@@ -16,14 +16,14 @@ class Sequence:
                     btn = tk.Button(
                         sequence_field,
                         width=4, height=2,
-                        bg="black",
+                        bg="Black",
                         state="disabled"
                     )
                 else:
                     btn = tk.Button(
                         sequence_field,
                         width=4, height=2,
-                        bg="white",
+                        bg="White",
                         command=lambda r=r, c=c: self.model.on_cell_click(r, c)
                     )
                 btn.grid(row=r, column=c, sticky="nsew")
@@ -61,7 +61,7 @@ class Sequence:
                 winner_color_code = Misc.colors_selection[winner_color]
                 Misc.print_hex_color(f"Winner: {winner_color}", winner_color_code)
                 break
-
+            
 
 
 def main():

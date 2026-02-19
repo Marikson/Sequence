@@ -7,23 +7,26 @@ class SequenceModel:
         self.inline_dict = {
             "Red": {
                 "inline": 0,
-                "two_ended": False,
+                "two_ended": True,
                 "open_in_middle": False,
-                "one_ended": False
+                "one_ended": False,
+                "round_to_come_again": len(Misc.turn) - 1
             }
             , 
             "Green": {
                 "inline": 0,
-                "two_ended": False,
+                "two_ended": True,
                 "open_in_middle": False,
-                "one_ended": False
+                "one_ended": False,
+                "round_to_come_again": len(Misc.turn) - 1
             }
             , 
             "Blue": {
                 "inline": 0,
-                "two_ended": False,
+                "two_ended": True,
                 "open_in_middle": False,
-                "one_ended": False
+                "one_ended": False,
+                "round_to_come_again": len(Misc.turn) - 1
             }
         }
 
@@ -115,24 +118,32 @@ class SequenceModel:
             if col - i >= 0 and self.get_btn_color(self.grid[row][col - i]) in [color, "Black"]:
                 inline_counter += 1
             elif col - i >= 0 and self.get_btn_color(self.grid[row][col - i]) == "White":
-                for j in range(1, 5-inline_counter):
-                   if col - i - j >= 0 and self.get_btn_color(self.grid[row][col - i - j]) in [color, "Black"]: 
+                for j in range(1, 5-i):
+                    if col - i - j >= 0 and self.get_btn_color(self.grid[row][col - i - j]) in [color, "Black"]: 
                         inline_counter += 1
                         is_open_in_middle = True
+                    else:
+                        break
+                break
             else:
                 is_one_ended = True
+                is_two_ended = False
                 break
         for i in range(1, 5):
             # Right
             if col + i < Misc.GRID_SIZE and self.get_btn_color(self.grid[row][col + i]) in [color, "Black"]:
                 inline_counter += 1
             elif col + i < Misc.GRID_SIZE and self.get_btn_color(self.grid[row][col + i]) == "White":
-                for j in range(1, 5-inline_counter):
-                   if col + i + j < Misc.GRID_SIZE and self.get_btn_color(self.grid[row][col + i + j]) in [color, "Black"]: 
+                for j in range(1, 5-i):
+                    if col + i + j < Misc.GRID_SIZE and self.get_btn_color(self.grid[row][col + i + j]) in [color, "Black"]: 
                         inline_counter += 1
                         is_open_in_middle = True
+                    else:
+                        break
+                break
             else:
                 is_one_ended = True
+                is_two_ended = False
                 break
         self.set_inline_dict(color, inline_counter, is_open_in_middle, is_one_ended)
 
@@ -143,24 +154,32 @@ class SequenceModel:
             if row - i >= 0 and self.get_btn_color(self.grid[row - i][col]) in [color, "Black"]:
                 inline_counter += 1
             elif row - i >= 0 and self.get_btn_color(self.grid[row - i][col]) == "White":
-                for j in range(1, 5-inline_counter):
-                   if row - i - j >= 0 and self.get_btn_color(self.grid[row - i - j][col]) in [color, "Black"]: 
+                for j in range(1, 5-i):
+                    if row - i - j >= 0 and self.get_btn_color(self.grid[row - i - j][col]) in [color, "Black"]: 
                         inline_counter += 1
                         is_open_in_middle = True
+                    else:
+                        break
+                break
             else:
                 is_one_ended = True
+                is_two_ended = False
                 break
         for i in range(1, 5):
             # Down
             if row + i < Misc.GRID_SIZE and self.get_btn_color(self.grid[row + i][col]) in [color, "Black"]:
                 inline_counter += 1
             elif row + i < Misc.GRID_SIZE and self.get_btn_color(self.grid[row + i][col]) == "White":
-                for j in range(1, 5-inline_counter):
-                   if row + i + j < Misc.GRID_SIZE and self.get_btn_color(self.grid[row + i + j][col]) in [color, "Black"]: 
+                for j in range(1, 5-i):
+                    if row + i + j < Misc.GRID_SIZE and self.get_btn_color(self.grid[row + i + j][col]) in [color, "Black"]: 
                         inline_counter += 1
                         is_open_in_middle = True
+                    else:
+                        break
+                break
             else:
                 is_one_ended = True
+                is_two_ended = False
                 break
         self.set_inline_dict(color, inline_counter, is_open_in_middle, is_one_ended)
 
@@ -171,24 +190,32 @@ class SequenceModel:
             if row - i >= 0 and col - i >= 0 and self.get_btn_color(self.grid[row - i][col - i]) in [color, "Black"]:
                 inline_counter += 1
             elif row - i >= 0 and col - i >= 0 and self.get_btn_color(self.grid[row - i][col - i]) == "White":
-                for j in range(1, 5-inline_counter):
-                   if row - i - j >= 0 and col - i - j >= 0 and self.get_btn_color(self.grid[row - i - j][col - i - j]) in [color, "Black"]: 
+                for j in range(1, 5-i):
+                    if row - i - j >= 0 and col - i - j >= 0 and self.get_btn_color(self.grid[row - i - j][col - i - j]) in [color, "Black"]: 
                         inline_counter += 1
                         is_open_in_middle = True
+                    else:
+                        break
+                break
             else:
                 is_one_ended = True
+                is_two_ended = False
                 break
         for i in range(1, 5):
             # down-right
             if row + i < Misc.GRID_SIZE and col + i < Misc.GRID_SIZE and self.get_btn_color(self.grid[row + i][col + i]) in [color, "Black"]:
                 inline_counter += 1
             elif row + i < Misc.GRID_SIZE and col + i < Misc.GRID_SIZE and self.get_btn_color(self.grid[row + i][col + i]) == "White":
-                for j in range(1, 5-inline_counter):
-                   if row + i + j < Misc.GRID_SIZE and col + i + j < Misc.GRID_SIZE and self.get_btn_color(self.grid[row + i + j][col + i + j]) in [color, "Black"]: 
+                for j in range(1, 5-i):
+                    if row + i + j < Misc.GRID_SIZE and col + i + j < Misc.GRID_SIZE and self.get_btn_color(self.grid[row + i + j][col + i + j]) in [color, "Black"]: 
                         inline_counter += 1
                         is_open_in_middle = True
+                    else:
+                        break
+                break
             else:
                 is_one_ended = True
+                is_two_ended = False
                 break
         self.set_inline_dict(color, inline_counter, is_open_in_middle, is_one_ended)        
 
@@ -200,11 +227,15 @@ class SequenceModel:
                 inline_counter += 1
             elif row + i < Misc.GRID_SIZE and col - i >= 0 and self.get_btn_color(self.grid[row + i][col - i]) == "White":
                 for j in range(1, 5-inline_counter):
-                   if row + i + j < Misc.GRID_SIZE and col - i - j >= 0 and self.get_btn_color(self.grid[row + i + j][col - i - j]) in [color, "Black"]: 
+                    if row + i + j < Misc.GRID_SIZE and col - i - j >= 0 and self.get_btn_color(self.grid[row + i + j][col - i - j]) in [color, "Black"]: 
                         inline_counter += 1
                         is_open_in_middle = True
+                    else:
+                        break
+                break
             else:
                 is_one_ended = True
+                is_two_ended = False
                 break
         for i in range(1, 5):
             # down-left
@@ -212,11 +243,16 @@ class SequenceModel:
                 inline_counter += 1
             elif row - i >= 0 and col + i < Misc.GRID_SIZE and self.get_btn_color(self.grid[row - i][col + i]) == "White":
                 for j in range(1, 5-inline_counter):
-                   if row - i - j >= 0 and col + i + j < Misc.GRID_SIZE and self.get_btn_color(self.grid[row - i - j][col + i + j]) in [color, "Black"]: 
+                    if row - i - j >= 0 and col + i + j < Misc.GRID_SIZE and self.get_btn_color(self.grid[row - i - j][col + i + j]) in [color, "Black"]: 
                         inline_counter += 1
                         is_open_in_middle = True
+                    else:
+                        break
+                break
             else:
                 is_one_ended = True
+                is_two_ended = False
                 break
         self.set_inline_dict(color, inline_counter, is_open_in_middle, is_one_ended)
+        print(self.inline_dict[color]["inline"],self.inline_dict[color]["open_in_middle"])
      

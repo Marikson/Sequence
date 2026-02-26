@@ -7,7 +7,7 @@ class SequenceModel:
         self.inline_dict = {
             "Red": {
                 "inline": 0,
-                "two_ended": True,
+                "two_ended": False,
                 "open_in_middle": False,
                 "one_ended": False,
                 "round_to_come_again": len(Misc.turn) - 1
@@ -15,7 +15,7 @@ class SequenceModel:
             , 
             "Green": {
                 "inline": 0,
-                "two_ended": True,
+                "two_ended": False,
                 "open_in_middle": False,
                 "one_ended": False,
                 "round_to_come_again": len(Misc.turn) - 1
@@ -23,7 +23,7 @@ class SequenceModel:
             , 
             "Blue": {
                 "inline": 0,
-                "two_ended": True,
+                "two_ended": False,
                 "open_in_middle": False,
                 "one_ended": False,
                 "round_to_come_again": len(Misc.turn) - 1
@@ -98,161 +98,249 @@ class SequenceModel:
         self.check_inline_per_color(color, r, c)
 
 
-    def set_inline_dict(self, color, inline_counter, is_open_in_middle, is_one_ended):
-        self.inline_dict[color]["inline"] = max(self.inline_dict[color]["inline"], inline_counter)
-        self.inline_dict[color]["open_in_middle"] = self.inline_dict[color]["open_in_middle"] or is_open_in_middle
-        self.inline_dict[color]["one_ended"] = self.inline_dict[color]["one_ended"] or is_one_ended
-        self.inline_dict[color]["two_ended"] = not self.inline_dict[color]["one_ended"] and not self.inline_dict[color]["open_in_middle"]
+    def set_inline_dict(self, color, inline_counter_minus, inline_counter_plus, 
+                        is_open_in_middle_minus, is_open_in_middle_plus, is_opened_minus, is_opened_plus,
+                        opened_minus_counter=0, opened_plus_counter=0):
+        
+        inline_sum = 1 + inline_counter_minus + inline_counter_plus
+        if inline_sum >= 5:
+            if inline_counter_minus > inline_counter_plus:
+                inline = 4
+                open_in_middle = is_open_in_middle_minus
+                one_ended = (inline_counter_minus + opened_minus_counter == 4 and is_opened_minus) 
+                two_ended = one_ended and is_open_in_middle_plus
+                    
 
+            elif inline_counter_plus > inline_counter_minus:
+                inline = 4
+                open_in_middle = is_open_in_middle_plus
+                one_ended = (inline_counter_plus + opened_plus_counter == 4 and is_opened_plus) 
+                two_ended = one_ended and is_open_in_middle_minus
+
+            elif inline_counter_plus == inline_counter_minus:
+                inline = 4
+                open_in_middle = is_open_in_middle_minus or is_open_in_middle_plus
+                one_ended = (inline_counter_plus + opened_plus_counter == 4 and is_open_in_middle_plus) or (inline_counter_minus + opened_minus_counter == 4 and is_open_in_middle_minus)
+                two_ended = (inline_counter_plus + opened_plus_counter == 4 and is_open_in_middle_plus) and (inline_counter_minus + opened_minus_counter == 4 and is_open_in_middle_minus)
+        
+        else:
+            inline = inline_sum
+            open_in_middle = is_open_in_middle_minus or is_open_in_middle_plus
+            one_ended = is_opened_minus or is_opened_plus
+            two_ended = is_opened_minus and is_opened_plus
+
+        if inline_sum > self.inline_dict[color]["inline"]:
+            self.inline_dict[color]["inline"] = inline
+            self.inline_dict[color]["open_in_middle"] = open_in_middle
+            self.inline_dict[color]["one_ended"] = one_ended
+            self.inline_dict[color]["two_ended"] = two_ended
 
     def check_inline_per_color(self, color, row, col):
-        inline_counter = 1
-        is_open_in_middle = False
-        is_one_ended = False
-        is_two_ended = False
-        
-
         # Horizontal
+        inline_counter_minus = 0
+        inline_counter_plus = 0
+        opened_minus_counter = 0
+        opened_plus_counter = 0
+        opened_minus = False
+        opened_plus = False
+        is_open_in_middle_minus = False
+        is_open_in_middle_plus = False
+        potentially_open_in_middle_minus = False
+        potentially_open_in_middle_plus = False
+        other_color_inline_minus = False
+        other_color_inline_plus = False
         for i in range(1, 5):
             # Left
-            if col - i >= 0 and self.get_btn_color(self.grid[row][col - i]) in [color, "Black"]:
-                inline_counter += 1
-            elif col - i >= 0 and self.get_btn_color(self.grid[row][col - i]) == "White":
-                for j in range(1, 5-i):
-                    if col - i - j >= 0 and self.get_btn_color(self.grid[row][col - i - j]) in [color, "Black"]: 
-                        inline_counter += 1
-                        is_open_in_middle = True
-                    else:
-                        break
-                break
-            else:
-                is_one_ended = True
-                is_two_ended = False
-                break
-        for i in range(1, 5):
+            if col - i >= 0:
+                if self.get_btn_color(self.grid[row][col - i]) in [color, "Black"]:
+                    inline_counter_minus += 1
+                    if potentially_open_in_middle_minus and not other_color_inline_minus:
+                        is_open_in_middle_minus = True
+                elif self.get_btn_color(self.grid[row][col - i]) == "White":
+                    potentially_open_in_middle_minus = True
+                    opened_minus_counter += 1
+                    if i==4:
+                        opened_minus = True
+                else:
+                    other_color_inline_minus = True
+                    is_open_in_middle_minus = False
+ 
             # Right
-            if col + i < Misc.GRID_SIZE and self.get_btn_color(self.grid[row][col + i]) in [color, "Black"]:
-                inline_counter += 1
-            elif col + i < Misc.GRID_SIZE and self.get_btn_color(self.grid[row][col + i]) == "White":
-                for j in range(1, 5-i):
-                    if col + i + j < Misc.GRID_SIZE and self.get_btn_color(self.grid[row][col + i + j]) in [color, "Black"]: 
-                        inline_counter += 1
-                        is_open_in_middle = True
-                    else:
-                        break
-                break
-            else:
-                is_one_ended = True
-                is_two_ended = False
-                break
-        self.set_inline_dict(color, inline_counter, is_open_in_middle, is_one_ended)
+            if col + i < Misc.GRID_SIZE:
+                if self.get_btn_color(self.grid[row][col + i]) in [color, "Black"]:
+                    inline_counter_plus += 1
+                    if potentially_open_in_middle_plus and not other_color_inline_plus:
+                        is_open_in_middle_plus = True
+                elif self.get_btn_color(self.grid[row][col + i]) == "White":
+                    potentially_open_in_middle_plus = True
+                    opened_plus_counter += 1
+                    if i==4:
+                        opened_plus = True
+                else:
+                    other_color_inline_plus = True
+                    is_open_in_middle_plus = False
+                    
+
+        self.set_inline_dict(color, inline_counter_minus, inline_counter_plus,
+                            is_open_in_middle_minus, is_open_in_middle_plus, 
+                            opened_minus, opened_plus,
+                            opened_minus_counter, opened_plus_counter)
+
+        
 
         # Vertical
-        inline_counter = 1
+        inline_counter_minus = 0
+        inline_counter_plus = 0
+        opened_minus_counter = 0
+        opened_plus_counter = 0
+        opened_minus = False
+        opened_plus = False
+        is_open_in_middle_minus = False
+        is_open_in_middle_plus = False
+        potentially_open_in_middle_minus = False
+        potentially_open_in_middle_plus = False
+        other_color_inline_minus = False
+        other_color_inline_plus = False
         for i in range(1, 5):
             # Up
-            if row - i >= 0 and self.get_btn_color(self.grid[row - i][col]) in [color, "Black"]:
-                inline_counter += 1
-            elif row - i >= 0 and self.get_btn_color(self.grid[row - i][col]) == "White":
-                for j in range(1, 5-i):
-                    if row - i - j >= 0 and self.get_btn_color(self.grid[row - i - j][col]) in [color, "Black"]: 
-                        inline_counter += 1
-                        is_open_in_middle = True
-                    else:
-                        break
-                break
-            else:
-                is_one_ended = True
-                is_two_ended = False
-                break
-        for i in range(1, 5):
+            if row - i >= 0:
+                if self.get_btn_color(self.grid[row - i][col]) in [color, "Black"]:
+                    inline_counter_minus += 1
+                    if potentially_open_in_middle_minus and not other_color_inline_minus:
+                        is_open_in_middle_minus = True
+                elif self.get_btn_color(self.grid[row][col - i]) == "White":
+                    potentially_open_in_middle_minus = True
+                    opened_minus_counter += 1
+                    if i==4:
+                        opened_minus = True
+                else:
+                    other_color_inline_minus = True
+                    is_open_in_middle_minus = False
+
             # Down
-            if row + i < Misc.GRID_SIZE and self.get_btn_color(self.grid[row + i][col]) in [color, "Black"]:
-                inline_counter += 1
-            elif row + i < Misc.GRID_SIZE and self.get_btn_color(self.grid[row + i][col]) == "White":
-                for j in range(1, 5-i):
-                    if row + i + j < Misc.GRID_SIZE and self.get_btn_color(self.grid[row + i + j][col]) in [color, "Black"]: 
-                        inline_counter += 1
-                        is_open_in_middle = True
-                    else:
-                        break
-                break
-            else:
-                is_one_ended = True
-                is_two_ended = False
-                break
-        self.set_inline_dict(color, inline_counter, is_open_in_middle, is_one_ended)
+            if row + i < Misc.GRID_SIZE:
+                if self.get_btn_color(self.grid[row + i][col]) in [color, "Black"]:
+                    inline_counter_plus += 1
+                    if potentially_open_in_middle_plus and not other_color_inline_plus:
+                        is_open_in_middle_plus = True
+                elif self.get_btn_color(self.grid[row][col + i]) == "White":
+                    potentially_open_in_middle_plus = True
+                    opened_plus_counter += 1
+                    if i==4:
+                        opened_plus = True
+                else:
+                    other_color_inline_plus = True
+                    is_open_in_middle_plus = False
+
+        self.set_inline_dict(color, inline_counter_minus, inline_counter_plus,
+                            is_open_in_middle_minus, is_open_in_middle_plus, 
+                            opened_minus, opened_plus,
+                            opened_minus_counter, opened_plus_counter)
+        
 
         # Diagonal [0,0] to [9,9]
-        inline_counter = 1
+        inline_counter_minus = 0
+        inline_counter_plus = 0
+        opened_minus_counter = 0
+        opened_plus_counter = 0
+        opened_minus = False
+        opened_plus = False
+        is_open_in_middle_minus = False
+        is_open_in_middle_plus = False
+        potentially_open_in_middle_minus = False
+        potentially_open_in_middle_plus = False
+        other_color_inline_minus = False
+        other_color_inline_plus = False
         for i in range(1, 5):
             # up-left
-            if row - i >= 0 and col - i >= 0 and self.get_btn_color(self.grid[row - i][col - i]) in [color, "Black"]:
-                inline_counter += 1
-            elif row - i >= 0 and col - i >= 0 and self.get_btn_color(self.grid[row - i][col - i]) == "White":
-                for j in range(1, 5-i):
-                    if row - i - j >= 0 and col - i - j >= 0 and self.get_btn_color(self.grid[row - i - j][col - i - j]) in [color, "Black"]: 
-                        inline_counter += 1
-                        is_open_in_middle = True
-                    else:
-                        break
-                break
-            else:
-                is_one_ended = True
-                is_two_ended = False
-                break
-        for i in range(1, 5):
+            if row - i >= 0 and col - i >= 0:
+                if self.get_btn_color(self.grid[row - i][col - i]) in [color, "Black"]:
+                    inline_counter_minus += 1
+                    if potentially_open_in_middle_minus and not other_color_inline_minus:
+                        is_open_in_middle_minus = True
+                elif self.get_btn_color(self.grid[row][col - i]) == "White":
+                    potentially_open_in_middle_minus = True
+                    opened_minus_counter += 1
+                    if i==4:
+                        opened_minus = True
+                else:
+                    other_color_inline_minus = True
+                    is_open_in_middle_minus = False
+            
             # down-right
-            if row + i < Misc.GRID_SIZE and col + i < Misc.GRID_SIZE and self.get_btn_color(self.grid[row + i][col + i]) in [color, "Black"]:
-                inline_counter += 1
-            elif row + i < Misc.GRID_SIZE and col + i < Misc.GRID_SIZE and self.get_btn_color(self.grid[row + i][col + i]) == "White":
-                for j in range(1, 5-i):
-                    if row + i + j < Misc.GRID_SIZE and col + i + j < Misc.GRID_SIZE and self.get_btn_color(self.grid[row + i + j][col + i + j]) in [color, "Black"]: 
-                        inline_counter += 1
-                        is_open_in_middle = True
-                    else:
-                        break
-                break
-            else:
-                is_one_ended = True
-                is_two_ended = False
-                break
-        self.set_inline_dict(color, inline_counter, is_open_in_middle, is_one_ended)        
+            if row + i < Misc.GRID_SIZE and col + i < Misc.GRID_SIZE:
+                if self.get_btn_color(self.grid[row + i][col + i]) in [color, "Black"]:
+                    inline_counter_plus += 1
+                    if potentially_open_in_middle_plus and not other_color_inline_plus:
+                        is_open_in_middle_plus = True
+                elif self.get_btn_color(self.grid[row][col + i]) == "White":
+                    potentially_open_in_middle_plus = True
+                    opened_plus_counter += 1
+                    if i==4:
+                        opened_plus = True
+                else:
+                    other_color_inline_plus = True
+                    is_open_in_middle_plus = False
+
+        self.set_inline_dict(color, inline_counter_minus, inline_counter_plus,
+                            is_open_in_middle_minus, is_open_in_middle_plus, 
+                            opened_minus, opened_plus,
+                            opened_minus_counter, opened_plus_counter)
+        
+              
 
         # Diagonal [0,9] to [9,0]
-        inline_counter = 1
+        inline_counter_minus = 0
+        inline_counter_plus = 0
+        opened_minus_counter = 0
+        opened_plus_counter = 0
+        opened_minus = False
+        opened_plus = False
+        is_open_in_middle_minus = False
+        is_open_in_middle_plus = False
+        potentially_open_in_middle_minus = False
+        potentially_open_in_middle_plus = False
+        other_color_inline_minus = False
+        other_color_inline_plus = False
         for i in range(1, 5):
             # up-right
-            if row + i < Misc.GRID_SIZE and col - i >= 0 and self.get_btn_color(self.grid[row + i][col - i]) in [color, "Black"]:
-                inline_counter += 1
-            elif row + i < Misc.GRID_SIZE and col - i >= 0 and self.get_btn_color(self.grid[row + i][col - i]) == "White":
-                for j in range(1, 5-inline_counter):
-                    if row + i + j < Misc.GRID_SIZE and col - i - j >= 0 and self.get_btn_color(self.grid[row + i + j][col - i - j]) in [color, "Black"]: 
-                        inline_counter += 1
-                        is_open_in_middle = True
-                    else:
-                        break
-                break
-            else:
-                is_one_ended = True
-                is_two_ended = False
-                break
-        for i in range(1, 5):
+            if row + i < Misc.GRID_SIZE and col - i >= 0:
+                if self.get_btn_color(self.grid[row + i][col - i]) in [color, "Black"]:
+                    inline_counter_minus += 1
+                    if potentially_open_in_middle_minus and not other_color_inline_minus:
+                        is_open_in_middle_minus = True
+                elif self.get_btn_color(self.grid[row][col - i]) == "White":
+                    potentially_open_in_middle_minus = True
+                    opened_minus_counter += 1
+                    if i==4:
+                        opened_minus = True
+                else:
+                    other_color_inline_minus = True
+                    is_open_in_middle_minus = False
+            
             # down-left
-            if row - i >= 0 and col + i < Misc.GRID_SIZE and self.get_btn_color(self.grid[row - i][col + i]) in [color, "Black"]:
-                inline_counter += 1
-            elif row - i >= 0 and col + i < Misc.GRID_SIZE and self.get_btn_color(self.grid[row - i][col + i]) == "White":
-                for j in range(1, 5-inline_counter):
-                    if row - i - j >= 0 and col + i + j < Misc.GRID_SIZE and self.get_btn_color(self.grid[row - i - j][col + i + j]) in [color, "Black"]: 
-                        inline_counter += 1
-                        is_open_in_middle = True
-                    else:
-                        break
-                break
-            else:
-                is_one_ended = True
-                is_two_ended = False
-                break
-        self.set_inline_dict(color, inline_counter, is_open_in_middle, is_one_ended)
-        print(self.inline_dict[color]["inline"],self.inline_dict[color]["open_in_middle"])
+            if row - i >= 0 and col + i < Misc.GRID_SIZE:
+                if self.get_btn_color(self.grid[row - i][col + i]) in [color, "Black"]:
+                    inline_counter_plus += 1
+                    if potentially_open_in_middle_plus and not other_color_inline_plus:
+                        is_open_in_middle_plus = True
+                elif self.get_btn_color(self.grid[row][col + i]) == "White":
+                    potentially_open_in_middle_plus = True
+                    opened_plus_counter += 1
+                    if i==4:
+                        opened_plus = True
+                else:
+                    other_color_inline_plus = True
+                    is_open_in_middle_plus = False
+
+        self.set_inline_dict(color, inline_counter_minus, inline_counter_plus,
+                            is_open_in_middle_minus, is_open_in_middle_plus, 
+                            opened_minus, opened_plus,
+                            opened_minus_counter, opened_plus_counter)
+
+        
+        print(f"  Inline: {self.inline_dict[color]['inline']} " \
+              f"\n  Open in middle: {self.inline_dict[color]['open_in_middle']} " \
+              f"\n  One ended: {self.inline_dict[color]['one_ended']} " \
+              f"\n  Two ended: {self.inline_dict[color]['two_ended']} ")
      

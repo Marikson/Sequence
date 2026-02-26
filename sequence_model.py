@@ -51,43 +51,43 @@ class SequenceModel:
                     continue
 
                 # Down
-                if c <= Misc.GRID_SIZE - 5:
-                    if all(self.get_btn_color(self.grid[r][c + i]) in [color_code, "Black"] for i in range(5)):
+                if c <= Misc.GRID_SIZE - Misc.INLINE_TO_WIN:
+                    if all(self.get_btn_color(self.grid[r][c + i]) in [color_code, "Black"] for i in range(Misc.INLINE_TO_WIN)):
                         return color_code
                     
                 # Up
                 if c >= 4:
-                    if all(self.get_btn_color(self.grid[r][c - i]) in [color_code, "Black"] for i in range(5)):
+                    if all(self.get_btn_color(self.grid[r][c - i]) in [color_code, "Black"] for i in range(Misc.INLINE_TO_WIN)):
                         return color_code
 
                 # Right
-                if r <= Misc.GRID_SIZE - 5:
-                    if all(self.get_btn_color(self.grid[r + i][c]) in [color_code, "Black"] for i in range(5)):
+                if r <= Misc.GRID_SIZE - Misc.INLINE_TO_WIN:
+                    if all(self.get_btn_color(self.grid[r + i][c]) in [color_code, "Black"] for i in range(Misc.INLINE_TO_WIN)):
                         return color_code
                     
                 # Left
                 if r >= 4:
-                    if all(self.get_btn_color(self.grid[r - i][c]) in [color_code, "Black"] for i in range(5)):
+                    if all(self.get_btn_color(self.grid[r - i][c]) in [color_code, "Black"] for i in range(Misc.INLINE_TO_WIN)):
                         return color_code
 
                 # down-right
-                if r <= Misc.GRID_SIZE - 5 and c <= Misc.GRID_SIZE - 5:
-                    if all(self.get_btn_color(self.grid[r + i][c + i]) in [color_code, "Black"] for i in range(5)):
+                if r <= Misc.GRID_SIZE - Misc.INLINE_TO_WIN and c <= Misc.GRID_SIZE - Misc.INLINE_TO_WIN:
+                    if all(self.get_btn_color(self.grid[r + i][c + i]) in [color_code, "Black"] for i in range(Misc.INLINE_TO_WIN)):
                         return color_code
 
                 # up-right
-                if r >= 4 and c <= Misc.GRID_SIZE - 5:
-                    if all(self.get_btn_color(self.grid[r - i][c + i]) in [color_code, "Black"] for i in range(5)):
+                if r >= 4 and c <= Misc.GRID_SIZE - Misc.INLINE_TO_WIN:
+                    if all(self.get_btn_color(self.grid[r - i][c + i]) in [color_code, "Black"] for i in range(Misc.INLINE_TO_WIN)):
                         return color_code
                     
                 # down-left
-                if r <= Misc.GRID_SIZE - 5 and c >= 4:
-                    if all(self.get_btn_color(self.grid[r + i][c - i]) in [color_code, "Black"] for i in range(5)):
+                if r <= Misc.GRID_SIZE - Misc.INLINE_TO_WIN and c >= 4:
+                    if all(self.get_btn_color(self.grid[r + i][c - i]) in [color_code, "Black"] for i in range(Misc.INLINE_TO_WIN)):
                         return color_code
 
                 # up-left
                 if r >= 4 and c >= 4:
-                    if all(self.get_btn_color(self.grid[r - i][c - i]) in [color_code, "Black"] for i in range(5)):
+                    if all(self.get_btn_color(self.grid[r - i][c - i]) in [color_code, "Black"] for i in range(Misc.INLINE_TO_WIN)):
                         return color_code    
 
         return None
@@ -109,15 +109,15 @@ class SequenceModel:
             inline = inline_sum
             open_in_middle = is_open_in_middle_minus
             empty_middle_counter = empty_minus_counter
-            one_ended = not is_opened_minus and empty_plus_counter >= (5 - inline_sum)
-            two_ended = is_opened_minus and empty_plus_counter >= (5 - inline_sum)
+            one_ended = not is_opened_minus and empty_plus_counter >= (Misc.INLINE_TO_WIN - inline_sum) and empty_minus_counter < (Misc.INLINE_TO_WIN - inline_sum)
+            two_ended = is_opened_minus and empty_plus_counter >= (Misc.INLINE_TO_WIN - inline_sum)
             
         elif inline_counter_plus > inline_counter_minus:
             inline = inline_sum
             open_in_middle = is_open_in_middle_plus
             empty_middle_counter = empty_plus_counter
-            one_ended = not is_opened_plus and empty_minus_counter >= (5 - inline_sum)
-            two_ended = is_opened_plus and empty_minus_counter >= (5 - inline_sum)
+            one_ended = not is_opened_plus and empty_minus_counter >= (Misc.INLINE_TO_WIN - inline_sum) and empty_plus_counter < (Misc.INLINE_TO_WIN - inline_sum)
+            two_ended = is_opened_plus and empty_minus_counter >= (Misc.INLINE_TO_WIN - inline_sum)
             
 
         return {"inline": inline,
@@ -133,30 +133,24 @@ class SequenceModel:
         
         if inline_counter_minus > inline_counter_plus:
             inline = inline_sum
-            open_in_middle = is_open_in_middle_minus or (empty_plus_counter >= 1 and inline_counter_plus >= 1)
+            open_in_middle = is_open_in_middle_minus
             empty_middle_counter = empty_minus_counter 
-            one_ended = (not is_opened_minus and empty_plus_counter >= (5 - inline_sum)) or \
-                        (not is_opened_plus and empty_minus_counter >= (5 - inline_sum))
-            two_ended = (not is_opened_minus and empty_plus_counter >= (5 - inline_sum)) and \
-                        (not is_opened_plus and empty_minus_counter >= (5 - inline_sum))
+            one_ended = not is_opened_minus and empty_plus_counter >= (Misc.INLINE_TO_WIN - inline_sum) and empty_minus_counter + inline_sum < Misc.INLINE_TO_WIN
+            two_ended = is_opened_minus and empty_plus_counter >= (Misc.INLINE_TO_WIN - inline_sum)
                 
         elif inline_counter_plus > inline_counter_minus:
             inline = inline_sum
-            open_in_middle = is_open_in_middle_plus or (empty_minus_counter >= 1 and inline_counter_minus >= 1)
+            open_in_middle = is_open_in_middle_plus
             empty_middle_counter = empty_plus_counter
-            one_ended = (not is_opened_plus and empty_minus_counter >= (5 - inline_sum)) or \
-                        (not is_opened_minus and empty_plus_counter >= (5 - inline_sum))
-            two_ended = (not is_opened_plus and empty_minus_counter >= (5 - inline_sum)) and \
-                        (not is_opened_minus and empty_plus_counter >= (5 - inline_sum))
+            one_ended = not is_opened_plus and empty_minus_counter >= (Misc.INLINE_TO_WIN - inline_sum) and empty_plus_counter + inline_sum < Misc.INLINE_TO_WIN
+            two_ended = is_opened_plus and empty_minus_counter >= (Misc.INLINE_TO_WIN - inline_sum)
         
         elif inline_counter_plus == inline_counter_minus:
             inline = inline_sum
-            open_in_middle = is_open_in_middle_minus or is_open_in_middle_plus
-            empty_middle_counter = empty_plus_counter + empty_minus_counter
-            one_ended = (not is_opened_minus and empty_plus_counter >= (5 - inline_sum)) or \
-                        (not is_opened_plus and empty_minus_counter >= (5 - inline_sum))
-            two_ended = (not is_opened_minus and empty_plus_counter >= (5 - inline_sum)) and \
-                        (not is_opened_plus and empty_minus_counter >= (5 - inline_sum))
+            open_in_middle = is_open_in_middle_minus and is_open_in_middle_plus
+            empty_middle_counter = Misc.INLINE_TO_WIN - inline_sum
+            one_ended = False
+            two_ended = False
             
 
         return {"inline": inline,
@@ -174,15 +168,15 @@ class SequenceModel:
             inline = inline_sum
             open_in_middle = is_open_in_middle_minus or (empty_plus_counter >= 1 and inline_counter_plus >= 1)
             empty_middle_counter = empty_minus_counter 
-            one_ended = False
-            two_ended = False
+            one_ended = not is_opened_minus and empty_plus_counter >= (Misc.INLINE_TO_WIN - inline_sum) and empty_minus_counter + inline_sum < Misc.INLINE_TO_WIN
+            two_ended = is_opened_minus and empty_plus_counter >= (Misc.INLINE_TO_WIN - inline_sum)
         
         elif inline_counter_plus > inline_counter_minus:
             inline = inline_sum
             open_in_middle = is_open_in_middle_plus or (empty_minus_counter >= 1 and inline_counter_minus >= 1)
             empty_middle_counter = empty_plus_counter
-            one_ended = False
-            two_ended = False
+            one_ended = not is_opened_plus and empty_minus_counter >= (Misc.INLINE_TO_WIN - inline_sum) and empty_plus_counter + inline_sum < Misc.INLINE_TO_WIN
+            two_ended = is_opened_plus and empty_minus_counter >= (Misc.INLINE_TO_WIN - inline_sum)
 
         return {"inline": inline,
                 "open_in_middle": open_in_middle, 
@@ -198,24 +192,24 @@ class SequenceModel:
             inline = inline_sum
             open_in_middle = is_open_in_middle_minus
             empty_middle_counter = empty_minus_counter 
-            one_ended = not is_opened_minus and empty_plus_counter >= (5 - inline_sum)
-            two_ended = is_opened_minus and empty_plus_counter >= (5 - inline_sum)
+            one_ended = not is_opened_minus and empty_plus_counter >= (Misc.INLINE_TO_WIN - inline_sum)
+            two_ended = is_opened_minus and empty_plus_counter >= (Misc.INLINE_TO_WIN - inline_sum)
 
         elif inline_counter_plus > inline_counter_minus:
             inline = inline_sum
             open_in_middle = is_open_in_middle_plus
             empty_middle_counter = empty_plus_counter
-            one_ended = not is_opened_plus and empty_minus_counter >= (5 - inline_sum)
-            two_ended = is_opened_plus and empty_minus_counter >= (5 - inline_sum)
+            one_ended = not is_opened_plus and empty_minus_counter >= (Misc.INLINE_TO_WIN - inline_sum)
+            two_ended = is_opened_plus and empty_minus_counter >= (Misc.INLINE_TO_WIN - inline_sum)
         
         elif inline_counter_plus == inline_counter_minus:
             inline = inline_sum
             open_in_middle = is_open_in_middle_minus or is_open_in_middle_plus
             empty_middle_counter = empty_plus_counter + empty_minus_counter
-            one_ended = (not is_opened_minus and empty_plus_counter >= (5 - inline_sum)) or \
-                        (not is_opened_plus and empty_minus_counter >= (5 - inline_sum))
-            two_ended = (not is_opened_minus and empty_plus_counter >= (5 - inline_sum)) and \
-                        (not is_opened_plus and empty_minus_counter >= (5 - inline_sum))
+            one_ended = (not is_opened_minus and empty_plus_counter >= (Misc.INLINE_TO_WIN - inline_sum)) or \
+                        (not is_opened_plus and empty_minus_counter >= (Misc.INLINE_TO_WIN - inline_sum))
+            two_ended = (not is_opened_minus and empty_plus_counter >= (Misc.INLINE_TO_WIN - inline_sum)) and \
+                        (not is_opened_plus and empty_minus_counter >= (Misc.INLINE_TO_WIN - inline_sum))
             
         return {"inline": inline,
                 "open_in_middle": open_in_middle, 
@@ -242,7 +236,7 @@ class SequenceModel:
             evaluated = self.four_in_line(inline_sum, inline_counter_minus, inline_counter_plus,
                             is_open_in_middle_minus, is_open_in_middle_plus, is_opened_minus, is_opened_plus,
                             empty_minus_counter, empty_plus_counter)
-        elif inline_sum >= 5:
+        elif inline_sum >= Misc.INLINE_TO_WIN:
             evaluated = self.more_inline(inline_counter_minus, inline_counter_plus,
                             is_open_in_middle_minus, is_open_in_middle_plus, is_opened_minus, is_opened_plus,
                             empty_minus_counter, empty_plus_counter)
@@ -278,7 +272,7 @@ class SequenceModel:
         potentially_open_in_middle_plus = False
         other_color_inline_minus = False
         other_color_inline_plus = False
-        for i in range(1, 5):
+        for i in range(1, Misc.INLINE_TO_WIN):
             # Left
             if col - i >= 0:
                 if self.get_btn_color(self.grid[row][col - i]) in [color, "Black"]:
@@ -287,9 +281,10 @@ class SequenceModel:
                         is_open_in_middle_minus = True
                 elif self.get_btn_color(self.grid[row][col - i]) == "White":
                     potentially_open_in_middle_minus = True
-                    empty_minus_counter += 1
                     if i==4 and not other_color_inline_minus:
                         opened_minus = True
+                    else:
+                        empty_minus_counter += 1
                 else:
                     other_color_inline_minus = True
                     is_open_in_middle_minus = False
@@ -303,9 +298,10 @@ class SequenceModel:
                         is_open_in_middle_plus = True
                 elif self.get_btn_color(self.grid[row][col + i]) == "White":
                     potentially_open_in_middle_plus = True
-                    empty_plus_counter += 1
                     if i==4 and not other_color_inline_plus:
                         opened_plus = True
+                    else:
+                        empty_plus_counter += 1
                 else:
                     other_color_inline_plus = True
                     is_open_in_middle_plus = False
@@ -331,7 +327,7 @@ class SequenceModel:
         potentially_open_in_middle_plus = False
         other_color_inline_minus = False
         other_color_inline_plus = False
-        for i in range(1, 5):
+        for i in range(1, Misc.INLINE_TO_WIN):
             # Up
             if row - i >= 0:
                 if self.get_btn_color(self.grid[row - i][col]) in [color, "Black"]:
@@ -340,9 +336,10 @@ class SequenceModel:
                         is_open_in_middle_minus = True
                 elif self.get_btn_color(self.grid[row - i][col]) == "White":
                     potentially_open_in_middle_minus = True
-                    empty_minus_counter += 1
                     if i==4 and not other_color_inline_minus:
                         opened_minus = True
+                    else:
+                        empty_minus_counter += 1   
                 else:
                     other_color_inline_minus = True
                     is_open_in_middle_minus = False
@@ -356,9 +353,10 @@ class SequenceModel:
                         is_open_in_middle_plus = True
                 elif self.get_btn_color(self.grid[row + i][col]) == "White":
                     potentially_open_in_middle_plus = True
-                    empty_plus_counter += 1
                     if i==4 and not other_color_inline_plus:
                         opened_plus = True
+                    else:                        
+                        empty_plus_counter += 1
                 else:
                     other_color_inline_plus = True
                     is_open_in_middle_plus = False
@@ -383,7 +381,7 @@ class SequenceModel:
         potentially_open_in_middle_plus = False
         other_color_inline_minus = False
         other_color_inline_plus = False
-        for i in range(1, 5):
+        for i in range(1, Misc.INLINE_TO_WIN):
             # up-left
             if row - i >= 0 and col - i >= 0:
                 if self.get_btn_color(self.grid[row - i][col - i]) in [color, "Black"]:
@@ -392,9 +390,10 @@ class SequenceModel:
                         is_open_in_middle_minus = True
                 elif self.get_btn_color(self.grid[row - i][col - i]) == "White":
                     potentially_open_in_middle_minus = True
-                    empty_minus_counter += 1
                     if i==4 and not other_color_inline_minus:
                         opened_minus = True
+                    else:
+                        empty_minus_counter += 1
                 else:
                     other_color_inline_minus = True
                     is_open_in_middle_minus = False
@@ -408,9 +407,10 @@ class SequenceModel:
                         is_open_in_middle_plus = True
                 elif self.get_btn_color(self.grid[row + i][col + i]) == "White":
                     potentially_open_in_middle_plus = True
-                    empty_plus_counter += 1
                     if i==4 and not other_color_inline_plus:
                         opened_plus = True
+                    else:
+                        empty_plus_counter += 1
                 else:
                     other_color_inline_plus = True
                     is_open_in_middle_plus = False
@@ -435,7 +435,7 @@ class SequenceModel:
         potentially_open_in_middle_plus = False
         other_color_inline_minus = False
         other_color_inline_plus = False
-        for i in range(1, 5):
+        for i in range(1, Misc.INLINE_TO_WIN):
             # up-right
             if row + i < Misc.GRID_SIZE and col - i >= 0:
                 if self.get_btn_color(self.grid[row + i][col - i]) in [color, "Black"]:
@@ -444,9 +444,10 @@ class SequenceModel:
                         is_open_in_middle_minus = True
                 elif self.get_btn_color(self.grid[row + i][col - i]) == "White":
                     potentially_open_in_middle_minus = True
-                    empty_minus_counter += 1
                     if i==4 and not other_color_inline_minus:
                         opened_minus = True
+                    else:                        
+                        empty_minus_counter += 1
                 else:
                     other_color_inline_minus = True
                     is_open_in_middle_minus = False
@@ -460,9 +461,10 @@ class SequenceModel:
                         is_open_in_middle_plus = True
                 elif self.get_btn_color(self.grid[row - i][col + i]) == "White":
                     potentially_open_in_middle_plus = True
-                    empty_plus_counter += 1
                     if i==4 and not other_color_inline_plus:
                         opened_plus = True
+                    else:
+                        empty_plus_counter += 1
                 else:
                     other_color_inline_plus = True
                     is_open_in_middle_plus = False

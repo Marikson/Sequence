@@ -2,6 +2,7 @@ class Misc:
     GRID_SIZE = 10   # 10x10 grid
     CELL_SIZE = 40   # pixel size of each cell
     PROBABILITY_PER_MOVE = 16 / 104
+    INLINE_TO_WIN = 5
 
     colors_selection = {"Red": "#ff0000", "Green": "#006400", "Blue": "#0000ff", "Black": "#000000", "White": "#ffffff"}
     turn = ["Green"] #, "Blue", "Red"]

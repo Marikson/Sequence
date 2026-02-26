@@ -100,47 +100,57 @@ class SequenceModel:
 
     def set_inline_dict(self, color, inline_counter_minus, inline_counter_plus, 
                         is_open_in_middle_minus, is_open_in_middle_plus, is_opened_minus, is_opened_plus,
-                        opened_minus_counter=0, opened_plus_counter=0):
+                        empty_minus_counter=0, empty_plus_counter=0):
         
         inline_sum = 1 + inline_counter_minus + inline_counter_plus
         if inline_sum >= 5:
-            if inline_counter_minus > inline_counter_plus:
-                inline = 4
-                open_in_middle = is_open_in_middle_minus
-                one_ended = (inline_counter_minus + opened_minus_counter == 4 and is_opened_minus) 
-                two_ended = one_ended and is_open_in_middle_plus
-                    
-
-            elif inline_counter_plus > inline_counter_minus:
-                inline = 4
-                open_in_middle = is_open_in_middle_plus
-                one_ended = (inline_counter_plus + opened_plus_counter == 4 and is_opened_plus) 
-                two_ended = one_ended and is_open_in_middle_minus
-
-            elif inline_counter_plus == inline_counter_minus:
-                inline = 4
-                open_in_middle = is_open_in_middle_minus or is_open_in_middle_plus
-                one_ended = (inline_counter_plus + opened_plus_counter == 4 and is_open_in_middle_plus) or (inline_counter_minus + opened_minus_counter == 4 and is_open_in_middle_minus)
-                two_ended = (inline_counter_plus + opened_plus_counter == 4 and is_open_in_middle_plus) and (inline_counter_minus + opened_minus_counter == 4 and is_open_in_middle_minus)
+            inline_sum = 4
         
-        else:
+        if inline_counter_minus > inline_counter_plus:
+            inline = inline_sum
+            open_in_middle = is_open_in_middle_minus or (empty_plus_counter >= 1 and inline_counter_plus >= 1)
+            one_ended = (not is_opened_minus and empty_plus_counter >= (5 - inline_sum)) or \
+                        (not is_opened_plus and empty_minus_counter >= (5 - inline_sum))
+            two_ended = (not is_opened_minus and empty_plus_counter >= (5 - inline_sum)) and \
+                        (not is_opened_plus and empty_minus_counter >= (5 - inline_sum))
+                
+        elif inline_counter_plus > inline_counter_minus:
+            inline = inline_sum
+            open_in_middle = is_open_in_middle_plus or (empty_minus_counter >= 1 and inline_counter_minus >= 1)
+            one_ended = (not is_opened_plus and empty_plus_counter >= (5 - inline_sum)) or \
+                        (not is_opened_minus and empty_minus_counter >= (5 - inline_sum))
+            two_ended = (not is_opened_plus and empty_plus_counter >= (5 - inline_sum)) and \
+                        (not is_opened_minus and empty_minus_counter >= (5 - inline_sum))
+        
+        elif inline_counter_plus == inline_counter_minus:
             inline = inline_sum
             open_in_middle = is_open_in_middle_minus or is_open_in_middle_plus
-            one_ended = is_opened_minus or is_opened_plus
-            two_ended = is_opened_minus and is_opened_plus
+            one_ended = (not is_opened_minus and empty_plus_counter >= (5 - inline_sum)) or \
+                        (not is_opened_plus and empty_minus_counter >= (5 - inline_sum))
+            two_ended = (not is_opened_minus and empty_plus_counter >= (5 - inline_sum)) and \
+                        (not is_opened_plus and empty_minus_counter >= (5 - inline_sum))
+        # else:
+        #     inline = inline_sum
+        #     open_in_middle = is_open_in_middle_minus or is_open_in_middle_plus
+        #     one_ended = is_opened_minus or is_opened_plus
+        #     two_ended = is_opened_minus and is_opened_plus
 
         if inline_sum > self.inline_dict[color]["inline"]:
-            self.inline_dict[color]["inline"] = inline
+            self.inline_dict[color]["inline"] = inline_sum
             self.inline_dict[color]["open_in_middle"] = open_in_middle
             self.inline_dict[color]["one_ended"] = one_ended
             self.inline_dict[color]["two_ended"] = two_ended
+        
+        elif inline == self.inline_dict[color]["inline"]:
+            if two_ended and not self.inline_dict[color]["two_ended"]:
+                self.inline_dict[color]["two_ended"] = two_ended
 
     def check_inline_per_color(self, color, row, col):
         # Horizontal
         inline_counter_minus = 0
         inline_counter_plus = 0
-        opened_minus_counter = 0
-        opened_plus_counter = 0
+        empty_minus_counter = 0
+        empty_plus_counter = 0
         opened_minus = False
         opened_plus = False
         is_open_in_middle_minus = False
@@ -158,12 +168,13 @@ class SequenceModel:
                         is_open_in_middle_minus = True
                 elif self.get_btn_color(self.grid[row][col - i]) == "White":
                     potentially_open_in_middle_minus = True
-                    opened_minus_counter += 1
-                    if i==4:
+                    empty_minus_counter += 1
+                    if i==4 and not other_color_inline_minus:
                         opened_minus = True
                 else:
                     other_color_inline_minus = True
                     is_open_in_middle_minus = False
+                    opened_minus = False
  
             # Right
             if col + i < Misc.GRID_SIZE:
@@ -173,26 +184,27 @@ class SequenceModel:
                         is_open_in_middle_plus = True
                 elif self.get_btn_color(self.grid[row][col + i]) == "White":
                     potentially_open_in_middle_plus = True
-                    opened_plus_counter += 1
-                    if i==4:
+                    empty_plus_counter += 1
+                    if i==4 and not other_color_inline_plus:
                         opened_plus = True
                 else:
                     other_color_inline_plus = True
                     is_open_in_middle_plus = False
+                    opened_plus = False
                     
 
         self.set_inline_dict(color, inline_counter_minus, inline_counter_plus,
                             is_open_in_middle_minus, is_open_in_middle_plus, 
                             opened_minus, opened_plus,
-                            opened_minus_counter, opened_plus_counter)
+                            empty_minus_counter, empty_plus_counter)
 
         
 
         # Vertical
         inline_counter_minus = 0
         inline_counter_plus = 0
-        opened_minus_counter = 0
-        opened_plus_counter = 0
+        empty_minus_counter = 0
+        empty_plus_counter = 0
         opened_minus = False
         opened_plus = False
         is_open_in_middle_minus = False
@@ -208,14 +220,15 @@ class SequenceModel:
                     inline_counter_minus += 1
                     if potentially_open_in_middle_minus and not other_color_inline_minus:
                         is_open_in_middle_minus = True
-                elif self.get_btn_color(self.grid[row][col - i]) == "White":
+                elif self.get_btn_color(self.grid[row - i][col]) == "White":
                     potentially_open_in_middle_minus = True
-                    opened_minus_counter += 1
-                    if i==4:
+                    empty_minus_counter += 1
+                    if i==4 and not other_color_inline_minus:
                         opened_minus = True
                 else:
                     other_color_inline_minus = True
                     is_open_in_middle_minus = False
+                    opened_minus = False
 
             # Down
             if row + i < Misc.GRID_SIZE:
@@ -223,26 +236,27 @@ class SequenceModel:
                     inline_counter_plus += 1
                     if potentially_open_in_middle_plus and not other_color_inline_plus:
                         is_open_in_middle_plus = True
-                elif self.get_btn_color(self.grid[row][col + i]) == "White":
+                elif self.get_btn_color(self.grid[row + i][col]) == "White":
                     potentially_open_in_middle_plus = True
-                    opened_plus_counter += 1
-                    if i==4:
+                    empty_plus_counter += 1
+                    if i==4 and not other_color_inline_plus:
                         opened_plus = True
                 else:
                     other_color_inline_plus = True
                     is_open_in_middle_plus = False
+                    opened_plus = False
 
         self.set_inline_dict(color, inline_counter_minus, inline_counter_plus,
                             is_open_in_middle_minus, is_open_in_middle_plus, 
                             opened_minus, opened_plus,
-                            opened_minus_counter, opened_plus_counter)
+                            empty_minus_counter, empty_plus_counter)
         
 
         # Diagonal [0,0] to [9,9]
         inline_counter_minus = 0
         inline_counter_plus = 0
-        opened_minus_counter = 0
-        opened_plus_counter = 0
+        empty_minus_counter = 0
+        empty_plus_counter = 0
         opened_minus = False
         opened_plus = False
         is_open_in_middle_minus = False
@@ -258,14 +272,15 @@ class SequenceModel:
                     inline_counter_minus += 1
                     if potentially_open_in_middle_minus and not other_color_inline_minus:
                         is_open_in_middle_minus = True
-                elif self.get_btn_color(self.grid[row][col - i]) == "White":
+                elif self.get_btn_color(self.grid[row - i][col - i]) == "White":
                     potentially_open_in_middle_minus = True
-                    opened_minus_counter += 1
-                    if i==4:
+                    empty_minus_counter += 1
+                    if i==4 and not other_color_inline_minus:
                         opened_minus = True
                 else:
                     other_color_inline_minus = True
                     is_open_in_middle_minus = False
+                    opened_minus = False
             
             # down-right
             if row + i < Misc.GRID_SIZE and col + i < Misc.GRID_SIZE:
@@ -273,27 +288,28 @@ class SequenceModel:
                     inline_counter_plus += 1
                     if potentially_open_in_middle_plus and not other_color_inline_plus:
                         is_open_in_middle_plus = True
-                elif self.get_btn_color(self.grid[row][col + i]) == "White":
+                elif self.get_btn_color(self.grid[row + i][col + i]) == "White":
                     potentially_open_in_middle_plus = True
-                    opened_plus_counter += 1
-                    if i==4:
+                    empty_plus_counter += 1
+                    if i==4 and not other_color_inline_plus:
                         opened_plus = True
                 else:
                     other_color_inline_plus = True
                     is_open_in_middle_plus = False
+                    opened_plus = False
 
         self.set_inline_dict(color, inline_counter_minus, inline_counter_plus,
                             is_open_in_middle_minus, is_open_in_middle_plus, 
                             opened_minus, opened_plus,
-                            opened_minus_counter, opened_plus_counter)
+                            empty_minus_counter, empty_plus_counter)
         
               
 
         # Diagonal [0,9] to [9,0]
         inline_counter_minus = 0
         inline_counter_plus = 0
-        opened_minus_counter = 0
-        opened_plus_counter = 0
+        empty_minus_counter = 0
+        empty_plus_counter = 0
         opened_minus = False
         opened_plus = False
         is_open_in_middle_minus = False
@@ -305,38 +321,40 @@ class SequenceModel:
         for i in range(1, 5):
             # up-right
             if row + i < Misc.GRID_SIZE and col - i >= 0:
-                if self.get_btn_color(self.grid[row + i][col - i]) in [color, "Black"]:
+                if self.get_btn_color(self.grid[row][col - i]) in [color, "Black"]:
                     inline_counter_minus += 1
                     if potentially_open_in_middle_minus and not other_color_inline_minus:
                         is_open_in_middle_minus = True
                 elif self.get_btn_color(self.grid[row][col - i]) == "White":
                     potentially_open_in_middle_minus = True
-                    opened_minus_counter += 1
-                    if i==4:
+                    empty_minus_counter += 1
+                    if i==4 and not other_color_inline_minus:
                         opened_minus = True
                 else:
                     other_color_inline_minus = True
                     is_open_in_middle_minus = False
+                    opened_minus = False
             
             # down-left
             if row - i >= 0 and col + i < Misc.GRID_SIZE:
-                if self.get_btn_color(self.grid[row - i][col + i]) in [color, "Black"]:
+                if self.get_btn_color(self.grid[row][col + i]) in [color, "Black"]:
                     inline_counter_plus += 1
                     if potentially_open_in_middle_plus and not other_color_inline_plus:
                         is_open_in_middle_plus = True
                 elif self.get_btn_color(self.grid[row][col + i]) == "White":
                     potentially_open_in_middle_plus = True
-                    opened_plus_counter += 1
-                    if i==4:
+                    empty_plus_counter += 1
+                    if i==4 and not other_color_inline_plus:
                         opened_plus = True
                 else:
                     other_color_inline_plus = True
                     is_open_in_middle_plus = False
+                    opened_plus = False
 
         self.set_inline_dict(color, inline_counter_minus, inline_counter_plus,
                             is_open_in_middle_minus, is_open_in_middle_plus, 
                             opened_minus, opened_plus,
-                            opened_minus_counter, opened_plus_counter)
+                            empty_minus_counter, empty_plus_counter)
 
         
         print(f"  Inline: {self.inline_dict[color]['inline']} " \

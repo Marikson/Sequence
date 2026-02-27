@@ -135,15 +135,17 @@ class SequenceModel:
             inline = inline_sum
             open_in_middle = is_open_in_middle_minus
             empty_middle_counter = empty_middle_minus_counter 
-            one_ended = False
-            two_ended = False
+            two_ended = (empty_minus_counter > 0 or is_opened_minus) and (empty_plus_counter > 0 or is_opened_plus)
+            one_ended = not two_ended and inline_sum + empty_middle_minus_counter < Misc.INLINE_TO_WIN and \
+                        (empty_minus_counter > 0 or empty_plus_counter > 0 or is_opened_minus or is_opened_plus)
                 
         elif inline_counter_plus > inline_counter_minus:
             inline = inline_sum
             open_in_middle = is_open_in_middle_plus
             empty_middle_counter = empty_middle_plus_counter
-            one_ended = False
-            two_ended = False
+            two_ended = (empty_minus_counter > 0 or is_opened_minus) and (empty_plus_counter > 0 or is_opened_plus)
+            one_ended = not two_ended and inline_sum + empty_middle_plus_counter < Misc.INLINE_TO_WIN and \
+                        (empty_minus_counter > 0 or empty_plus_counter > 0 or is_opened_minus or is_opened_plus)
         
         elif inline_counter_plus == inline_counter_minus:
             inline = inline_sum
@@ -284,11 +286,11 @@ class SequenceModel:
                 if self.get_btn_color(self.grid[row][col - i]) in [color, "Black"]:
                     if not other_color_inline_minus:
                         inline_counter_minus += 1
-                    if potentially_open_in_middle_minus and not other_color_inline_minus:
-                        empty_middle_minus_counter = empty_minus_counter
-                        is_open_in_middle_minus = True
-                        potentially_open_in_middle_minus = False
-                        empty_minus_counter = 0
+                        if potentially_open_in_middle_minus:
+                            empty_middle_minus_counter = empty_middle_minus_counter + empty_minus_counter
+                            is_open_in_middle_minus = True
+                            potentially_open_in_middle_minus = False
+                            empty_minus_counter = 0
                 elif self.get_btn_color(self.grid[row][col - i]) == "White":
                     if not other_color_inline_minus:
                         potentially_open_in_middle_minus = True
@@ -306,11 +308,11 @@ class SequenceModel:
                 if self.get_btn_color(self.grid[row][col + i]) in [color, "Black"]:
                     if not other_color_inline_plus:
                         inline_counter_plus += 1
-                    if potentially_open_in_middle_plus and not other_color_inline_plus:
-                        empty_middle_plus_counter = empty_plus_counter
-                        is_open_in_middle_plus = True
-                        potentially_open_in_middle_plus = False
-                        empty_plus_counter = 0
+                        if potentially_open_in_middle_plus:
+                            empty_middle_plus_counter = empty_middle_plus_counter + empty_plus_counter
+                            is_open_in_middle_plus = True
+                            potentially_open_in_middle_plus = False
+                            empty_plus_counter = 0
                 elif self.get_btn_color(self.grid[row][col + i]) == "White":
                     if not other_color_inline_plus:
                         potentially_open_in_middle_plus = True
@@ -352,11 +354,11 @@ class SequenceModel:
                 if self.get_btn_color(self.grid[row - i][col]) in [color, "Black"]:
                     if not other_color_inline_minus:
                         inline_counter_minus += 1
-                    if potentially_open_in_middle_minus and not other_color_inline_minus:
-                        empty_middle_minus_counter = empty_minus_counter
-                        is_open_in_middle_minus = True
-                        potentially_open_in_middle_minus = False
-                        empty_minus_counter = 0
+                        if potentially_open_in_middle_minus:
+                            empty_middle_minus_counter = empty_middle_minus_counter + empty_minus_counter
+                            is_open_in_middle_minus = True
+                            potentially_open_in_middle_minus = False
+                            empty_minus_counter = 0
                 elif self.get_btn_color(self.grid[row - i][col]) == "White":
                     if not other_color_inline_minus:
                         potentially_open_in_middle_minus = True
@@ -374,11 +376,11 @@ class SequenceModel:
                 if self.get_btn_color(self.grid[row + i][col]) in [color, "Black"]:
                     if not other_color_inline_plus:
                         inline_counter_plus += 1
-                    if potentially_open_in_middle_plus and not other_color_inline_plus:
-                        empty_middle_plus_counter = empty_plus_counter
-                        is_open_in_middle_plus = True
-                        potentially_open_in_middle_plus = False
-                        empty_plus_counter = 0
+                        if potentially_open_in_middle_plus:
+                            empty_middle_plus_counter = empty_middle_plus_counter + empty_plus_counter
+                            is_open_in_middle_plus = True
+                            potentially_open_in_middle_plus = False
+                            empty_plus_counter = 0
                 elif self.get_btn_color(self.grid[row + i][col]) == "White":
                     if not other_color_inline_plus:
                         potentially_open_in_middle_plus = True
@@ -419,11 +421,11 @@ class SequenceModel:
                 if self.get_btn_color(self.grid[row - i][col - i]) in [color, "Black"]:
                     if not other_color_inline_minus:
                         inline_counter_minus += 1
-                    if potentially_open_in_middle_minus and not other_color_inline_minus:
-                        empty_middle_minus_counter = empty_minus_counter
-                        is_open_in_middle_minus = True
-                        potentially_open_in_middle_minus = False
-                        empty_minus_counter = 0
+                        if potentially_open_in_middle_minus:
+                            empty_middle_minus_counter = empty_middle_minus_counter + empty_minus_counter
+                            is_open_in_middle_minus = True
+                            potentially_open_in_middle_minus = False
+                            empty_minus_counter = 0
                 elif self.get_btn_color(self.grid[row - i][col - i]) == "White":
                     if not other_color_inline_minus:
                         potentially_open_in_middle_minus = True
@@ -441,11 +443,11 @@ class SequenceModel:
                 if self.get_btn_color(self.grid[row + i][col + i]) in [color, "Black"]:
                     if not other_color_inline_plus:
                         inline_counter_plus += 1
-                    if potentially_open_in_middle_plus and not other_color_inline_plus:
-                        empty_middle_plus_counter = empty_plus_counter
-                        is_open_in_middle_plus = True
-                        potentially_open_in_middle_plus = False
-                        empty_plus_counter = 0
+                        if potentially_open_in_middle_plus:
+                            empty_middle_plus_counter = empty_middle_plus_counter + empty_plus_counter
+                            is_open_in_middle_plus = True
+                            potentially_open_in_middle_plus = False
+                            empty_plus_counter = 0
                 elif self.get_btn_color(self.grid[row + i][col + i]) == "White":
                     if not other_color_inline_plus:
                         potentially_open_in_middle_plus = True
@@ -484,11 +486,11 @@ class SequenceModel:
                 if self.get_btn_color(self.grid[row + i][col - i]) in [color, "Black"]:
                     if not other_color_inline_minus:
                         inline_counter_minus += 1
-                    if potentially_open_in_middle_minus and not other_color_inline_minus:
-                        empty_middle_minus_counter = empty_minus_counter
-                        is_open_in_middle_minus = True
-                        potentially_open_in_middle_minus = False
-                        empty_minus_counter = 0
+                        if potentially_open_in_middle_minus:
+                            empty_middle_minus_counter = empty_middle_minus_counter + empty_minus_counter
+                            is_open_in_middle_minus = True
+                            potentially_open_in_middle_minus = False
+                            empty_minus_counter = 0
                 elif self.get_btn_color(self.grid[row + i][col - i]) == "White":
                     if not other_color_inline_minus:
                         potentially_open_in_middle_minus = True
@@ -506,11 +508,11 @@ class SequenceModel:
                 if self.get_btn_color(self.grid[row - i][col + i]) in [color, "Black"]:
                     if not other_color_inline_plus:
                         inline_counter_plus += 1
-                    if potentially_open_in_middle_plus and not other_color_inline_plus:
-                        empty_middle_plus_counter = empty_plus_counter
-                        is_open_in_middle_plus = True
-                        potentially_open_in_middle_plus = False
-                        empty_plus_counter = 0
+                        if potentially_open_in_middle_plus:
+                            empty_middle_plus_counter = empty_middle_plus_counter + empty_plus_counter
+                            is_open_in_middle_plus = True
+                            potentially_open_in_middle_plus = False
+                            empty_plus_counter = 0
                 elif self.get_btn_color(self.grid[row - i][col + i]) == "White":
                     if not other_color_inline_plus:
                         potentially_open_in_middle_plus = True

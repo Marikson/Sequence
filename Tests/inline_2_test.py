@@ -83,10 +83,10 @@ class Inline2TestHorizontalMinus(unittest.TestCase):
         test_game = Sequence()
         test_game.create_grid(test_field)
 
-        test_game.model.clicked_cell = {"r": 1, "c": 6}
+        test_game.model.clicked_cell = {"r": 1, "c": 5}
         r, c = test_game.pick_cell()
         test_game.model.set_color("Red")
-        test_game.model.clicked_cell = {"r": 1, "c": 5}
+        test_game.model.clicked_cell = {"r": 1, "c": 6}
         r, c = test_game.pick_cell()
         test_game.model.set_color("Red")
         test_game.model.check_inline_per_color("Red", r, c)
@@ -103,10 +103,10 @@ class Inline2TestHorizontalMinus(unittest.TestCase):
         test_game = Sequence()
         test_game.create_grid(test_field)
 
-        test_game.model.clicked_cell = {"r": 1, "c": 6}
+        test_game.model.clicked_cell = {"r": 1, "c": 4}
         r, c = test_game.pick_cell()
         test_game.model.set_color("Red")
-        test_game.model.clicked_cell = {"r": 1, "c": 4}
+        test_game.model.clicked_cell = {"r": 1, "c": 6}
         r, c = test_game.pick_cell()
         test_game.model.set_color("Red")
         test_game.model.check_inline_per_color("Red", r, c)
@@ -124,10 +124,10 @@ class Inline2TestHorizontalMinus(unittest.TestCase):
         test_game = Sequence()
         test_game.create_grid(test_field)
 
-        test_game.model.clicked_cell = {"r": 1, "c": 6}
+        test_game.model.clicked_cell = {"r": 1, "c": 3}
         r, c = test_game.pick_cell()
         test_game.model.set_color("Red")
-        test_game.model.clicked_cell = {"r": 1, "c": 3}
+        test_game.model.clicked_cell = {"r": 1, "c": 6}
         r, c = test_game.pick_cell()
         test_game.model.set_color("Red")
         test_game.model.check_inline_per_color("Red", r, c)
@@ -145,10 +145,10 @@ class Inline2TestHorizontalMinus(unittest.TestCase):
         test_game = Sequence()
         test_game.create_grid(test_field)
 
-        test_game.model.clicked_cell = {"r": 1, "c": 6}
+        test_game.model.clicked_cell = {"r": 1, "c": 2}
         r, c = test_game.pick_cell()
         test_game.model.set_color("Red")
-        test_game.model.clicked_cell = {"r": 1, "c": 2}
+        test_game.model.clicked_cell = {"r": 1, "c": 6}
         r, c = test_game.pick_cell()
         test_game.model.set_color("Red")
         test_game.model.check_inline_per_color("Red", r, c)
@@ -236,10 +236,10 @@ class Inline2TestHorizontalPlus(unittest.TestCase):
         test_game = Sequence()
         test_game.create_grid(test_field)
 
-        test_game.model.clicked_cell = {"r": 1, "c": 2}
+        test_game.model.clicked_cell = {"r": 1, "c": 3}
         r, c = test_game.pick_cell()
         test_game.model.set_color("Red")
-        test_game.model.clicked_cell = {"r": 1, "c": 3}
+        test_game.model.clicked_cell = {"r": 1, "c": 2}
         r, c = test_game.pick_cell()
         test_game.model.set_color("Red")
         test_game.model.check_inline_per_color("Red", r, c)
@@ -257,10 +257,10 @@ class Inline2TestHorizontalPlus(unittest.TestCase):
         test_game = Sequence()
         test_game.create_grid(test_field)
 
-        test_game.model.clicked_cell = {"r": 1, "c": 2}
+        test_game.model.clicked_cell = {"r": 1, "c": 4}
         r, c = test_game.pick_cell()
         test_game.model.set_color("Red")
-        test_game.model.clicked_cell = {"r": 1, "c": 4}
+        test_game.model.clicked_cell = {"r": 1, "c": 2}
         r, c = test_game.pick_cell()
         test_game.model.set_color("Red")
         test_game.model.check_inline_per_color("Red", r, c)
@@ -278,10 +278,10 @@ class Inline2TestHorizontalPlus(unittest.TestCase):
         test_game = Sequence()
         test_game.create_grid(test_field)
 
-        test_game.model.clicked_cell = {"r": 1, "c": 2}
+        test_game.model.clicked_cell = {"r": 1, "c": 5}
         r, c = test_game.pick_cell()
         test_game.model.set_color("Red")
-        test_game.model.clicked_cell = {"r": 1, "c": 5}
+        test_game.model.clicked_cell = {"r": 1, "c": 2}
         r, c = test_game.pick_cell()
         test_game.model.set_color("Red")
         test_game.model.check_inline_per_color("Red", r, c)
@@ -299,10 +299,10 @@ class Inline2TestHorizontalPlus(unittest.TestCase):
         test_game = Sequence()
         test_game.create_grid(test_field)
 
-        test_game.model.clicked_cell = {"r": 1, "c": 2}
+        test_game.model.clicked_cell = {"r": 1, "c": 6}
         r, c = test_game.pick_cell()
         test_game.model.set_color("Red")
-        test_game.model.clicked_cell = {"r": 1, "c": 6}
+        test_game.model.clicked_cell = {"r": 1, "c": 2}
         r, c = test_game.pick_cell()
         test_game.model.set_color("Red")
         test_game.model.check_inline_per_color("Red", r, c)
@@ -393,10 +393,10 @@ class Inline2TestVerticalMinus(unittest.TestCase):
         test_game = Sequence()
         test_game.create_grid(test_field)
 
-        test_game.model.clicked_cell = {"r": 6, "c": 1}
+        test_game.model.clicked_cell = {"r": 5, "c": 1}
         r, c = test_game.pick_cell()
         test_game.model.set_color("Red")
-        test_game.model.clicked_cell = {"r": 5, "c": 1}
+        test_game.model.clicked_cell = {"r": 6, "c": 1}
         r, c = test_game.pick_cell()
         test_game.model.set_color("Red")
         test_game.model.check_inline_per_color("Red", r, c)
@@ -413,10 +413,10 @@ class Inline2TestVerticalMinus(unittest.TestCase):
         test_game = Sequence()
         test_game.create_grid(test_field)
 
-        test_game.model.clicked_cell = {"r": 6, "c": 1}
+        test_game.model.clicked_cell = {"r": 4, "c": 1}
         r, c = test_game.pick_cell()
         test_game.model.set_color("Red")
-        test_game.model.clicked_cell = {"r": 4, "c": 1}
+        test_game.model.clicked_cell = {"r": 6, "c": 1}
         r, c = test_game.pick_cell()
         test_game.model.set_color("Red")
         test_game.model.check_inline_per_color("Red", r, c)
@@ -434,10 +434,10 @@ class Inline2TestVerticalMinus(unittest.TestCase):
         test_game = Sequence()
         test_game.create_grid(test_field)
 
-        test_game.model.clicked_cell = {"r": 6, "c": 1}
+        test_game.model.clicked_cell = {"r": 3, "c": 1}
         r, c = test_game.pick_cell()
         test_game.model.set_color("Red")
-        test_game.model.clicked_cell = {"r": 3, "c": 1}
+        test_game.model.clicked_cell = {"r": 6, "c": 1}
         r, c = test_game.pick_cell()
         test_game.model.set_color("Red")
         test_game.model.check_inline_per_color("Red", r, c)
@@ -455,10 +455,10 @@ class Inline2TestVerticalMinus(unittest.TestCase):
         test_game = Sequence()
         test_game.create_grid(test_field)
 
-        test_game.model.clicked_cell = {"r": 6, "c": 1}
+        test_game.model.clicked_cell = {"r": 2, "c": 1}
         r, c = test_game.pick_cell()
         test_game.model.set_color("Red")
-        test_game.model.clicked_cell = {"r": 2, "c": 1}
+        test_game.model.clicked_cell = {"r": 6, "c": 1}
         r, c = test_game.pick_cell()
         test_game.model.set_color("Red")
         test_game.model.check_inline_per_color("Red", r, c)
@@ -704,10 +704,10 @@ class Inline2TestUpLeft(unittest.TestCase):
         test_game = Sequence()
         test_game.create_grid(test_field)
 
-        test_game.model.clicked_cell = {"r": 5, "c": 7}
+        test_game.model.clicked_cell = {"r": 4, "c": 6}
         r, c = test_game.pick_cell()
         test_game.model.set_color("Red")
-        test_game.model.clicked_cell = {"r": 4, "c": 6}
+        test_game.model.clicked_cell = {"r": 5, "c": 7}
         r, c = test_game.pick_cell()
         test_game.model.set_color("Red")
         test_game.model.check_inline_per_color("Red", r, c)
@@ -724,10 +724,10 @@ class Inline2TestUpLeft(unittest.TestCase):
         test_game = Sequence()
         test_game.create_grid(test_field)
 
-        test_game.model.clicked_cell = {"r": 5, "c": 7}
+        test_game.model.clicked_cell = {"r": 3, "c": 5}
         r, c = test_game.pick_cell()
         test_game.model.set_color("Red")
-        test_game.model.clicked_cell = {"r": 3, "c": 5}
+        test_game.model.clicked_cell = {"r": 5, "c": 7}
         r, c = test_game.pick_cell()
         test_game.model.set_color("Red")
         test_game.model.check_inline_per_color("Red", r, c)
@@ -745,10 +745,10 @@ class Inline2TestUpLeft(unittest.TestCase):
         test_game = Sequence()
         test_game.create_grid(test_field)
 
-        test_game.model.clicked_cell = {"r": 5, "c": 7}
+        test_game.model.clicked_cell = {"r": 2, "c": 4}
         r, c = test_game.pick_cell()
         test_game.model.set_color("Red")
-        test_game.model.clicked_cell = {"r": 2, "c": 4}
+        test_game.model.clicked_cell = {"r": 5, "c": 7}
         r, c = test_game.pick_cell()
         test_game.model.set_color("Red")
         test_game.model.check_inline_per_color("Red", r, c)
@@ -766,10 +766,10 @@ class Inline2TestUpLeft(unittest.TestCase):
         test_game = Sequence()
         test_game.create_grid(test_field)
 
-        test_game.model.clicked_cell = {"r": 5, "c": 7}
+        test_game.model.clicked_cell = {"r": 1, "c": 3}
         r, c = test_game.pick_cell()
         test_game.model.set_color("Red")
-        test_game.model.clicked_cell = {"r": 1, "c": 3}
+        test_game.model.clicked_cell = {"r": 5, "c": 7}
         r, c = test_game.pick_cell()
         test_game.model.set_color("Red")
         test_game.model.check_inline_per_color("Red", r, c)
@@ -859,10 +859,10 @@ class Inline2TestUpRight(unittest.TestCase):
         test_game = Sequence()
         test_game.create_grid(test_field)
 
-        test_game.model.clicked_cell = {"r": 5, "c": 2}
+        test_game.model.clicked_cell = {"r": 4, "c": 3}
         r, c = test_game.pick_cell()
         test_game.model.set_color("Red")
-        test_game.model.clicked_cell = {"r": 4, "c": 3}
+        test_game.model.clicked_cell = {"r": 5, "c": 2}
         r, c = test_game.pick_cell()
         test_game.model.set_color("Red")
         test_game.model.check_inline_per_color("Red", r, c)
@@ -879,10 +879,10 @@ class Inline2TestUpRight(unittest.TestCase):
         test_game = Sequence()
         test_game.create_grid(test_field)
 
-        test_game.model.clicked_cell = {"r": 5, "c": 2}
+        test_game.model.clicked_cell = {"r": 3, "c": 4}
         r, c = test_game.pick_cell()
         test_game.model.set_color("Red")
-        test_game.model.clicked_cell = {"r": 3, "c": 4}
+        test_game.model.clicked_cell = {"r": 5, "c": 2}
         r, c = test_game.pick_cell()
         test_game.model.set_color("Red")
         test_game.model.check_inline_per_color("Red", r, c)
@@ -900,10 +900,10 @@ class Inline2TestUpRight(unittest.TestCase):
         test_game = Sequence()
         test_game.create_grid(test_field)
 
-        test_game.model.clicked_cell = {"r": 5, "c": 2}
+        test_game.model.clicked_cell = {"r": 2, "c": 5}
         r, c = test_game.pick_cell()
         test_game.model.set_color("Red")
-        test_game.model.clicked_cell = {"r": 2, "c": 5}
+        test_game.model.clicked_cell = {"r": 5, "c": 2}
         r, c = test_game.pick_cell()
         test_game.model.set_color("Red")
         test_game.model.check_inline_per_color("Red", r, c)
@@ -921,10 +921,10 @@ class Inline2TestUpRight(unittest.TestCase):
         test_game = Sequence()
         test_game.create_grid(test_field)
 
-        test_game.model.clicked_cell = {"r": 5, "c": 2}
+        test_game.model.clicked_cell = {"r": 1, "c": 6}
         r, c = test_game.pick_cell()
         test_game.model.set_color("Red")
-        test_game.model.clicked_cell = {"r": 1, "c": 6}
+        test_game.model.clicked_cell = {"r": 5, "c": 2}
         r, c = test_game.pick_cell()
         test_game.model.set_color("Red")
         test_game.model.check_inline_per_color("Red", r, c)
@@ -1014,10 +1014,10 @@ class Inline2TestDownLeft(unittest.TestCase):
         test_game = Sequence()
         test_game.create_grid(test_field)
 
-        test_game.model.clicked_cell = {"r": 2, "c": 5}
+        test_game.model.clicked_cell = {"r": 3, "c": 4}
         r, c = test_game.pick_cell()
         test_game.model.set_color("Red")
-        test_game.model.clicked_cell = {"r": 3, "c": 4}
+        test_game.model.clicked_cell = {"r": 2, "c": 5}
         r, c = test_game.pick_cell()
         test_game.model.set_color("Red")
         test_game.model.check_inline_per_color("Red", r, c)
@@ -1034,10 +1034,10 @@ class Inline2TestDownLeft(unittest.TestCase):
         test_game = Sequence()
         test_game.create_grid(test_field)
 
-        test_game.model.clicked_cell = {"r": 2, "c": 5}
+        test_game.model.clicked_cell = {"r": 4, "c": 3}
         r, c = test_game.pick_cell()
         test_game.model.set_color("Red")
-        test_game.model.clicked_cell = {"r": 4, "c": 3}
+        test_game.model.clicked_cell = {"r": 2, "c": 5}
         r, c = test_game.pick_cell()
         test_game.model.set_color("Red")
         test_game.model.check_inline_per_color("Red", r, c)
@@ -1055,10 +1055,10 @@ class Inline2TestDownLeft(unittest.TestCase):
         test_game = Sequence()
         test_game.create_grid(test_field)
 
-        test_game.model.clicked_cell = {"r": 2, "c": 5}
+        test_game.model.clicked_cell = {"r": 5, "c": 2}
         r, c = test_game.pick_cell()
         test_game.model.set_color("Red")
-        test_game.model.clicked_cell = {"r": 5, "c": 2}
+        test_game.model.clicked_cell = {"r": 2, "c": 5}
         r, c = test_game.pick_cell()
         test_game.model.set_color("Red")
         test_game.model.check_inline_per_color("Red", r, c)
@@ -1076,10 +1076,10 @@ class Inline2TestDownLeft(unittest.TestCase):
         test_game = Sequence()
         test_game.create_grid(test_field)
 
-        test_game.model.clicked_cell = {"r": 2, "c": 5}
+        test_game.model.clicked_cell = {"r": 6, "c": 1}
         r, c = test_game.pick_cell()
         test_game.model.set_color("Red")
-        test_game.model.clicked_cell = {"r": 6, "c": 1}
+        test_game.model.clicked_cell = {"r": 2, "c": 5}
         r, c = test_game.pick_cell()
         test_game.model.set_color("Red")
         test_game.model.check_inline_per_color("Red", r, c)
@@ -1169,10 +1169,10 @@ class Inline2TestDownRight(unittest.TestCase):
         test_game = Sequence()
         test_game.create_grid(test_field)
 
-        test_game.model.clicked_cell = {"r": 3, "c": 1}
+        test_game.model.clicked_cell = {"r": 4, "c": 2}
         r, c = test_game.pick_cell()
         test_game.model.set_color("Red")
-        test_game.model.clicked_cell = {"r": 4, "c": 2}
+        test_game.model.clicked_cell = {"r": 3, "c": 1}
         r, c = test_game.pick_cell()
         test_game.model.set_color("Red")
         test_game.model.check_inline_per_color("Red", r, c)
@@ -1189,10 +1189,10 @@ class Inline2TestDownRight(unittest.TestCase):
         test_game = Sequence()
         test_game.create_grid(test_field)
 
-        test_game.model.clicked_cell = {"r": 3, "c": 1}
+        test_game.model.clicked_cell = {"r": 5, "c": 3}
         r, c = test_game.pick_cell()
         test_game.model.set_color("Red")
-        test_game.model.clicked_cell = {"r": 5, "c": 3}
+        test_game.model.clicked_cell = {"r": 3, "c": 1}
         r, c = test_game.pick_cell()
         test_game.model.set_color("Red")
         test_game.model.check_inline_per_color("Red", r, c)
@@ -1210,10 +1210,10 @@ class Inline2TestDownRight(unittest.TestCase):
         test_game = Sequence()
         test_game.create_grid(test_field)
 
-        test_game.model.clicked_cell = {"r": 3, "c": 1}
+        test_game.model.clicked_cell = {"r": 6, "c": 4}
         r, c = test_game.pick_cell()
         test_game.model.set_color("Red")
-        test_game.model.clicked_cell = {"r": 6, "c": 4}
+        test_game.model.clicked_cell = {"r": 3, "c": 1}
         r, c = test_game.pick_cell()
         test_game.model.set_color("Red")
         test_game.model.check_inline_per_color("Red", r, c)
@@ -1231,10 +1231,10 @@ class Inline2TestDownRight(unittest.TestCase):
         test_game = Sequence()
         test_game.create_grid(test_field)
 
-        test_game.model.clicked_cell = {"r": 3, "c": 1}
+        test_game.model.clicked_cell = {"r": 7, "c": 5}
         r, c = test_game.pick_cell()
         test_game.model.set_color("Red")
-        test_game.model.clicked_cell = {"r":7, "c": 5}
+        test_game.model.clicked_cell = {"r": 3, "c": 1}
         r, c = test_game.pick_cell()
         test_game.model.set_color("Red")
         test_game.model.check_inline_per_color("Red", r, c)

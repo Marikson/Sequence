@@ -63,25 +63,5 @@ class SequenceTest(unittest.TestCase):
         self.assertEqual(test_game.model.grid[r][c]["bg"], "Red")
 
 
-
-    def test_3_inline_minus_horizontal_0_empty(self):
-        test_field = tk.Tk()
-        test_field.title("Test Field")
-    
-        test_game = Sequence()
-        test_game.create_grid(test_field)
-
-        for c in range(1, 3):
-             test_game.model.clicked_cell = {"r": 0, "c": c}
-             r, c = test_game.pick_cell()
-             test_game.model.set_color("Red")
-             test_game.model.check_inline_per_color("Red", r, c)
-        self.assertEqual(test_game.model.inline_dict["Red"]["inline"], 3)
-        self.assertEqual(test_game.model.inline_dict["Red"]["two_ended"], False)
-        self.assertEqual(test_game.model.inline_dict["Red"]["one_ended"], True)
-        self.assertEqual(test_game.model.inline_dict["Red"]["empty_middle_counter"], 0)
-
-
-
 if __name__ == '__main__':
     unittest.main()

@@ -101,24 +101,26 @@ class SequenceModel:
         self.check_inline_per_color(color, r, c)
 
 
-    def two_in_line(self, inline_sum, inline_counter_minus, inline_counter_plus, 
+    def even_in_line(self, inline_sum, inline_counter_minus, inline_counter_plus, 
                         is_open_in_middle_minus, is_open_in_middle_plus, is_opened_minus, is_opened_plus,
                         empty_minus_counter, empty_plus_counter, empty_middle_minus_counter, empty_middle_plus_counter):
         
+        if inline_sum >= Misc.INLINE_TO_WIN:
+            inline_sum = Misc.INLINE_TO_WIN - 1
+
+
         if inline_counter_minus > inline_counter_plus:
             open_in_middle = is_open_in_middle_minus
             empty_middle_counter = empty_middle_minus_counter
-            two_ended = (empty_minus_counter > 0 or is_opened_minus) and (empty_plus_counter > 0 or is_opened_plus)
-            one_ended = not two_ended and inline_sum + empty_middle_minus_counter < Misc.INLINE_TO_WIN and \
-                        (empty_minus_counter > 0 or empty_plus_counter > 0 or is_opened_minus or is_opened_plus)
-            
+   
         elif inline_counter_plus > inline_counter_minus:
             open_in_middle = is_open_in_middle_plus
             empty_middle_counter = empty_middle_plus_counter
-            two_ended = (empty_minus_counter > 0 or is_opened_minus) and (empty_plus_counter > 0 or is_opened_plus)
-            one_ended = not two_ended and inline_sum + empty_middle_plus_counter < Misc.INLINE_TO_WIN and \
-                        (empty_minus_counter > 0 or empty_plus_counter > 0 or is_opened_minus or is_opened_plus)
-            
+        
+        two_ended = (empty_minus_counter > 0 or is_opened_minus) and (empty_plus_counter > 0 or is_opened_plus)
+        one_ended = not two_ended and inline_sum + empty_middle_counter < Misc.INLINE_TO_WIN and \
+                    (empty_minus_counter > 0 or empty_plus_counter > 0 or is_opened_minus or is_opened_plus)   
+
 
         return {"inline": inline_sum,
                 "open_in_middle": open_in_middle, 
@@ -127,96 +129,36 @@ class SequenceModel:
                 "two_ended": two_ended}
 
 
-    def three_in_line(self, inline_sum, inline_counter_minus, inline_counter_plus, 
+    def odd_in_line(self, inline_sum, inline_counter_minus, inline_counter_plus, 
                         is_open_in_middle_minus, is_open_in_middle_plus, is_opened_minus, is_opened_plus,
                         empty_minus_counter, empty_plus_counter, empty_middle_minus_counter, empty_middle_plus_counter):
         
+        if inline_sum >= Misc.INLINE_TO_WIN:
+            inline_sum = Misc.INLINE_TO_WIN - 1
+
         if inline_counter_minus > inline_counter_plus:
-            inline = inline_sum
             open_in_middle = is_open_in_middle_minus
             empty_middle_counter = empty_middle_minus_counter 
-            two_ended = (empty_minus_counter > 0 or is_opened_minus) and (empty_plus_counter > 0 or is_opened_plus)
-            one_ended = not two_ended and inline_sum + empty_middle_minus_counter < Misc.INLINE_TO_WIN and \
-                        (empty_minus_counter > 0 or empty_plus_counter > 0 or is_opened_minus or is_opened_plus)
                 
         elif inline_counter_plus > inline_counter_minus:
-            inline = inline_sum
             open_in_middle = is_open_in_middle_plus
             empty_middle_counter = empty_middle_plus_counter
-            two_ended = (empty_minus_counter > 0 or is_opened_minus) and (empty_plus_counter > 0 or is_opened_plus)
-            one_ended = not two_ended and inline_sum + empty_middle_plus_counter < Misc.INLINE_TO_WIN and \
-                        (empty_minus_counter > 0 or empty_plus_counter > 0 or is_opened_minus or is_opened_plus)
-        
+            
         elif inline_counter_plus == inline_counter_minus:
-            inline = inline_sum
             open_in_middle = is_open_in_middle_minus or is_open_in_middle_plus
             empty_middle_counter = empty_middle_minus_counter + empty_middle_plus_counter
-            one_ended = False
-            two_ended = False
         
-        return {"inline": inline,
+        two_ended = (empty_minus_counter > 0 or is_opened_minus) and (empty_plus_counter > 0 or is_opened_plus)
+        one_ended = not two_ended and inline_sum + empty_middle_counter < Misc.INLINE_TO_WIN and \
+                    (empty_minus_counter > 0 or empty_plus_counter > 0 or is_opened_minus or is_opened_plus)
+                        
+        
+        return {"inline": inline_sum,
                 "open_in_middle": open_in_middle, 
                 "empty_middle_counter": empty_middle_counter, 
                 "one_ended": one_ended, 
                 "two_ended": two_ended}
 
-    
-    def four_in_line(self, inline_sum, inline_counter_minus, inline_counter_plus, 
-                        is_open_in_middle_minus, is_open_in_middle_plus, is_opened_minus, is_opened_plus,
-                        empty_minus_counter, empty_plus_counter, empty_middle_minus_counter, empty_middle_plus_counter):
-        
-        if inline_counter_minus > inline_counter_plus:
-            inline = inline_sum
-            open_in_middle = is_open_in_middle_minus or (empty_plus_counter >= 1 and inline_counter_plus >= 1)
-            empty_middle_counter = empty_minus_counter 
-            one_ended = not is_opened_minus and empty_plus_counter >= (Misc.INLINE_TO_WIN - inline_sum) and empty_minus_counter + inline_sum < Misc.INLINE_TO_WIN
-            two_ended = is_opened_minus and empty_plus_counter >= (Misc.INLINE_TO_WIN - inline_sum)
-        
-        elif inline_counter_plus > inline_counter_minus:
-            inline = inline_sum
-            open_in_middle = is_open_in_middle_plus or (empty_minus_counter >= 1 and inline_counter_minus >= 1)
-            empty_middle_counter = empty_plus_counter
-            one_ended = not is_opened_plus and empty_minus_counter >= (Misc.INLINE_TO_WIN - inline_sum) and empty_plus_counter + inline_sum < Misc.INLINE_TO_WIN
-            two_ended = is_opened_plus and empty_minus_counter >= (Misc.INLINE_TO_WIN - inline_sum)
-
-        return {"inline": inline,
-                "open_in_middle": open_in_middle, 
-                "empty_middle_counter": empty_middle_counter, 
-                "one_ended": one_ended, 
-                "two_ended": two_ended}
-
-    def more_inline(self, inline_counter_minus, inline_counter_plus, 
-                        is_open_in_middle_minus, is_open_in_middle_plus, is_opened_minus, is_opened_plus,
-                        empty_minus_counter, empty_plus_counter, empty_middle_minus_counter, empty_middle_plus_counter):
-        inline_sum = 4
-        if inline_counter_minus > inline_counter_plus:
-            inline = inline_sum
-            open_in_middle = is_open_in_middle_minus
-            empty_middle_counter = empty_minus_counter 
-            one_ended = not is_opened_minus and empty_plus_counter >= (Misc.INLINE_TO_WIN - inline_sum)
-            two_ended = is_opened_minus and empty_plus_counter >= (Misc.INLINE_TO_WIN - inline_sum)
-
-        elif inline_counter_plus > inline_counter_minus:
-            inline = inline_sum
-            open_in_middle = is_open_in_middle_plus
-            empty_middle_counter = empty_plus_counter
-            one_ended = not is_opened_plus and empty_minus_counter >= (Misc.INLINE_TO_WIN - inline_sum)
-            two_ended = is_opened_plus and empty_minus_counter >= (Misc.INLINE_TO_WIN - inline_sum)
-        
-        elif inline_counter_plus == inline_counter_minus:
-            inline = inline_sum
-            open_in_middle = is_open_in_middle_minus or is_open_in_middle_plus
-            empty_middle_counter = empty_plus_counter + empty_minus_counter
-            one_ended = (not is_opened_minus and empty_plus_counter >= (Misc.INLINE_TO_WIN - inline_sum)) or \
-                        (not is_opened_plus and empty_minus_counter >= (Misc.INLINE_TO_WIN - inline_sum))
-            two_ended = (not is_opened_minus and empty_plus_counter >= (Misc.INLINE_TO_WIN - inline_sum)) and \
-                        (not is_opened_plus and empty_minus_counter >= (Misc.INLINE_TO_WIN - inline_sum))
-            
-        return {"inline": inline,
-                "open_in_middle": open_in_middle, 
-                "empty_middle_counter": empty_middle_counter, 
-                "one_ended": one_ended, 
-                "two_ended": two_ended}
 
     def set_inline_dict(self, color, inline_counter_minus, inline_counter_plus, 
                         is_open_in_middle_minus, is_open_in_middle_plus, is_opened_minus, is_opened_plus,
@@ -225,28 +167,19 @@ class SequenceModel:
         
         inline_sum = 1 + inline_counter_minus + inline_counter_plus
         if inline_sum == 1:
-            return
-        if inline_sum == 2:
-            evaluated = self.two_in_line(inline_sum, inline_counter_minus, inline_counter_plus,
+            return          
+            
+        if inline_sum % 2 == 0:
+            evaluated = self.even_in_line(inline_sum, inline_counter_minus, inline_counter_plus,
                             is_open_in_middle_minus, is_open_in_middle_plus, is_opened_minus, is_opened_plus,
                             empty_minus_counter, empty_plus_counter,
                             empty_middle_minus_counter, empty_middle_plus_counter)
-        elif inline_sum == 3:
-            evaluated = self.three_in_line(inline_sum, inline_counter_minus, inline_counter_plus,
+        
+        elif inline_sum % 2 == 1:
+            evaluated = self.odd_in_line(inline_sum, inline_counter_minus, inline_counter_plus,
                             is_open_in_middle_minus, is_open_in_middle_plus, is_opened_minus, is_opened_plus,
                             empty_minus_counter, empty_plus_counter,
                             empty_middle_minus_counter, empty_middle_plus_counter)
-        elif inline_sum == 4:
-            evaluated = self.four_in_line(inline_sum, inline_counter_minus, inline_counter_plus,
-                            is_open_in_middle_minus, is_open_in_middle_plus, is_opened_minus, is_opened_plus,
-                            empty_minus_counter, empty_plus_counter,
-                            empty_middle_minus_counter, empty_middle_plus_counter)
-        elif inline_sum >= Misc.INLINE_TO_WIN:
-            evaluated = self.more_inline(inline_counter_minus, inline_counter_plus,
-                            is_open_in_middle_minus, is_open_in_middle_plus, is_opened_minus, is_opened_plus,
-                            empty_minus_counter, empty_plus_counter,
-                            empty_middle_minus_counter, empty_middle_plus_counter)
-
         
         if evaluated["inline"] > self.inline_dict[color]["inline"]:
             self.inline_dict[color]["inline"] = evaluated["inline"]

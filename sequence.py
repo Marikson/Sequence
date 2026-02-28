@@ -35,7 +35,13 @@ class Sequence:
         for i in range(Misc.GRID_SIZE):
             sequence_field.grid_rowconfigure(i, weight=1)
             sequence_field.grid_columnconfigure(i, weight=1)
+    
 
+    def delete_grid(self):
+        for row in self.model.grid:
+            for btn in row:
+                btn.destroy()
+        self.model.grid = []
 
 
     def pick_cell(self):
@@ -51,8 +57,9 @@ class Sequence:
             current_color = Misc.turn[0]
             print(f"Current turn: {current_color}")
             self.model.clicked_cell = {"r": None, "c": None}
-            self.pick_cell()
+            row, column = self.pick_cell()
             self.model.set_color(current_color)
+            self.model.check_inline_per_color(current_color, row, column)
             
             Misc.turn = Misc.turn[1:] + [Misc.turn[0]]
 
@@ -60,6 +67,7 @@ class Sequence:
             if winner_color:
                 winner_color_code = Misc.colors_selection[winner_color]
                 Misc.print_hex_color(f"Winner: {winner_color}", winner_color_code)
+                self.delete_grid()
                 break
             
 

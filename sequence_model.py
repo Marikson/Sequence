@@ -98,7 +98,7 @@ class SequenceModel:
             r, c = self.clicked_cell["r"], self.clicked_cell["c"]
             self.grid[r][c].config(bg=color)
             self.grid[r][c].config(state="disabled")
-        self.check_inline_per_color(color, r, c)
+        return r, c, color
 
 
     def even_in_line(self, inline_sum, inline_counter_minus, inline_counter_plus, 
@@ -465,9 +465,9 @@ class SequenceModel:
                             empty_middle_minus_counter, empty_middle_plus_counter)
 
         
-        print(f"  Inline: {self.inline_dict[color]['inline']} " \
-              f"\n  Open in middle: {self.inline_dict[color]['open_in_middle']} " \
-              f"\n  Empty middle counter: {self.inline_dict[color]['empty_middle_counter']} " \
-              f"\n  One ended: {self.inline_dict[color]['one_ended']} " \
-              f"\n  Two ended: {self.inline_dict[color]['two_ended']} ")
+        # print(f"  Inline: {self.inline_dict[color]['inline']} " \
+        #       f"\n  Open in middle: {self.inline_dict[color]['open_in_middle']} " \
+        #       f"\n  Empty middle counter: {self.inline_dict[color]['empty_middle_counter']} " \
+        #       f"\n  One ended: {self.inline_dict[color]['one_ended']} " \
+        #       f"\n  Two ended: {self.inline_dict[color]['two_ended']} ")
      

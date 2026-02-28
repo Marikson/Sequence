@@ -19,6 +19,7 @@ class Inline3TestHorizontalMinus(unittest.TestCase):
         self.assertEqual(test_game.model.inline_dict["Red"]["inline"], 3)
         self.assertEqual(test_game.model.inline_dict["Red"]["two_ended"], False)
         self.assertEqual(test_game.model.inline_dict["Red"]["one_ended"], True)
+        self.assertEqual(test_game.model.inline_dict["Red"]["open_in_middle"], False)
         self.assertEqual(test_game.model.inline_dict["Red"]["empty_middle_counter"], 0)
 
     def test_1_empty_one_ended(self):
@@ -36,6 +37,7 @@ class Inline3TestHorizontalMinus(unittest.TestCase):
         self.assertEqual(test_game.model.inline_dict["Red"]["inline"], 3)
         self.assertEqual(test_game.model.inline_dict["Red"]["two_ended"], False)
         self.assertEqual(test_game.model.inline_dict["Red"]["one_ended"], True)
+        self.assertEqual(test_game.model.inline_dict["Red"]["open_in_middle"], True)
         self.assertEqual(test_game.model.inline_dict["Red"]["empty_middle_counter"], 1)
 
     def test_2_empty_only_middle(self):
@@ -53,6 +55,7 @@ class Inline3TestHorizontalMinus(unittest.TestCase):
         self.assertEqual(test_game.model.inline_dict["Red"]["inline"], 3)
         self.assertEqual(test_game.model.inline_dict["Red"]["two_ended"], False)
         self.assertEqual(test_game.model.inline_dict["Red"]["one_ended"], False)
+        self.assertEqual(test_game.model.inline_dict["Red"]["open_in_middle"], True)
         self.assertEqual(test_game.model.inline_dict["Red"]["empty_middle_counter"], 2)
 
     def test_2_empty_only_middle_mirrored(self):
@@ -72,6 +75,7 @@ class Inline3TestHorizontalMinus(unittest.TestCase):
         self.assertEqual(test_game.model.inline_dict["Red"]["inline"], 3)
         self.assertEqual(test_game.model.inline_dict["Red"]["two_ended"], False)
         self.assertEqual(test_game.model.inline_dict["Red"]["one_ended"], False)
+        self.assertEqual(test_game.model.inline_dict["Red"]["open_in_middle"], True)
         self.assertEqual(test_game.model.inline_dict["Red"]["empty_middle_counter"], 2)
 
     def test_2_empty_only_middle_on_even_fields(self):
@@ -90,6 +94,7 @@ class Inline3TestHorizontalMinus(unittest.TestCase):
         self.assertEqual(test_game.model.inline_dict["Red"]["inline"], 3)
         self.assertEqual(test_game.model.inline_dict["Red"]["two_ended"], False)
         self.assertEqual(test_game.model.inline_dict["Red"]["one_ended"], False)
+        self.assertEqual(test_game.model.inline_dict["Red"]["open_in_middle"], True)
         self.assertEqual(test_game.model.inline_dict["Red"]["empty_middle_counter"], 2)
 
     def test_2_empty_only_middle_on_odd_fields(self):
@@ -108,6 +113,7 @@ class Inline3TestHorizontalMinus(unittest.TestCase):
         self.assertEqual(test_game.model.inline_dict["Red"]["inline"], 3)
         self.assertEqual(test_game.model.inline_dict["Red"]["two_ended"], False)
         self.assertEqual(test_game.model.inline_dict["Red"]["one_ended"], True)
+        self.assertEqual(test_game.model.inline_dict["Red"]["open_in_middle"], True)
         self.assertEqual(test_game.model.inline_dict["Red"]["empty_middle_counter"], 1)
 
 
@@ -126,6 +132,7 @@ class Inline3TestHorizontalMinus(unittest.TestCase):
         self.assertEqual(test_game.model.inline_dict["Red"]["inline"], 3)
         self.assertEqual(test_game.model.inline_dict["Red"]["two_ended"], True)
         self.assertEqual(test_game.model.inline_dict["Red"]["one_ended"], False)
+        self.assertEqual(test_game.model.inline_dict["Red"]["open_in_middle"], False)
         self.assertEqual(test_game.model.inline_dict["Red"]["empty_middle_counter"], 0)
 
     def test_1_empty_two_ended(self):
@@ -146,6 +153,7 @@ class Inline3TestHorizontalMinus(unittest.TestCase):
         self.assertEqual(test_game.model.inline_dict["Red"]["inline"], 3)
         self.assertEqual(test_game.model.inline_dict["Red"]["two_ended"], True)
         self.assertEqual(test_game.model.inline_dict["Red"]["one_ended"], False)
+        self.assertEqual(test_game.model.inline_dict["Red"]["open_in_middle"], True)
         self.assertEqual(test_game.model.inline_dict["Red"]["empty_middle_counter"], 1)
 
     def test_1_empty_two_ended_mirrored(self):
@@ -166,6 +174,7 @@ class Inline3TestHorizontalMinus(unittest.TestCase):
         self.assertEqual(test_game.model.inline_dict["Red"]["inline"], 3)
         self.assertEqual(test_game.model.inline_dict["Red"]["two_ended"], True)
         self.assertEqual(test_game.model.inline_dict["Red"]["one_ended"], False)
+        self.assertEqual(test_game.model.inline_dict["Red"]["open_in_middle"], True)
         self.assertEqual(test_game.model.inline_dict["Red"]["empty_middle_counter"], 1)
 
     def test_2_empty_only_middle_NOT_two_ended(self):
@@ -186,6 +195,7 @@ class Inline3TestHorizontalMinus(unittest.TestCase):
         self.assertEqual(test_game.model.inline_dict["Red"]["inline"], 3)
         self.assertEqual(test_game.model.inline_dict["Red"]["two_ended"], False)
         self.assertEqual(test_game.model.inline_dict["Red"]["one_ended"], False)
+        self.assertEqual(test_game.model.inline_dict["Red"]["open_in_middle"], True)
         self.assertEqual(test_game.model.inline_dict["Red"]["empty_middle_counter"], 2)
 
     def test_2_empty_only_middle_NOT_two_ended_mirrored(self):
@@ -206,6 +216,7 @@ class Inline3TestHorizontalMinus(unittest.TestCase):
         self.assertEqual(test_game.model.inline_dict["Red"]["inline"], 3)
         self.assertEqual(test_game.model.inline_dict["Red"]["two_ended"], False)
         self.assertEqual(test_game.model.inline_dict["Red"]["one_ended"], False)
+        self.assertEqual(test_game.model.inline_dict["Red"]["open_in_middle"], True)
         self.assertEqual(test_game.model.inline_dict["Red"]["empty_middle_counter"], 2)
 
     def test_chess_pattern_NOT_two_ended(self):
@@ -224,6 +235,7 @@ class Inline3TestHorizontalMinus(unittest.TestCase):
         self.assertEqual(test_game.model.inline_dict["Red"]["inline"], 3)
         self.assertEqual(test_game.model.inline_dict["Red"]["two_ended"], False)
         self.assertEqual(test_game.model.inline_dict["Red"]["one_ended"], False)
+        self.assertEqual(test_game.model.inline_dict["Red"]["open_in_middle"], True)
         self.assertEqual(test_game.model.inline_dict["Red"]["empty_middle_counter"], 2)
 
  
@@ -236,13 +248,14 @@ class Inline3TestHorizontalPlus(unittest.TestCase):
         test_game.create_grid(test_field)
 
         for c in range(8, 6, -1):
-            test_game.model.clicked_cell = {"r": 0, "c": c}
+            test_game.model.clicked_cell = {"r": 9, "c": c}
             r, c = test_game.pick_cell()
             test_game.model.set_color("Red")
         test_game.model.check_inline_per_color("Red", r, c)
         self.assertEqual(test_game.model.inline_dict["Red"]["inline"], 3)
         self.assertEqual(test_game.model.inline_dict["Red"]["two_ended"], False)
         self.assertEqual(test_game.model.inline_dict["Red"]["one_ended"], True)
+        self.assertEqual(test_game.model.inline_dict["Red"]["open_in_middle"], False)
         self.assertEqual(test_game.model.inline_dict["Red"]["empty_middle_counter"], 0)
 
     def test_1_empty_one_ended(self):
@@ -253,13 +266,14 @@ class Inline3TestHorizontalPlus(unittest.TestCase):
         test_game.create_grid(test_field)
 
         for c in range(7,5, -1):
-            test_game.model.clicked_cell = {"r": 0, "c": c}
+            test_game.model.clicked_cell = {"r": 9, "c": c}
             r, c = test_game.pick_cell()
             test_game.model.set_color("Red")
         test_game.model.check_inline_per_color("Red", r, c)
         self.assertEqual(test_game.model.inline_dict["Red"]["inline"], 3)
         self.assertEqual(test_game.model.inline_dict["Red"]["two_ended"], False)
         self.assertEqual(test_game.model.inline_dict["Red"]["one_ended"], True)
+        self.assertEqual(test_game.model.inline_dict["Red"]["open_in_middle"], True)
         self.assertEqual(test_game.model.inline_dict["Red"]["empty_middle_counter"], 1)
 
     def test_2_empty_only_middle(self):
@@ -270,13 +284,14 @@ class Inline3TestHorizontalPlus(unittest.TestCase):
         test_game.create_grid(test_field)
 
         for c in range(6, 4, -1):
-            test_game.model.clicked_cell = {"r": 0, "c": c}
+            test_game.model.clicked_cell = {"r": 9, "c": c}
             r, c = test_game.pick_cell()
             test_game.model.set_color("Red")
             test_game.model.check_inline_per_color("Red", r, c)
         self.assertEqual(test_game.model.inline_dict["Red"]["inline"], 3)
         self.assertEqual(test_game.model.inline_dict["Red"]["two_ended"], False)
         self.assertEqual(test_game.model.inline_dict["Red"]["one_ended"], False)
+        self.assertEqual(test_game.model.inline_dict["Red"]["open_in_middle"], True)
         self.assertEqual(test_game.model.inline_dict["Red"]["empty_middle_counter"], 2)
 
     def test_2_empty_only_middle_mirrored(self):
@@ -286,16 +301,17 @@ class Inline3TestHorizontalPlus(unittest.TestCase):
         test_game = Sequence()
         test_game.create_grid(test_field)
 
-        test_game.model.clicked_cell = {"r": 0, "c": 8}
+        test_game.model.clicked_cell = {"r": 9, "c": 8}
         r, c = test_game.pick_cell()
         test_game.model.set_color("Red")
-        test_game.model.clicked_cell = {"r": 0, "c": 5}
+        test_game.model.clicked_cell = {"r": 9, "c": 5}
         r, c = test_game.pick_cell()
         test_game.model.set_color("Red")
         test_game.model.check_inline_per_color("Red", r, c)
         self.assertEqual(test_game.model.inline_dict["Red"]["inline"], 3)
         self.assertEqual(test_game.model.inline_dict["Red"]["two_ended"], False)
         self.assertEqual(test_game.model.inline_dict["Red"]["one_ended"], False)
+        self.assertEqual(test_game.model.inline_dict["Red"]["open_in_middle"], True)
         self.assertEqual(test_game.model.inline_dict["Red"]["empty_middle_counter"], 2)
 
     def test_2_empty_only_middle_on_even_fields(self):
@@ -307,13 +323,14 @@ class Inline3TestHorizontalPlus(unittest.TestCase):
 
         for c in range(8, 5, -1):
             if c % 2 == 0:
-                test_game.model.clicked_cell = {"r": 0, "c": c}
+                test_game.model.clicked_cell = {"r": 9, "c": c}
                 r, c = test_game.pick_cell()
                 test_game.model.set_color("Red")
         test_game.model.check_inline_per_color("Red", r, c)
         self.assertEqual(test_game.model.inline_dict["Red"]["inline"], 3)
         self.assertEqual(test_game.model.inline_dict["Red"]["two_ended"], False)
         self.assertEqual(test_game.model.inline_dict["Red"]["one_ended"], True)
+        self.assertEqual(test_game.model.inline_dict["Red"]["open_in_middle"], True)
         self.assertEqual(test_game.model.inline_dict["Red"]["empty_middle_counter"], 1)
 
     def test_2_empty_only_middle_on_odd_fields(self):
@@ -325,13 +342,14 @@ class Inline3TestHorizontalPlus(unittest.TestCase):
 
         for c in range(7, 4, -1):
             if c % 2 == 1:
-                test_game.model.clicked_cell = {"r": 0, "c": c}
+                test_game.model.clicked_cell = {"r": 9, "c": c}
                 r, c = test_game.pick_cell()
                 test_game.model.set_color("Red")
         test_game.model.check_inline_per_color("Red", r, c)
         self.assertEqual(test_game.model.inline_dict["Red"]["inline"], 3)
         self.assertEqual(test_game.model.inline_dict["Red"]["two_ended"], False)
         self.assertEqual(test_game.model.inline_dict["Red"]["one_ended"], False)
+        self.assertEqual(test_game.model.inline_dict["Red"]["open_in_middle"], True)
         self.assertEqual(test_game.model.inline_dict["Red"]["empty_middle_counter"], 2)
 
     
@@ -350,6 +368,7 @@ class Inline3TestHorizontalPlus(unittest.TestCase):
         self.assertEqual(test_game.model.inline_dict["Red"]["inline"], 3)
         self.assertEqual(test_game.model.inline_dict["Red"]["two_ended"], True)
         self.assertEqual(test_game.model.inline_dict["Red"]["one_ended"], False)
+        self.assertEqual(test_game.model.inline_dict["Red"]["open_in_middle"], False)
         self.assertEqual(test_game.model.inline_dict["Red"]["empty_middle_counter"], 0)
     
     def test_1_empty_two_ended(self):
@@ -370,6 +389,7 @@ class Inline3TestHorizontalPlus(unittest.TestCase):
         self.assertEqual(test_game.model.inline_dict["Red"]["inline"], 3)
         self.assertEqual(test_game.model.inline_dict["Red"]["two_ended"], True)
         self.assertEqual(test_game.model.inline_dict["Red"]["one_ended"], False)
+        self.assertEqual(test_game.model.inline_dict["Red"]["open_in_middle"], True)
         self.assertEqual(test_game.model.inline_dict["Red"]["empty_middle_counter"], 1)
 
     def test_1_empty_two_ended_mirrored(self):
@@ -390,6 +410,7 @@ class Inline3TestHorizontalPlus(unittest.TestCase):
         self.assertEqual(test_game.model.inline_dict["Red"]["inline"], 3)
         self.assertEqual(test_game.model.inline_dict["Red"]["two_ended"], True)
         self.assertEqual(test_game.model.inline_dict["Red"]["one_ended"], False)
+        self.assertEqual(test_game.model.inline_dict["Red"]["open_in_middle"], True)
         self.assertEqual(test_game.model.inline_dict["Red"]["empty_middle_counter"], 1)
 
     def test_2_empty_only_middle_NOT_two_ended(self):
@@ -410,6 +431,7 @@ class Inline3TestHorizontalPlus(unittest.TestCase):
         self.assertEqual(test_game.model.inline_dict["Red"]["inline"], 3)
         self.assertEqual(test_game.model.inline_dict["Red"]["two_ended"], False)
         self.assertEqual(test_game.model.inline_dict["Red"]["one_ended"], False)
+        self.assertEqual(test_game.model.inline_dict["Red"]["open_in_middle"], True)
         self.assertEqual(test_game.model.inline_dict["Red"]["empty_middle_counter"], 2)
 
     def test_2_empty_only_middle_NOT_two_ended_mirrored(self):
@@ -430,6 +452,7 @@ class Inline3TestHorizontalPlus(unittest.TestCase):
         self.assertEqual(test_game.model.inline_dict["Red"]["inline"], 3)
         self.assertEqual(test_game.model.inline_dict["Red"]["two_ended"], False)
         self.assertEqual(test_game.model.inline_dict["Red"]["one_ended"], False)
+        self.assertEqual(test_game.model.inline_dict["Red"]["open_in_middle"], True)
         self.assertEqual(test_game.model.inline_dict["Red"]["empty_middle_counter"], 2)
 
     def test_chess_pattern_NOT_two_ended(self):
@@ -448,6 +471,7 @@ class Inline3TestHorizontalPlus(unittest.TestCase):
         self.assertEqual(test_game.model.inline_dict["Red"]["inline"], 3)
         self.assertEqual(test_game.model.inline_dict["Red"]["two_ended"], False)
         self.assertEqual(test_game.model.inline_dict["Red"]["one_ended"], False)
+        self.assertEqual(test_game.model.inline_dict["Red"]["open_in_middle"], True)
         self.assertEqual(test_game.model.inline_dict["Red"]["empty_middle_counter"], 2)
 
 
@@ -467,6 +491,7 @@ class Inline3TestVerticalMinus(unittest.TestCase):
         self.assertEqual(test_game.model.inline_dict["Red"]["inline"], 3)
         self.assertEqual(test_game.model.inline_dict["Red"]["two_ended"], False)
         self.assertEqual(test_game.model.inline_dict["Red"]["one_ended"], True)
+        self.assertEqual(test_game.model.inline_dict["Red"]["open_in_middle"], False)
         self.assertEqual(test_game.model.inline_dict["Red"]["empty_middle_counter"], 0)
 
     def test_1_empty_one_ended(self):
@@ -484,6 +509,7 @@ class Inline3TestVerticalMinus(unittest.TestCase):
         self.assertEqual(test_game.model.inline_dict["Red"]["inline"], 3)
         self.assertEqual(test_game.model.inline_dict["Red"]["two_ended"], False)
         self.assertEqual(test_game.model.inline_dict["Red"]["one_ended"], True)
+        self.assertEqual(test_game.model.inline_dict["Red"]["open_in_middle"], True)
         self.assertEqual(test_game.model.inline_dict["Red"]["empty_middle_counter"], 1)
 
     def test_2_empty_only_middle(self):
@@ -501,6 +527,7 @@ class Inline3TestVerticalMinus(unittest.TestCase):
         self.assertEqual(test_game.model.inline_dict["Red"]["inline"], 3)
         self.assertEqual(test_game.model.inline_dict["Red"]["two_ended"], False)
         self.assertEqual(test_game.model.inline_dict["Red"]["one_ended"], False)
+        self.assertEqual(test_game.model.inline_dict["Red"]["open_in_middle"], True)
         self.assertEqual(test_game.model.inline_dict["Red"]["empty_middle_counter"], 2)
 
     def test_2_empty_only_middle_mirrored(self):
@@ -520,6 +547,7 @@ class Inline3TestVerticalMinus(unittest.TestCase):
         self.assertEqual(test_game.model.inline_dict["Red"]["inline"], 3)
         self.assertEqual(test_game.model.inline_dict["Red"]["two_ended"], False)
         self.assertEqual(test_game.model.inline_dict["Red"]["one_ended"], False)
+        self.assertEqual(test_game.model.inline_dict["Red"]["open_in_middle"], True)
         self.assertEqual(test_game.model.inline_dict["Red"]["empty_middle_counter"], 2)
 
     def test_2_empty_only_middle_on_even_fields(self):
@@ -538,6 +566,7 @@ class Inline3TestVerticalMinus(unittest.TestCase):
         self.assertEqual(test_game.model.inline_dict["Red"]["inline"], 3)
         self.assertEqual(test_game.model.inline_dict["Red"]["two_ended"], False)
         self.assertEqual(test_game.model.inline_dict["Red"]["one_ended"], False)
+        self.assertEqual(test_game.model.inline_dict["Red"]["open_in_middle"], True)
         self.assertEqual(test_game.model.inline_dict["Red"]["empty_middle_counter"], 2)
 
     def test_2_empty_only_middle_on_odd_fields(self):
@@ -556,6 +585,7 @@ class Inline3TestVerticalMinus(unittest.TestCase):
         self.assertEqual(test_game.model.inline_dict["Red"]["inline"], 3)
         self.assertEqual(test_game.model.inline_dict["Red"]["two_ended"], False)
         self.assertEqual(test_game.model.inline_dict["Red"]["one_ended"], True)
+        self.assertEqual(test_game.model.inline_dict["Red"]["open_in_middle"], True)
         self.assertEqual(test_game.model.inline_dict["Red"]["empty_middle_counter"], 1)
 
 
@@ -574,6 +604,7 @@ class Inline3TestVerticalMinus(unittest.TestCase):
         self.assertEqual(test_game.model.inline_dict["Red"]["inline"], 3)
         self.assertEqual(test_game.model.inline_dict["Red"]["two_ended"], True)
         self.assertEqual(test_game.model.inline_dict["Red"]["one_ended"], False)
+        self.assertEqual(test_game.model.inline_dict["Red"]["open_in_middle"], False)
         self.assertEqual(test_game.model.inline_dict["Red"]["empty_middle_counter"], 0)
 
     def test_1_empty_two_ended(self):
@@ -595,6 +626,7 @@ class Inline3TestVerticalMinus(unittest.TestCase):
         self.assertEqual(test_game.model.inline_dict["Red"]["inline"], 3)
         self.assertEqual(test_game.model.inline_dict["Red"]["two_ended"], True)
         self.assertEqual(test_game.model.inline_dict["Red"]["one_ended"], False)
+        self.assertEqual(test_game.model.inline_dict["Red"]["open_in_middle"], True)
         self.assertEqual(test_game.model.inline_dict["Red"]["empty_middle_counter"], 1)
 
     def test_1_empty_two_ended_mirrored(self):
@@ -615,6 +647,7 @@ class Inline3TestVerticalMinus(unittest.TestCase):
         self.assertEqual(test_game.model.inline_dict["Red"]["inline"], 3)
         self.assertEqual(test_game.model.inline_dict["Red"]["two_ended"], True)
         self.assertEqual(test_game.model.inline_dict["Red"]["one_ended"], False)
+        self.assertEqual(test_game.model.inline_dict["Red"]["open_in_middle"], True)
         self.assertEqual(test_game.model.inline_dict["Red"]["empty_middle_counter"], 1)
 
     def test_2_empty_only_middle_NOT_two_ended(self):
@@ -636,6 +669,7 @@ class Inline3TestVerticalMinus(unittest.TestCase):
         self.assertEqual(test_game.model.inline_dict["Red"]["inline"], 3)
         self.assertEqual(test_game.model.inline_dict["Red"]["two_ended"], False)
         self.assertEqual(test_game.model.inline_dict["Red"]["one_ended"], False)
+        self.assertEqual(test_game.model.inline_dict["Red"]["open_in_middle"], True)
         self.assertEqual(test_game.model.inline_dict["Red"]["empty_middle_counter"], 2)
     
     def test_2_empty_only_middle_NOT_two_ended_mirrored(self):
@@ -657,6 +691,7 @@ class Inline3TestVerticalMinus(unittest.TestCase):
         self.assertEqual(test_game.model.inline_dict["Red"]["inline"], 3)
         self.assertEqual(test_game.model.inline_dict["Red"]["two_ended"], False)
         self.assertEqual(test_game.model.inline_dict["Red"]["one_ended"], False)
+        self.assertEqual(test_game.model.inline_dict["Red"]["open_in_middle"], True)
         self.assertEqual(test_game.model.inline_dict["Red"]["empty_middle_counter"], 2)
 
     def test_chess_pattern_NOT_two_ended(self):
@@ -675,10 +710,10 @@ class Inline3TestVerticalMinus(unittest.TestCase):
         self.assertEqual(test_game.model.inline_dict["Red"]["inline"], 3)
         self.assertEqual(test_game.model.inline_dict["Red"]["two_ended"], False)
         self.assertEqual(test_game.model.inline_dict["Red"]["one_ended"], False)
+        self.assertEqual(test_game.model.inline_dict["Red"]["open_in_middle"], True)
         self.assertEqual(test_game.model.inline_dict["Red"]["empty_middle_counter"], 2)
 
  
-
 class Inline2TestVerticalPlus(unittest.TestCase):
     def test_0_empty_one_ended(self):
         test_field = tk.Tk()
@@ -695,6 +730,7 @@ class Inline2TestVerticalPlus(unittest.TestCase):
         self.assertEqual(test_game.model.inline_dict["Red"]["inline"], 3)
         self.assertEqual(test_game.model.inline_dict["Red"]["two_ended"], False)
         self.assertEqual(test_game.model.inline_dict["Red"]["one_ended"], True)
+        self.assertEqual(test_game.model.inline_dict["Red"]["open_in_middle"], False)
         self.assertEqual(test_game.model.inline_dict["Red"]["empty_middle_counter"], 0)
 
     def test_1_empty_one_ended(self):
@@ -712,6 +748,7 @@ class Inline2TestVerticalPlus(unittest.TestCase):
         self.assertEqual(test_game.model.inline_dict["Red"]["inline"], 3)
         self.assertEqual(test_game.model.inline_dict["Red"]["two_ended"], False)
         self.assertEqual(test_game.model.inline_dict["Red"]["one_ended"], True)
+        self.assertEqual(test_game.model.inline_dict["Red"]["open_in_middle"], True)
         self.assertEqual(test_game.model.inline_dict["Red"]["empty_middle_counter"], 1)
 
     def test_2_empty_only_middle(self):
@@ -729,6 +766,7 @@ class Inline2TestVerticalPlus(unittest.TestCase):
         self.assertEqual(test_game.model.inline_dict["Red"]["inline"], 3)
         self.assertEqual(test_game.model.inline_dict["Red"]["two_ended"], False)
         self.assertEqual(test_game.model.inline_dict["Red"]["one_ended"], False)
+        self.assertEqual(test_game.model.inline_dict["Red"]["open_in_middle"], True)
         self.assertEqual(test_game.model.inline_dict["Red"]["empty_middle_counter"], 2)
 
     def test_2_empty_only_middle_mirrored(self):
@@ -748,6 +786,7 @@ class Inline2TestVerticalPlus(unittest.TestCase):
         self.assertEqual(test_game.model.inline_dict["Red"]["inline"], 3)
         self.assertEqual(test_game.model.inline_dict["Red"]["two_ended"], False)
         self.assertEqual(test_game.model.inline_dict["Red"]["one_ended"], False)
+        self.assertEqual(test_game.model.inline_dict["Red"]["open_in_middle"], True)
         self.assertEqual(test_game.model.inline_dict["Red"]["empty_middle_counter"], 2)
 
     def test_1_empty_one_ended_on_even_fields(self):
@@ -766,6 +805,7 @@ class Inline2TestVerticalPlus(unittest.TestCase):
         self.assertEqual(test_game.model.inline_dict["Red"]["inline"], 3)
         self.assertEqual(test_game.model.inline_dict["Red"]["two_ended"], False)
         self.assertEqual(test_game.model.inline_dict["Red"]["one_ended"], True)
+        self.assertEqual(test_game.model.inline_dict["Red"]["open_in_middle"], True)
         self.assertEqual(test_game.model.inline_dict["Red"]["empty_middle_counter"], 1)
 
     def test_2_empty_only_middle_on_odd_fields(self):
@@ -784,6 +824,7 @@ class Inline2TestVerticalPlus(unittest.TestCase):
         self.assertEqual(test_game.model.inline_dict["Red"]["inline"], 3)
         self.assertEqual(test_game.model.inline_dict["Red"]["two_ended"], False)
         self.assertEqual(test_game.model.inline_dict["Red"]["one_ended"], False)
+        self.assertEqual(test_game.model.inline_dict["Red"]["open_in_middle"], True)
         self.assertEqual(test_game.model.inline_dict["Red"]["empty_middle_counter"], 2)
 
     
@@ -802,6 +843,7 @@ class Inline2TestVerticalPlus(unittest.TestCase):
         self.assertEqual(test_game.model.inline_dict["Red"]["inline"], 3)
         self.assertEqual(test_game.model.inline_dict["Red"]["two_ended"], True)
         self.assertEqual(test_game.model.inline_dict["Red"]["one_ended"], False)
+        self.assertEqual(test_game.model.inline_dict["Red"]["open_in_middle"], False)
         self.assertEqual(test_game.model.inline_dict["Red"]["empty_middle_counter"], 0)
     
     def test_1_empty_two_ended(self):
@@ -822,6 +864,7 @@ class Inline2TestVerticalPlus(unittest.TestCase):
         self.assertEqual(test_game.model.inline_dict["Red"]["inline"], 3)
         self.assertEqual(test_game.model.inline_dict["Red"]["two_ended"], True)
         self.assertEqual(test_game.model.inline_dict["Red"]["one_ended"], False)
+        self.assertEqual(test_game.model.inline_dict["Red"]["open_in_middle"], True)
         self.assertEqual(test_game.model.inline_dict["Red"]["empty_middle_counter"], 1)
 
     def test_1_empty_two_ended_mirrored(self):
@@ -842,6 +885,7 @@ class Inline2TestVerticalPlus(unittest.TestCase):
         self.assertEqual(test_game.model.inline_dict["Red"]["inline"], 3)
         self.assertEqual(test_game.model.inline_dict["Red"]["two_ended"], True)
         self.assertEqual(test_game.model.inline_dict["Red"]["one_ended"], False)
+        self.assertEqual(test_game.model.inline_dict["Red"]["open_in_middle"], True)
         self.assertEqual(test_game.model.inline_dict["Red"]["empty_middle_counter"], 1)
 
     def test_2_empty_only_middle_NOT_two_ended(self):
@@ -862,6 +906,7 @@ class Inline2TestVerticalPlus(unittest.TestCase):
         self.assertEqual(test_game.model.inline_dict["Red"]["inline"], 3)
         self.assertEqual(test_game.model.inline_dict["Red"]["two_ended"], False)
         self.assertEqual(test_game.model.inline_dict["Red"]["one_ended"], False)
+        self.assertEqual(test_game.model.inline_dict["Red"]["open_in_middle"], True)
         self.assertEqual(test_game.model.inline_dict["Red"]["empty_middle_counter"], 2)
 
     def test_2_empty_only_middle_NOT_two_ended_mirrored(self):
@@ -882,6 +927,7 @@ class Inline2TestVerticalPlus(unittest.TestCase):
         self.assertEqual(test_game.model.inline_dict["Red"]["inline"], 3)
         self.assertEqual(test_game.model.inline_dict["Red"]["two_ended"], False)
         self.assertEqual(test_game.model.inline_dict["Red"]["one_ended"], False)
+        self.assertEqual(test_game.model.inline_dict["Red"]["open_in_middle"], True)
         self.assertEqual(test_game.model.inline_dict["Red"]["empty_middle_counter"], 2)
 
     def test_chess_pattern_NOT_two_ended(self):
@@ -900,11 +946,47 @@ class Inline2TestVerticalPlus(unittest.TestCase):
         self.assertEqual(test_game.model.inline_dict["Red"]["inline"], 3)
         self.assertEqual(test_game.model.inline_dict["Red"]["two_ended"], False)
         self.assertEqual(test_game.model.inline_dict["Red"]["one_ended"], False)
+        self.assertEqual(test_game.model.inline_dict["Red"]["open_in_middle"], True)
         self.assertEqual(test_game.model.inline_dict["Red"]["empty_middle_counter"], 2)
 
     
 class Inline2TestUpLeft(unittest.TestCase):
-     pass
+    def test_0_empty_one_ended(self):
+        test_field = tk.Tk()
+        test_field.title("Test Field")
+
+        test_game = Sequence()
+        test_game.create_grid(test_field)
+
+        for i in range(1, 3):
+            test_game.model.clicked_cell = {"r": i, "c": i}
+            r, c = test_game.pick_cell()
+            test_game.model.set_color("Red")
+        test_game.model.check_inline_per_color("Red", r, c)
+        self.assertEqual(test_game.model.inline_dict["Red"]["inline"], 3)
+        self.assertEqual(test_game.model.inline_dict["Red"]["two_ended"], False)
+        self.assertEqual(test_game.model.inline_dict["Red"]["one_ended"], True)
+        self.assertEqual(test_game.model.inline_dict["Red"]["open_in_middle"], False)
+        self.assertEqual(test_game.model.inline_dict["Red"]["empty_middle_counter"], 0)
+
+    def test_1_empty_one_ended(self):
+        test_field = tk.Tk()
+        test_field.title("Test Field")
+
+        test_game = Sequence()
+        test_game.create_grid(test_field)
+
+        for i in range(2, 4):
+            test_game.model.clicked_cell = {"r": i, "c": i}
+            r, c = test_game.pick_cell()
+            test_game.model.set_color("Red")
+        test_game.model.check_inline_per_color("Red", r, c)
+        self.assertEqual(test_game.model.inline_dict["Red"]["inline"], 3)
+        self.assertEqual(test_game.model.inline_dict["Red"]["two_ended"], False)
+        self.assertEqual(test_game.model.inline_dict["Red"]["one_ended"], True)
+        self.assertEqual(test_game.model.inline_dict["Red"]["open_in_middle"], True)
+        self.assertEqual(test_game.model.inline_dict["Red"]["empty_middle_counter"], 1)
+
 
 
 class Inline3TestUpRight(unittest.TestCase):

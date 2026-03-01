@@ -1188,7 +1188,6 @@ class Inline3TestUpLeft(unittest.TestCase):
         self.assertEqual(test_game.model.inline_dict["Red"]["empty_middle_counter"], 2)
 
 
-
 class Inline3TestUpRight(unittest.TestCase):
     def test_0_empty_one_ended(self):
         test_field = tk.Tk()

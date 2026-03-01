@@ -25,7 +25,7 @@ class Sequence:
                         width=4, height=2,
                         bg="White",
                         command=lambda r=r, c=c: self.model.on_cell_click(r, c),
-                        text="[{}][{}]".format(r, c)
+                        # text="[{}][{}]".format(r, c)
                     )
                 btn.grid(row=r, column=c, sticky="nsew")
                 row.append(btn)
@@ -61,6 +61,12 @@ class Sequence:
             row, column = self.pick_cell()
             self.model.set_color(current_color)
             self.model.check_inline_per_color(current_color, row, column)
+            current_color_probability = self.model.calculate_win_probability(current_color)
+            print(f"Win probability for {current_color}: {current_color_probability}")
+            next_color_probability = self.model.calculate_win_probability(Misc.turn[1])
+            print(f"Win probability for {Misc.turn[1]}: {next_color_probability}")
+            last_color_probability = self.model.calculate_win_probability(Misc.turn[2])
+            print(f"Win probability for {Misc.turn[2]}: {last_color_probability}")
             
             Misc.turn = Misc.turn[1:] + [Misc.turn[0]]
 

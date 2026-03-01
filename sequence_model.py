@@ -197,6 +197,22 @@ class SequenceModel:
                 self.inline_dict[color]["two_ended"] = evaluated["two_ended"]
 
 
+    def calculate_win_probability(self, color):
+        # Every color win probability should be calculated as one color just picked a cell
+        # Considering the color just picked a cell, how many they have inline, is two ended
+        # Others win probability depending on if they still have the highest inline or not
+
+
+        missing_cells_to_win = Misc.INLINE_TO_WIN - self.inline_dict[color]["inline"]
+
+        probability = 1 - missing_cells_to_win * Misc.PROBABILITY_TO_COLOR_FIELD
+        if self.inline_dict[color]["two_ended"]:
+            probability = 1 - (1 - probability) * 2
+        
+        return probability
+        
+
+
     def check_inline_per_color(self, color, row, col):
         # Horizontal
         inline_counter_minus = 0

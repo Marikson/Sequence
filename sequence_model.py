@@ -11,7 +11,7 @@ class SequenceModel:
                 "open_in_middle": False,
                 "empty_middle_counter": 0,
                 "one_ended": False,
-                "round_to_come_again": len(Misc.turn) - 1
+                "round_to_come_again": 0
             }
             , 
             "Green": {
@@ -20,7 +20,7 @@ class SequenceModel:
                 "open_in_middle": False,
                 "empty_middle_counter": 0,
                 "one_ended": False,
-                "round_to_come_again": len(Misc.turn) - 1
+                "round_to_come_again": 0
             }
             , 
             "Blue": {
@@ -29,7 +29,7 @@ class SequenceModel:
                 "open_in_middle": False,
                 "empty_middle_counter": 0,
                 "one_ended": False,
-                "round_to_come_again": len(Misc.turn) - 1
+                "round_to_come_again": 0
             }
         }
 
@@ -196,20 +196,26 @@ class SequenceModel:
                 self.inline_dict[color]["one_ended"] = evaluated["one_ended"]
                 self.inline_dict[color]["two_ended"] = evaluated["two_ended"]
 
+        self.inline_dict[color]["round_to_come_again"] = len(Misc.turn) - 1
 
-    def calculate_win_probability(self, color):
+
+    def calculate_win_probability(self, color_who_picked):
         # Every color win probability should be calculated as one color just picked a cell
         # Considering the color just picked a cell, how many they have inline, is two ended
         # Others win probability depending on if they still have the highest inline or not
 
+        if self.inline_dict[color_who_picked]["two_ended"] and self.inline_dict[color_who_picked]["inline"] == 4:
+            probability_multiplyer = 2
+        else:
+            probability_multiplyer = 1
+        color_who_picked_missing_cells_to_win = Misc.INLINE_TO_WIN - self.inline_dict[color_who_picked]["inline"]
+        probability_other_color_willing_to_block = color_who_picked_missing_cells_to_win * Misc.WILLING_TO_BLOCK_PROBABILITY * probability_multiplyer
 
-        missing_cells_to_win = Misc.INLINE_TO_WIN - self.inline_dict[color]["inline"]
 
-        probability = 1 - missing_cells_to_win * Misc.PROBABILITY_TO_COLOR_FIELD
-        if self.inline_dict[color]["two_ended"]:
-            probability = 1 - (1 - probability) * 2
+        color_who_picked_probability = (1 - color_who_picked_missing_cells_to_win * Misc.PROBABILITY_TO_COLOR_FIELD) * probability_multiplyer  \
+                                        * probability_other_color_willing_to_block * self.inline_dict[color_who_picked]["round_to_come_again"]
         
-        return probability
+        return color_who_picked_probability
         
 
 

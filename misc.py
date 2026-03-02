@@ -2,6 +2,7 @@ class Misc:
     GRID_SIZE = 10   # 10x10 grid
     CELL_SIZE = 40   # pixel size of each cell
     PROBABILITY_TO_COLOR_FIELD = 16 / 104
+    WILLING_TO_BLOCK_PROBABILITY = 0.25
     INLINE_TO_WIN = 5
 
     colors_selection = {"Red": "#ff0000", "Green": "#006400", "Blue": "#0000ff", "Black": "#000000", "White": "#ffffff"}
@@ -23,3 +24,5 @@ class Misc:
         r, g, b = tuple(int(hex_color[i:i+2], 16) for i in (0, 2, 4))
         # ANSI escape for 24-bit color
         print(f"\033[38;2;{r};{g};{b}m{text}\033[0m")
+
+

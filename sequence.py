@@ -2,6 +2,7 @@ import tkinter as tk
 
 from sequence_model import SequenceModel as SM
 from misc import Misc
+import termplotlib as tpl
 
 class Sequence:
     def __init__(self):
@@ -53,22 +54,36 @@ class Sequence:
         return r, c
 
 
+    def represent_probability(self, probability):
+
+        fig = tpl.figure()
+        fig.barh([round(probability*100), 25, 39], force_ascii=False, max_width=50)
+        all_charts = fig.get_string()
+
+        split_chart = all_charts.split("\n")
+        # for line in split_chart:
+        #     number_in_line = line.split()[0]
+
+        for color in Misc.turn:
+            color_code = Misc.colors_selection[color]
+            line = split_chart[Misc.turn.index(color)]
+            Misc.print_hex_color(f"{line}", color_code)
+
+
     def start_game(self):
+        color_index = 0
         while any(btn["state"] != "disabled" for row in self.model.grid for btn in row):
-            current_color = Misc.turn[0]
+            current_color = Misc.turn[color_index]
             print(f"Current turn: {current_color}")
             self.model.clicked_cell = {"r": None, "c": None}
             row, column = self.pick_cell()
             self.model.set_color(current_color)
             self.model.check_inline_per_color(current_color, row, column)
-            current_color_probability = self.model.calculate_win_probability(current_color)
-            print(f"Win probability for {current_color}: {current_color_probability}")
-            next_color_probability = self.model.calculate_win_probability(Misc.turn[1])
-            print(f"Win probability for {Misc.turn[1]}: {next_color_probability}")
-            last_color_probability = self.model.calculate_win_probability(Misc.turn[2])
-            print(f"Win probability for {Misc.turn[2]}: {last_color_probability}")
-            
-            Misc.turn = Misc.turn[1:] + [Misc.turn[0]]
+
+            color_probability = round(self.model.calculate_win_probability(current_color), 3)
+            self.represent_probability(color_probability)
+   
+            color_index = (color_index + 1) if color_index < len(Misc.turn) - 1 else 0
 
             winner_color = self.model.check_winner()
             if winner_color:

@@ -26,7 +26,7 @@ class Sequence:
                         width=4, height=2,
                         bg="White",
                         command=lambda r=r, c=c: self.model.on_cell_click(r, c),
-                        # text="[{}][{}]".format(r, c)
+                        text="[{}][{}]".format(r, c)
                     )
                 btn.grid(row=r, column=c, sticky="nsew")
                 row.append(btn)

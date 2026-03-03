@@ -1,26 +1,27 @@
 from misc import Misc
 
 class SequenceModel:
+
+    class Cell:
+        def __init__(self, row, col):
+            self.row_index = row
+            self.col_index = col
+
     def __init__(self):
         self.grid = None
         self.clicked_cell = {"r": None, "c": None}
+        
         self.inline_dict = {
-            "Red": {
-                "inline": 0,
-                "two_ended": False,
-                "open_in_middle": False,
-                "empty_middle_counter": 0,
-                "one_ended": False,
-                "round_to_come_again": 0
-            }
-            , 
             "Green": {
                 "inline": 0,
                 "two_ended": False,
                 "open_in_middle": False,
                 "empty_middle_counter": 0,
                 "one_ended": False,
-                "round_to_come_again": 0
+                "round_to_come_again": 0,
+                "inline_indexes": [],
+                "empty_indexes_for_inline": [],
+                "winning_probability": 0
             }
             , 
             "Blue": {
@@ -29,7 +30,21 @@ class SequenceModel:
                 "open_in_middle": False,
                 "empty_middle_counter": 0,
                 "one_ended": False,
-                "round_to_come_again": 0
+                "round_to_come_again": 0,
+                "inline_indexes": [],
+                "empty_indexes_for_inline": [],
+                "winning_probability": 0
+            },
+            "Red": {
+                "inline": 0,
+                "two_ended": False,
+                "open_in_middle": False,
+                "empty_middle_counter": 0,
+                "one_ended": False,
+                "round_to_come_again": 0,
+                "inline_indexes": [],
+                "empty_indexes_for_inline": [],
+                "winning_probability": 0
             }
         }
 
@@ -98,10 +113,10 @@ class SequenceModel:
             r, c = self.clicked_cell["r"], self.clicked_cell["c"]
             self.grid[r][c].config(bg=color)
             self.grid[r][c].config(state="disabled")
-        return r, c, color
+        # return r, c, color
 
 
-    def even_in_line(self, inline_sum, inline_counter_minus, inline_counter_plus, 
+    def even_in_line(self, cell: Cell, inline_sum, inline_counter_minus, inline_counter_plus, 
                         is_open_in_middle_minus, is_open_in_middle_plus, is_opened_minus, is_opened_plus,
                         empty_minus_counter, empty_plus_counter, empty_middle_minus_counter, empty_middle_plus_counter):
         
@@ -119,7 +134,9 @@ class SequenceModel:
         
         two_ended = (empty_minus_counter > 0 or is_opened_minus) and (empty_plus_counter > 0 or is_opened_plus)
         one_ended = not two_ended and inline_sum + empty_middle_counter < Misc.INLINE_TO_WIN and \
-                    (empty_minus_counter > 0 or empty_plus_counter > 0 or is_opened_minus or is_opened_plus)   
+                    (empty_minus_counter > 0 or empty_plus_counter > 0 or is_opened_minus or is_opened_plus)
+        
+        inline_indexes = []
 
 
         return {"inline": inline_sum,
@@ -129,7 +146,7 @@ class SequenceModel:
                 "two_ended": two_ended}
 
 
-    def odd_in_line(self, inline_sum, inline_counter_minus, inline_counter_plus, 
+    def odd_in_line(self, cell: Cell, inline_sum, inline_counter_minus, inline_counter_plus, 
                         is_open_in_middle_minus, is_open_in_middle_plus, is_opened_minus, is_opened_plus,
                         empty_minus_counter, empty_plus_counter, empty_middle_minus_counter, empty_middle_plus_counter):
         
@@ -160,7 +177,7 @@ class SequenceModel:
                 "two_ended": two_ended}
 
 
-    def set_inline_dict(self, color, inline_counter_minus, inline_counter_plus, 
+    def set_inline_dict(self, color, cell: Cell, inline_counter_minus, inline_counter_plus, 
                         is_open_in_middle_minus, is_open_in_middle_plus, is_opened_minus, is_opened_plus,
                         empty_minus_counter, empty_plus_counter,
                         empty_middle_minus_counter, empty_middle_plus_counter):
@@ -170,13 +187,13 @@ class SequenceModel:
             return          
             
         if inline_sum % 2 == 0:
-            evaluated = self.even_in_line(inline_sum, inline_counter_minus, inline_counter_plus,
+            evaluated = self.even_in_line(cell, inline_sum, inline_counter_minus, inline_counter_plus,
                             is_open_in_middle_minus, is_open_in_middle_plus, is_opened_minus, is_opened_plus,
                             empty_minus_counter, empty_plus_counter,
                             empty_middle_minus_counter, empty_middle_plus_counter)
         
         elif inline_sum % 2 == 1:
-            evaluated = self.odd_in_line(inline_sum, inline_counter_minus, inline_counter_plus,
+            evaluated = self.odd_in_line(cell, inline_sum, inline_counter_minus, inline_counter_plus,
                             is_open_in_middle_minus, is_open_in_middle_plus, is_opened_minus, is_opened_plus,
                             empty_minus_counter, empty_plus_counter,
                             empty_middle_minus_counter, empty_middle_plus_counter)
@@ -198,28 +215,28 @@ class SequenceModel:
 
         self.inline_dict[color]["round_to_come_again"] = len(Misc.turn) - 1
 
+        calculated_probability = self.calculate_win_probability(color)
+
 
     def calculate_win_probability(self, color_who_picked):
-        # Every color win probability should be calculated as one color just picked a cell
-        # Considering the color just picked a cell, how many they have inline, is two ended
-        # Others win probability depending on if they still have the highest inline or not
+        pass
 
-        if self.inline_dict[color_who_picked]["two_ended"] and self.inline_dict[color_who_picked]["inline"] == 4:
-            probability_multiplyer = 2
-        else:
-            probability_multiplyer = 1
-        color_who_picked_missing_cells_to_win = Misc.INLINE_TO_WIN - self.inline_dict[color_who_picked]["inline"]
-        probability_other_color_willing_to_block = color_who_picked_missing_cells_to_win * Misc.WILLING_TO_BLOCK_PROBABILITY * probability_multiplyer
+        # if self.inline_dict[color_who_picked]["two_ended"] and self.inline_dict[color_who_picked]["inline"] == 4:
+        #     probability_multiplyer = 2
+        # else:
+        #     probability_multiplyer = 1
+        # color_who_picked_missing_cells_to_win = Misc.INLINE_TO_WIN - self.inline_dict[color_who_picked]["inline"]
+        # probability_other_color_willing_to_block = color_who_picked_missing_cells_to_win * Misc.WILLING_TO_BLOCK_PROBABILITY * probability_multiplyer
 
 
-        color_who_picked_probability = (1 - color_who_picked_missing_cells_to_win * Misc.PROBABILITY_TO_COLOR_FIELD) * probability_multiplyer  \
-                                        * probability_other_color_willing_to_block * self.inline_dict[color_who_picked]["round_to_come_again"]
+        # color_who_picked_probability = (1 - color_who_picked_missing_cells_to_win * Misc.PROBABILITY_TO_COLOR_FIELD) * probability_multiplyer  \
+        #                                 * probability_other_color_willing_to_block * self.inline_dict[color_who_picked]["round_to_come_again"]
         
-        return color_who_picked_probability
+        # return color_who_picked_probability
         
 
 
-    def check_inline_per_color(self, color, row, col):
+    def check_inline_per_color(self, color, picked_cell: Cell):
         # Horizontal
         inline_counter_minus = 0
         inline_counter_plus = 0
@@ -237,8 +254,8 @@ class SequenceModel:
         other_color_inline_plus = False
         for i in range(1, Misc.INLINE_TO_WIN):
             # Left
-            if col - i >= 0:
-                if self.get_btn_color(self.grid[row][col - i]) in [color, "Black"]:
+            if picked_cell.col_index - i >= 0:
+                if self.get_btn_color(self.grid[picked_cell.row_index][picked_cell.col_index - i]) in [color, "Black"]:
                     if not other_color_inline_minus:
                         inline_counter_minus += 1
                         if potentially_open_in_middle_minus:
@@ -246,7 +263,7 @@ class SequenceModel:
                             is_open_in_middle_minus = True
                             potentially_open_in_middle_minus = False
                             empty_minus_counter = 0
-                elif self.get_btn_color(self.grid[row][col - i]) == "White":
+                elif self.get_btn_color(self.grid[picked_cell.row_index][picked_cell.col_index - i]) == "White":
                     if not other_color_inline_minus:
                         potentially_open_in_middle_minus = True
                         if i==4 and not other_color_inline_minus:
@@ -259,8 +276,8 @@ class SequenceModel:
                     opened_minus = False
  
             # Right
-            if col + i < Misc.GRID_SIZE:
-                if self.get_btn_color(self.grid[row][col + i]) in [color, "Black"]:
+            if picked_cell.col_index + i < Misc.GRID_SIZE:
+                if self.get_btn_color(self.grid[picked_cell.row_index][picked_cell.col_index + i]) in [color, "Black"]:
                     if not other_color_inline_plus:
                         inline_counter_plus += 1
                         if potentially_open_in_middle_plus:
@@ -268,7 +285,7 @@ class SequenceModel:
                             is_open_in_middle_plus = True
                             potentially_open_in_middle_plus = False
                             empty_plus_counter = 0
-                elif self.get_btn_color(self.grid[row][col + i]) == "White":
+                elif self.get_btn_color(self.grid[picked_cell.row_index][picked_cell.col_index + i]) == "White":
                     if not other_color_inline_plus:
                         potentially_open_in_middle_plus = True
                         if i==4 and not other_color_inline_plus:
@@ -281,7 +298,7 @@ class SequenceModel:
                     opened_plus = False
                     
 
-        self.set_inline_dict(color, inline_counter_minus, inline_counter_plus,
+        self.set_inline_dict(color, picked_cell, inline_counter_minus, inline_counter_plus,
                             is_open_in_middle_minus, is_open_in_middle_plus, 
                             opened_minus, opened_plus,
                             empty_minus_counter, empty_plus_counter,
@@ -305,8 +322,8 @@ class SequenceModel:
         other_color_inline_plus = False
         for i in range(1, Misc.INLINE_TO_WIN):
             # Up
-            if row - i >= 0:
-                if self.get_btn_color(self.grid[row - i][col]) in [color, "Black"]:
+            if picked_cell.row_index - i >= 0:
+                if self.get_btn_color(self.grid[picked_cell.row_index - i][picked_cell.col_index]) in [color, "Black"]:
                     if not other_color_inline_minus:
                         inline_counter_minus += 1
                         if potentially_open_in_middle_minus:
@@ -314,7 +331,7 @@ class SequenceModel:
                             is_open_in_middle_minus = True
                             potentially_open_in_middle_minus = False
                             empty_minus_counter = 0
-                elif self.get_btn_color(self.grid[row - i][col]) == "White":
+                elif self.get_btn_color(self.grid[picked_cell.row_index - i][picked_cell.col_index]) == "White":
                     if not other_color_inline_minus:
                         potentially_open_in_middle_minus = True
                         if i==4 and not other_color_inline_minus:
@@ -327,8 +344,8 @@ class SequenceModel:
                     opened_minus = False
 
             # Down
-            if row + i < Misc.GRID_SIZE:
-                if self.get_btn_color(self.grid[row + i][col]) in [color, "Black"]:
+            if picked_cell.row_index + i < Misc.GRID_SIZE:
+                if self.get_btn_color(self.grid[picked_cell.row_index + i][picked_cell.col_index]) in [color, "Black"]:
                     if not other_color_inline_plus:
                         inline_counter_plus += 1
                         if potentially_open_in_middle_plus:
@@ -336,7 +353,7 @@ class SequenceModel:
                             is_open_in_middle_plus = True
                             potentially_open_in_middle_plus = False
                             empty_plus_counter = 0
-                elif self.get_btn_color(self.grid[row + i][col]) == "White":
+                elif self.get_btn_color(self.grid[picked_cell.row_index + i][picked_cell.col_index]) == "White":
                     if not other_color_inline_plus:
                         potentially_open_in_middle_plus = True
                         if i==4 and not other_color_inline_plus:
@@ -348,7 +365,7 @@ class SequenceModel:
                     potentially_open_in_middle_plus = False
                     opened_plus = False
 
-        self.set_inline_dict(color, inline_counter_minus, inline_counter_plus,
+        self.set_inline_dict(color, picked_cell, inline_counter_minus, inline_counter_plus,
                             is_open_in_middle_minus, is_open_in_middle_plus, 
                             opened_minus, opened_plus,
                             empty_minus_counter, empty_plus_counter,
@@ -372,8 +389,8 @@ class SequenceModel:
         other_color_inline_plus = False
         for i in range(1, Misc.INLINE_TO_WIN):
             # up-left
-            if row - i >= 0 and col - i >= 0:
-                if self.get_btn_color(self.grid[row - i][col - i]) in [color, "Black"]:
+            if picked_cell.row_index - i >= 0 and picked_cell.col_index - i >= 0:
+                if self.get_btn_color(self.grid[picked_cell.row_index - i][picked_cell.col_index - i]) in [color, "Black"]:
                     if not other_color_inline_minus:
                         inline_counter_minus += 1
                         if potentially_open_in_middle_minus:
@@ -381,7 +398,7 @@ class SequenceModel:
                             is_open_in_middle_minus = True
                             potentially_open_in_middle_minus = False
                             empty_minus_counter = 0
-                elif self.get_btn_color(self.grid[row - i][col - i]) == "White":
+                elif self.get_btn_color(self.grid[picked_cell.row_index - i][picked_cell.col_index - i]) == "White":
                     if not other_color_inline_minus:
                         potentially_open_in_middle_minus = True
                         if i==4 and not other_color_inline_minus:
@@ -394,8 +411,8 @@ class SequenceModel:
                     opened_minus = False
             
             # down-right
-            if row + i < Misc.GRID_SIZE and col + i < Misc.GRID_SIZE:
-                if self.get_btn_color(self.grid[row + i][col + i]) in [color, "Black"]:
+            if picked_cell.row_index + i < Misc.GRID_SIZE and picked_cell.col_index + i < Misc.GRID_SIZE:
+                if self.get_btn_color(self.grid[picked_cell.row_index + i][picked_cell.col_index + i]) in [color, "Black"]:
                     if not other_color_inline_plus:
                         inline_counter_plus += 1
                         if potentially_open_in_middle_plus:
@@ -403,7 +420,7 @@ class SequenceModel:
                             is_open_in_middle_plus = True
                             potentially_open_in_middle_plus = False
                             empty_plus_counter = 0
-                elif self.get_btn_color(self.grid[row + i][col + i]) == "White":
+                elif self.get_btn_color(self.grid[picked_cell.row_index + i][picked_cell.col_index + i]) == "White":
                     if not other_color_inline_plus:
                         potentially_open_in_middle_plus = True
                         if i==4 and not other_color_inline_plus:
@@ -415,7 +432,7 @@ class SequenceModel:
                     potentially_open_in_middle_plus = False
                     opened_plus = False
 
-        self.set_inline_dict(color, inline_counter_minus, inline_counter_plus,
+        self.set_inline_dict(color, picked_cell, inline_counter_minus, inline_counter_plus,
                             is_open_in_middle_minus, is_open_in_middle_plus, 
                             opened_minus, opened_plus,
                             empty_minus_counter, empty_plus_counter,
@@ -437,8 +454,8 @@ class SequenceModel:
         other_color_inline_plus = False
         for i in range(1, Misc.INLINE_TO_WIN):
             # up-right
-            if row + i < Misc.GRID_SIZE and col - i >= 0:
-                if self.get_btn_color(self.grid[row + i][col - i]) in [color, "Black"]:
+            if picked_cell.row_index + i < Misc.GRID_SIZE and picked_cell.col_index - i >= 0:
+                if self.get_btn_color(self.grid[picked_cell.row_index + i][picked_cell.col_index - i]) in [color, "Black"]:
                     if not other_color_inline_minus:
                         inline_counter_minus += 1
                         if potentially_open_in_middle_minus:
@@ -446,7 +463,7 @@ class SequenceModel:
                             is_open_in_middle_minus = True
                             potentially_open_in_middle_minus = False
                             empty_minus_counter = 0
-                elif self.get_btn_color(self.grid[row + i][col - i]) == "White":
+                elif self.get_btn_color(self.grid[picked_cell.row_index + i][picked_cell.col_index - i]) == "White":
                     if not other_color_inline_minus:
                         potentially_open_in_middle_minus = True
                         if i==4 and not other_color_inline_minus:
@@ -459,8 +476,8 @@ class SequenceModel:
                     opened_minus = False
             
             # down-left
-            if row - i >= 0 and col + i < Misc.GRID_SIZE:
-                if self.get_btn_color(self.grid[row - i][col + i]) in [color, "Black"]:
+            if picked_cell.row_index - i >= 0 and picked_cell.col_index + i < Misc.GRID_SIZE:
+                if self.get_btn_color(self.grid[picked_cell.row_index - i][picked_cell.col_index + i]) in [color, "Black"]:
                     if not other_color_inline_plus:
                         inline_counter_plus += 1
                         if potentially_open_in_middle_plus:
@@ -468,7 +485,7 @@ class SequenceModel:
                             is_open_in_middle_plus = True
                             potentially_open_in_middle_plus = False
                             empty_plus_counter = 0
-                elif self.get_btn_color(self.grid[row - i][col + i]) == "White":
+                elif self.get_btn_color(self.grid[picked_cell.row_index - i][picked_cell.col_index + i]) == "White":
                     if not other_color_inline_plus:
                         potentially_open_in_middle_plus = True
                         if i==4 and not other_color_inline_plus:
@@ -480,7 +497,7 @@ class SequenceModel:
                     potentially_open_in_middle_plus = False
                     opened_plus = False
 
-        self.set_inline_dict(color, inline_counter_minus, inline_counter_plus,
+        self.set_inline_dict(color, picked_cell, inline_counter_minus, inline_counter_plus,
                             is_open_in_middle_minus, is_open_in_middle_plus, 
                             opened_minus, opened_plus,
                             empty_minus_counter, empty_plus_counter,

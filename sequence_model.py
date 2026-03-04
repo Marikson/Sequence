@@ -148,34 +148,57 @@ class SequenceModel:
 
         # Plus side has more inline -> more potential on plus side
         if plus_side_weight > minus_side_weight:
-            if minus_side_weight >= 1 and empty_minus_indexes and not is_opened_plus:
-                inline_indexes.extend(inline_minus_indexes)
-                empty_middle_indexes.extend(empty_middle_minus_indexes)
-                if empty_middle_indexes or empty_minus_indexes and picked_cell.are_neighbours(inline_plus_indexes[0]):
-                    inline_indexes.append(inline_plus_indexes[0])
+            # If plus is dominant, minus should be part of inline
+            if not empty_middle_indexes and minus_side_weight >= 1:
+                if empty_middle_plus_indexes:
+                    inline_indexes.extend(inline_minus_indexes)
+                    empty_middle_indexes.extend(empty_middle_minus_indexes)
+                    for i in range(0, plus_side_weight):
+                        if picked_cell.are_neighbours(inline_plus_indexes[i]):
+                            inline_indexes.append(inline_plus_indexes[i])
+                    empty_indexes = self.get_empty_indexes(len(inline_indexes) + len(empty_middle_indexes), empty_minus_indexes, empty_middle_plus_indexes)
 
+                else:
+                    inline_indexes.extend(inline_plus_indexes)
+                    empty_middle_indexes.extend(empty_middle_minus_indexes)
+
+                    empty_indexes = self.get_empty_indexes(len(inline_indexes) + len(empty_middle_indexes), empty_middle_minus_indexes, empty_plus_indexes)
+            
             else:
                 inline_indexes.extend(inline_plus_indexes)
                 empty_middle_indexes.extend(empty_middle_plus_indexes)
                 if plus_side_weight == 3 and is_opened_plus and picked_cell.are_neighbours(empty_middle_minus_indexes[0]):
                     is_opened_minus = True
+                
+                empty_indexes = self.get_empty_indexes(len(inline_indexes) + len(empty_middle_indexes), empty_minus_indexes, empty_plus_indexes)
 
         
         
 
         # Minus side has more inline -> more potential on minus side
         elif plus_side_weight < minus_side_weight:
-            if plus_side_weight >= 1 and empty_plus_indexes and not is_opened_minus:
-                inline_indexes.extend(inline_plus_indexes)
-                empty_middle_indexes.extend(empty_middle_plus_indexes)
-                if empty_middle_indexes or empty_plus_indexes and picked_cell.are_neighbours(inline_minus_indexes[0]):
-                    inline_indexes.append(inline_minus_indexes[0])
+            if not empty_middle_indexes and plus_side_weight >= 1:
+                if empty_middle_minus_indexes:
+                    inline_indexes.extend(inline_plus_indexes)
+                    empty_middle_indexes.extend(empty_middle_plus_indexes)
+                    for i in range(0, minus_side_weight):
+                        if picked_cell.are_neighbours(inline_minus_indexes[i]):
+                            inline_indexes.append(inline_minus_indexes[i])
+                    empty_indexes = self.get_empty_indexes(len(inline_indexes) + len(empty_middle_indexes), empty_middle_minus_indexes, empty_plus_indexes)
 
+                else:
+                    inline_indexes.extend(inline_minus_indexes)
+                    empty_middle_indexes.extend(empty_middle_plus_indexes)
+
+                    empty_indexes = self.get_empty_indexes(len(inline_indexes) + len(empty_middle_indexes), empty_minus_indexes, empty_middle_plus_indexes)
+            
             else:
                 inline_indexes.extend(inline_minus_indexes)
                 empty_middle_indexes.extend(empty_middle_minus_indexes)
                 if minus_side_weight == 3 and is_opened_minus and picked_cell.are_neighbours(empty_middle_plus_indexes[0]):
                     is_opened_plus = True
+                
+                empty_indexes = self.get_empty_indexes(len(inline_indexes) + len(empty_middle_indexes), empty_minus_indexes, empty_plus_indexes)
 
             
 
@@ -231,7 +254,7 @@ class SequenceModel:
     def get_empty_indexes(self, indexes_tracked, empty_minus_indexes, empty_plus_indexes):
         i = 0
         empty_indexes = []
-        while indexes_tracked < Misc.INLINE_TO_WIN:
+        while indexes_tracked <= Misc.INLINE_TO_WIN:
             if i < len(empty_minus_indexes):
                 empty_indexes.append(empty_minus_indexes[i])
                 indexes_tracked += 1

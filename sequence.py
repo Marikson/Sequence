@@ -85,15 +85,15 @@ class Sequence:
    
             color_index = (color_index + 1) if color_index < len(Misc.turn) - 1 else 0
 
-            winner_color = self.model.check_winner()
-            if winner_color:
-                winner_color_code = Misc.colors_selection[winner_color]
-                Misc.print_hex_color(f"Winner: {winner_color}", winner_color_code)
-                for row in self.model.grid:
-                    for btn in row:
-                        btn.config(bg=winner_color_code, state="disabled")
-                # self.delete_grid()
-                break
+            # # winner_color = self.model.check_winner()
+            # if winner_color:
+            #     winner_color_code = Misc.colors_selection[winner_color]
+            #     Misc.print_hex_color(f"Winner: {winner_color}", winner_color_code)
+            #     for row in self.model.grid:
+            #         for btn in row:
+            #             btn.config(bg=winner_color_code, state="disabled")
+            #     # self.delete_grid()
+            #     break
             
 
 

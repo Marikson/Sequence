@@ -7,6 +7,17 @@ class SequenceModel:
             self.row_index = row
             self.col_index = col
 
+        def are_neighbours(self, other_cell):
+            for i in range(self.row_index - 1, self.row_index + 2):
+                if i < 0 or i >= Misc.GRID_SIZE:
+                    continue
+                for j in range(self.col_index - 1, self.col_index + 2):
+                    if j < 0 or j >= Misc.GRID_SIZE:
+                        continue
+                    if i == other_cell.row_index and j == other_cell.col_index:
+                        return True
+            return False
+
     def __init__(self):
         self.grid = None
         self.clicked_cell = {"r": None, "c": None}
@@ -119,97 +130,88 @@ class SequenceModel:
         # return r, c, color
 
 
-    def determine_inline(self, cell: Cell, is_opened_minus, is_opened_plus,
+    def determine_inline(self, picked_cell: Cell, is_opened_minus, is_opened_plus,
                             inline_minus_indexes, inline_plus_indexes,
                             empty_middle_minus_indexes, empty_middle_plus_indexes,
                             empty_minus_indexes, empty_plus_indexes):
         
         inline_indexes = []
-        inline_indexes.append(cell)
+        inline_indexes.append(picked_cell)
         empty_indexes = []
         empty_middle_indexes = []
+        
+        minus_side_weight = len(inline_minus_indexes)
+        plus_side_weight = len(inline_plus_indexes)
+        minus_side_secondary_weight = len(empty_middle_minus_indexes)
+        plus_side_secondary_weight = len(empty_middle_plus_indexes)
 
 
-        if len(inline_minus_indexes) > len(inline_plus_indexes):
-            inline_indexes.extend(inline_minus_indexes)
-            empty_middle_indexes.extend(empty_middle_minus_indexes)
-
-            i = 0
-            indexes_tracked = len(empty_middle_indexes) + len(inline_indexes)
-            while indexes_tracked < Misc.INLINE_TO_WIN:
-                if empty_middle_plus_indexes and i < len(empty_middle_plus_indexes):
-                    empty_indexes.append(empty_middle_plus_indexes[i])
-                    indexes_tracked += 1
-                if empty_minus_indexes and i < len(empty_minus_indexes):
-                    empty_indexes.append(empty_minus_indexes[i])
-                    indexes_tracked += 1
-                i += 1
-
-        elif len(inline_minus_indexes) + len(empty_minus_indexes) < len(inline_plus_indexes) + len(empty_plus_indexes):
-            inline_indexes.extend(inline_plus_indexes)
-            empty_middle_indexes.extend(empty_middle_plus_indexes)
-
-            i = 0
-            indexes_tracked = len(empty_middle_indexes) + len(inline_indexes)
-            while indexes_tracked < Misc.INLINE_TO_WIN:
-                if empty_plus_indexes and i < len(empty_plus_indexes):
-                    empty_indexes.append(empty_plus_indexes[i])
-                    indexes_tracked += 1
-                if empty_middle_minus_indexes and i < len(empty_middle_minus_indexes):
-                    empty_indexes.append(empty_middle_minus_indexes[i])
-                    indexes_tracked += 1
-                i += 1
-
-        elif len(inline_minus_indexes) == len(inline_plus_indexes):
-            if len(empty_middle_minus_indexes) > len(empty_middle_plus_indexes):
-                inline_indexes.extend(inline_plus_indexes)
-                empty_middle_indexes.extend(empty_middle_plus_indexes)
-                
-                i = 0
-                indexes_tracked = len(empty_middle_indexes) + len(inline_indexes)
-                while indexes_tracked < Misc.INLINE_TO_WIN:
-                    if empty_plus_indexes and i < len(empty_plus_indexes):
-                        empty_indexes.append(empty_plus_indexes[i])
-                        indexes_tracked += 1
-                    if empty_middle_minus_indexes and i < len(empty_middle_minus_indexes):
-                        empty_indexes.append(empty_middle_minus_indexes[i])
-                        indexes_tracked += 1
-                    i += 1
-
-            elif len(empty_middle_minus_indexes) < len(empty_middle_plus_indexes):
+        # Plus side has more inline -> more potential on plus side
+        if plus_side_weight > minus_side_weight:
+            if minus_side_weight >= 1 and empty_minus_indexes and not is_opened_plus:
                 inline_indexes.extend(inline_minus_indexes)
                 empty_middle_indexes.extend(empty_middle_minus_indexes)
-                
-                i = 0
-                indexes_tracked = len(empty_middle_indexes) + len(inline_indexes)
-                while indexes_tracked < Misc.INLINE_TO_WIN:
-                    if empty_middle_plus_indexes and i < len(empty_middle_plus_indexes):
-                        empty_indexes.append(empty_middle_plus_indexes[i])
-                        indexes_tracked += 1
-                    if empty_minus_indexes and i < len(empty_minus_indexes):
-                        empty_indexes.append(empty_minus_indexes[i])
-                        indexes_tracked += 1
-                    i += 1
+                if empty_middle_indexes or empty_minus_indexes and picked_cell.are_neighbours(inline_plus_indexes[0]):
+                    inline_indexes.append(inline_plus_indexes[0])
 
-            elif len(empty_middle_minus_indexes) == len(empty_middle_plus_indexes):
-                inline_indexes.extend(inline_minus_indexes)
+            else:
                 inline_indexes.extend(inline_plus_indexes)
                 empty_middle_indexes.extend(empty_middle_plus_indexes)
+                if plus_side_weight == 3 and is_opened_plus and picked_cell.are_neighbours(empty_middle_minus_indexes[0]):
+                    is_opened_minus = True
+
+        
+        
+
+        # Minus side has more inline -> more potential on minus side
+        elif plus_side_weight < minus_side_weight:
+            if plus_side_weight >= 1 and empty_plus_indexes and not is_opened_minus:
+                inline_indexes.extend(inline_plus_indexes)
+                empty_middle_indexes.extend(empty_middle_plus_indexes)
+                if empty_middle_indexes or empty_plus_indexes and picked_cell.are_neighbours(inline_minus_indexes[0]):
+                    inline_indexes.append(inline_minus_indexes[0])
+
+            else:
+                inline_indexes.extend(inline_minus_indexes)
                 empty_middle_indexes.extend(empty_middle_minus_indexes)
+                if minus_side_weight == 3 and is_opened_minus and picked_cell.are_neighbours(empty_middle_plus_indexes[0]):
+                    is_opened_plus = True
 
-                i = 0
-                indexes_tracked = len(empty_middle_indexes) + len(inline_indexes)
-                while indexes_tracked < Misc.INLINE_TO_WIN:
-                    if empty_plus_indexes and i < len(empty_plus_indexes):
-                        empty_indexes.append(empty_plus_indexes[i])
-                        indexes_tracked += 1
-                    if empty_minus_indexes and i < len(empty_minus_indexes):
-                        empty_indexes.append(empty_minus_indexes[i])
-                        indexes_tracked += 1
-                    i += 1
-                    
+            
 
-        inline_sum = len(inline_indexes)
+        # Equal inline on both sides -> check empty middle fields
+        elif plus_side_weight == minus_side_weight:
+            # More empty middle fields on the plus side -> inline on the minus side is more valuable
+            if plus_side_secondary_weight > minus_side_secondary_weight:
+                inline_indexes.extend(inline_minus_indexes)
+                empty_middle_indexes.extend(empty_middle_minus_indexes)
+                if empty_middle_indexes and picked_cell.are_neighbours(inline_plus_indexes[0]):
+                    inline_indexes.append(inline_plus_indexes[0])
+                
+                empty_indexes = self.get_empty_indexes(len(inline_indexes) + len(empty_middle_indexes), empty_minus_indexes, empty_middle_plus_indexes)
+
+
+
+            # More empty middle fields on the minus side -> inline on the plus side is more valuable
+            elif plus_side_secondary_weight < minus_side_secondary_weight:
+                inline_indexes.extend(inline_plus_indexes)
+                empty_middle_indexes.extend(empty_middle_plus_indexes)
+                if empty_middle_indexes and picked_cell.are_neighbours(inline_minus_indexes[0]):
+                    inline_indexes.append(inline_minus_indexes[0])
+                
+                empty_indexes = self.get_empty_indexes(len(inline_indexes) + len(empty_middle_indexes), empty_middle_minus_indexes, empty_plus_indexes)
+
+
+
+            # This scenario can be only 1 by 1 or 2 by 2
+            elif plus_side_secondary_weight == minus_side_secondary_weight:
+                inline_indexes.extend(inline_minus_indexes)
+                inline_indexes.extend(inline_plus_indexes)
+                empty_middle_indexes.extend(empty_middle_minus_indexes)
+                empty_middle_indexes.extend(empty_middle_plus_indexes)
+
+
+        inline_sum = len(inline_indexes) if len(inline_indexes) < Misc.INLINE_TO_WIN else 4
         empty_middle_counter = len(empty_middle_indexes)
         open_in_middle = empty_middle_counter > 0
         two_ended = (len(empty_minus_indexes) > 0 or is_opened_minus) and (len(empty_plus_indexes) > 0 or is_opened_plus)
@@ -226,6 +228,20 @@ class SequenceModel:
                 "empty_middle_indexes": empty_middle_indexes}
 
 
+    def get_empty_indexes(self, indexes_tracked, empty_minus_indexes, empty_plus_indexes):
+        i = 0
+        empty_indexes = []
+        while indexes_tracked < Misc.INLINE_TO_WIN:
+            if i < len(empty_minus_indexes):
+                empty_indexes.append(empty_minus_indexes[i])
+                indexes_tracked += 1
+            if i < len(empty_plus_indexes):
+                empty_indexes.append(empty_plus_indexes[i])
+                indexes_tracked += 1
+            i += 1
+        return empty_indexes
+
+
     def set_inline_dict(self, color, cell: Cell,
                             opened_minus, opened_plus,
                             inline_minus_indexes, inline_plus_indexes,
@@ -238,10 +254,26 @@ class SequenceModel:
             
         evaluated = self.determine_inline(cell, opened_minus, opened_plus,
                             inline_minus_indexes, inline_plus_indexes,
-                            empty_middle_minus_indexes, empty_middle_plus_indexes,
+                            list(reversed(empty_middle_minus_indexes)), list(reversed(empty_middle_plus_indexes)),
                             empty_minus_indexes, empty_plus_indexes)
         
+        self.update_inline_dict(color, evaluated)
+
+        calculated_probability = self.calculate_win_probability(color)
+
+
+    def update_inline_dict(self, color, evaluated):
+        to_update = False
         if evaluated["inline"] > self.inline_dict[color]["inline"]:
+            to_update = True
+        elif evaluated["inline"] == self.inline_dict[color]["inline"]:
+            if evaluated["two_ended"] and not self.inline_dict[color]["two_ended"]:
+                to_update = True
+            elif evaluated["empty_middle_counter"] < self.inline_dict[color]["empty_middle_counter"]:
+                to_update = True
+
+
+        if to_update:
             self.inline_dict[color]["inline"] = evaluated["inline"]
             self.inline_dict[color]["open_in_middle"] = evaluated["open_in_middle"]
             self.inline_dict[color]["empty_middle_counter"] = evaluated["empty_middle_counter"]
@@ -250,21 +282,10 @@ class SequenceModel:
             self.inline_dict[color]["inline_indexes"] = evaluated["inline_indexes"]
             self.inline_dict[color]["empty_indexes"] = evaluated["empty_indexes"]
             self.inline_dict[color]["empty_middle_indexes"] = evaluated["empty_middle_indexes"]
-        
-        elif evaluated["inline"] == self.inline_dict[color]["inline"]:
-            if evaluated["two_ended"] and not self.inline_dict[color]["two_ended"]:
-                self.inline_dict[color]["inline"] = evaluated["inline"]
-                self.inline_dict[color]["open_in_middle"] = evaluated["open_in_middle"]
-                self.inline_dict[color]["empty_middle_counter"] = evaluated["empty_middle_counter"]
-                self.inline_dict[color]["one_ended"] = evaluated["one_ended"]
-                self.inline_dict[color]["two_ended"] = evaluated["two_ended"]
-                self.inline_dict[color]["inline_indexes"] = evaluated["inline_indexes"]
-                self.inline_dict[color]["empty_indexes"] = evaluated["empty_indexes"]
-                self.inline_dict[color]["empty_middle_indexes"] = evaluated["empty_middle_indexes"]
 
         # self.inline_dict[color]["round_to_come_again"] = len(Misc.turn) - 1
 
-        calculated_probability = self.calculate_win_probability(color)
+
 
 
     def calculate_win_probability(self, color_who_picked):
@@ -356,7 +377,7 @@ class SequenceModel:
         self.set_inline_dict(color, picked_cell,
                             opened_minus, opened_plus,
                             inline_minus_indexes, inline_plus_indexes,
-                            empty_middle_minus_indexes.reverse(), empty_middle_plus_indexes.reverse(),
+                            empty_middle_minus_indexes, empty_middle_plus_indexes,
                             empty_minus_indexes, empty_plus_indexes)
 
         
@@ -429,7 +450,7 @@ class SequenceModel:
         # self.set_inline_dict(color, picked_cell,
         #                     opened_minus, opened_plus,
         #                     inline_minus_indexes, inline_plus_indexes,
-        #                     empty_middle_minus_indexes.reverse(), empty_middle_plus_indexes.reverse(),
+        #                     empty_middle_minus_indexes, empty_middle_plus_indexes,
         #                     empty_minus_indexes, empty_plus_indexes)
         
 
@@ -500,7 +521,7 @@ class SequenceModel:
         # self.set_inline_dict(color, picked_cell,
         #                     opened_minus, opened_plus,
         #                     inline_minus_indexes, inline_plus_indexes,
-        #                     empty_middle_minus_indexes.reverse(), empty_middle_plus_indexes.reverse(),
+        #                     empty_middle_minus_indexes, empty_middle_plus_indexes,
         #                     empty_minus_indexes, empty_plus_indexes)
         
 
@@ -571,7 +592,7 @@ class SequenceModel:
         # self.set_inline_dict(color, picked_cell,
         #                     opened_minus, opened_plus,
         #                     inline_minus_indexes, inline_plus_indexes,
-        #                     empty_middle_minus_indexes.reverse(), empty_middle_plus_indexes.reverse(),
+        #                     empty_middle_minus_indexes, empty_middle_plus_indexes,
         #                     empty_minus_indexes, empty_plus_indexes)
 
         

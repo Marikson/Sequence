@@ -1,11 +1,59 @@
 from misc import Misc
+from typing import Iterable, Dict, Any, Set, List, Union
 
 class SequenceModel:
 
+    
     class Cell:
-        def __init__(self, row, col):
+        def __init__(self, row, col, other_cell=None, dx=0, dy=0):
             self.row_index = row
             self.col_index = col
+            self.relative_position_to_picked_cell = self.get_relative_position(other_cell, dx, dy) if other_cell else 0
+
+        def get_relative_position(self, other_cell, dx, dy):
+            """
+            Computes relative position k such that:
+            self = picked_cell + k * (dx, dy)
+
+            Returns:
+                int k     → valid relative position
+                None      → if not on the same directional line
+            """
+            dr = self.row_index - other_cell.row_index
+            dc = self.col_index - other_cell.col_index
+
+            # Invalid direction vector
+            if dx == 0 and dy == 0:
+                return None
+
+            # Horizontal line
+            if dx == 0:
+                if dr != 0:
+                    return None
+                if dc % dy != 0:
+                    return None
+                return dc // dy
+
+            # Vertical line
+            if dy == 0:
+                if dc != 0:
+                    return None
+                if dr % dx != 0:
+                    return None
+                return dr // dx
+
+            # Diagonal or general direction
+            if dr % dx != 0 or dc % dy != 0:
+                return None
+
+            k1 = dr // dx
+            k2 = dc // dy
+
+            if k1 != k2:
+                return None
+
+            return k1
+
 
         def are_neighbours(self, other_cell):
             for i in range(self.row_index - 1, self.row_index + 2):
@@ -130,126 +178,6 @@ class SequenceModel:
         # return r, c, color
 
 
-    def determine_inline(self, picked_cell: Cell, is_opened_minus, is_opened_plus,
-                            inline_minus_indexes, inline_plus_indexes,
-                            empty_middle_minus_indexes, empty_middle_plus_indexes,
-                            empty_minus_indexes, empty_plus_indexes):
-        
-        inline_indexes = []
-        inline_indexes.append(picked_cell)
-        empty_indexes = []
-        empty_middle_indexes = []
-        
-        minus_side_weight = len(inline_minus_indexes)
-        plus_side_weight = len(inline_plus_indexes)
-        minus_side_secondary_weight = len(empty_middle_minus_indexes)
-        plus_side_secondary_weight = len(empty_middle_plus_indexes)
-
-
-        # Plus side has more inline -> more potential on plus side
-        if plus_side_weight > minus_side_weight:
-            # If plus is dominant, minus should be part of inline
-            if not empty_middle_indexes and minus_side_weight >= 1:
-                if empty_middle_plus_indexes:
-                    inline_indexes.extend(inline_minus_indexes)
-                    empty_middle_indexes.extend(empty_middle_minus_indexes)
-                    for i in range(0, plus_side_weight):
-                        if picked_cell.are_neighbours(inline_plus_indexes[i]):
-                            inline_indexes.append(inline_plus_indexes[i])
-                    empty_indexes = self.get_empty_indexes(len(inline_indexes) + len(empty_middle_indexes), empty_minus_indexes, empty_middle_plus_indexes)
-
-                else:
-                    inline_indexes.extend(inline_plus_indexes)
-                    empty_middle_indexes.extend(empty_middle_minus_indexes)
-
-                    empty_indexes = self.get_empty_indexes(len(inline_indexes) + len(empty_middle_indexes), empty_middle_minus_indexes, empty_plus_indexes)
-            
-            else:
-                inline_indexes.extend(inline_plus_indexes)
-                empty_middle_indexes.extend(empty_middle_plus_indexes)
-                if plus_side_weight == 3 and is_opened_plus and picked_cell.are_neighbours(empty_middle_minus_indexes[0]):
-                    is_opened_minus = True
-                
-                empty_indexes = self.get_empty_indexes(len(inline_indexes) + len(empty_middle_indexes), empty_minus_indexes, empty_plus_indexes)
-
-        
-        
-
-        # Minus side has more inline -> more potential on minus side
-        elif plus_side_weight < minus_side_weight:
-            if not empty_middle_indexes and plus_side_weight >= 1:
-                if empty_middle_minus_indexes:
-                    inline_indexes.extend(inline_plus_indexes)
-                    empty_middle_indexes.extend(empty_middle_plus_indexes)
-                    for i in range(0, minus_side_weight):
-                        if picked_cell.are_neighbours(inline_minus_indexes[i]):
-                            inline_indexes.append(inline_minus_indexes[i])
-                    empty_indexes = self.get_empty_indexes(len(inline_indexes) + len(empty_middle_indexes), empty_middle_minus_indexes, empty_plus_indexes)
-
-                else:
-                    inline_indexes.extend(inline_minus_indexes)
-                    empty_middle_indexes.extend(empty_middle_plus_indexes)
-
-                    empty_indexes = self.get_empty_indexes(len(inline_indexes) + len(empty_middle_indexes), empty_minus_indexes, empty_middle_plus_indexes)
-            
-            else:
-                inline_indexes.extend(inline_minus_indexes)
-                empty_middle_indexes.extend(empty_middle_minus_indexes)
-                if minus_side_weight == 3 and is_opened_minus and picked_cell.are_neighbours(empty_middle_plus_indexes[0]):
-                    is_opened_plus = True
-                
-                empty_indexes = self.get_empty_indexes(len(inline_indexes) + len(empty_middle_indexes), empty_minus_indexes, empty_plus_indexes)
-
-            
-
-        # Equal inline on both sides -> check empty middle fields
-        elif plus_side_weight == minus_side_weight:
-            # More empty middle fields on the plus side -> inline on the minus side is more valuable
-            if plus_side_secondary_weight > minus_side_secondary_weight:
-                inline_indexes.extend(inline_minus_indexes)
-                empty_middle_indexes.extend(empty_middle_minus_indexes)
-                if empty_middle_indexes and picked_cell.are_neighbours(inline_plus_indexes[0]):
-                    inline_indexes.append(inline_plus_indexes[0])
-                
-                empty_indexes = self.get_empty_indexes(len(inline_indexes) + len(empty_middle_indexes), empty_minus_indexes, empty_middle_plus_indexes)
-
-
-
-            # More empty middle fields on the minus side -> inline on the plus side is more valuable
-            elif plus_side_secondary_weight < minus_side_secondary_weight:
-                inline_indexes.extend(inline_plus_indexes)
-                empty_middle_indexes.extend(empty_middle_plus_indexes)
-                if empty_middle_indexes and picked_cell.are_neighbours(inline_minus_indexes[0]):
-                    inline_indexes.append(inline_minus_indexes[0])
-                
-                empty_indexes = self.get_empty_indexes(len(inline_indexes) + len(empty_middle_indexes), empty_middle_minus_indexes, empty_plus_indexes)
-
-
-
-            # This scenario can be only 1 by 1 or 2 by 2
-            elif plus_side_secondary_weight == minus_side_secondary_weight:
-                inline_indexes.extend(inline_minus_indexes)
-                inline_indexes.extend(inline_plus_indexes)
-                empty_middle_indexes.extend(empty_middle_minus_indexes)
-                empty_middle_indexes.extend(empty_middle_plus_indexes)
-
-
-        inline_sum = len(inline_indexes) if len(inline_indexes) < Misc.INLINE_TO_WIN else 4
-        empty_middle_counter = len(empty_middle_indexes)
-        open_in_middle = empty_middle_counter > 0
-        two_ended = (len(empty_minus_indexes) > 0 or is_opened_minus) and (len(empty_plus_indexes) > 0 or is_opened_plus)
-        one_ended = not two_ended and inline_sum + empty_middle_counter < Misc.INLINE_TO_WIN and \
-                    (len(empty_minus_indexes) > 0 or len(empty_plus_indexes) > 0 or is_opened_minus or is_opened_plus)
-        
-        return {"inline": inline_sum,
-                "open_in_middle": open_in_middle, 
-                "empty_middle_counter": empty_middle_counter, 
-                "one_ended": one_ended, 
-                "two_ended": two_ended,
-                "inline_indexes": inline_indexes,
-                "empty_indexes": empty_indexes,
-                "empty_middle_indexes": empty_middle_indexes}
-
 
     def get_empty_indexes(self, indexes_tracked, empty_minus_indexes, empty_plus_indexes):
         i = 0
@@ -268,7 +196,7 @@ class SequenceModel:
     def set_inline_dict(self, color, cell: Cell,
                             opened_minus, opened_plus,
                             inline_minus_indexes, inline_plus_indexes,
-                            empty_middle_minus_indexes, empty_middle_plus_indexes,
+                            gap_minus_indexes, gap_plus_indexes,
                             empty_minus_indexes, empty_plus_indexes):
         
         
@@ -277,7 +205,7 @@ class SequenceModel:
             
         evaluated = self.determine_inline(cell, opened_minus, opened_plus,
                             inline_minus_indexes, inline_plus_indexes,
-                            list(reversed(empty_middle_minus_indexes)), list(reversed(empty_middle_plus_indexes)),
+                            list(reversed(gap_minus_indexes)), list(reversed(gap_plus_indexes)),
                             empty_minus_indexes, empty_plus_indexes)
         
         self.update_inline_dict(color, evaluated)
@@ -337,12 +265,12 @@ class SequenceModel:
         empty_plus_counter = 0
         empty_minus_indexes = []
         empty_plus_indexes = []
-        empty_middle_minus_indexes = []
-        empty_middle_plus_indexes = []
+        gap_minus_indexes = []
+        gap_plus_indexes = []
         opened_minus = False
         opened_plus = False
-        potentially_open_in_middle_minus = False
-        potentially_open_in_middle_plus = False
+        potentially_gap_minus = False
+        potentially_gap_plus = False
         other_color_inline_minus = False
         other_color_inline_plus = False
         for i in range(1, Misc.INLINE_TO_WIN):
@@ -350,57 +278,63 @@ class SequenceModel:
             if picked_cell.col_index - i >= 0:
                 if self.get_btn_color(self.grid[picked_cell.row_index][picked_cell.col_index - i]) in [color, "Black"]:
                     if not other_color_inline_minus:
-                        inline_minus_indexes.append(self.Cell(picked_cell.row_index, picked_cell.col_index - i))
-                        if potentially_open_in_middle_minus:
+                        inline_cell = self.Cell(picked_cell.row_index, picked_cell.col_index - i, picked_cell, 0, -1)
+                        inline_minus_indexes.append(inline_cell)
+                        if potentially_gap_minus:
                             for j in range(1, empty_minus_counter + 1):
-                                empty_middle_minus_indexes.append(self.Cell(picked_cell.row_index, picked_cell.col_index - i + j))
+                                gap_cell = self.Cell(picked_cell.row_index, picked_cell.col_index - i + j, picked_cell, 0, -1)
+                                gap_minus_indexes.append(gap_cell)
                                 empty_minus_indexes = [cell for cell in empty_minus_indexes if not (cell.row_index == picked_cell.row_index and cell.col_index == picked_cell.col_index - i + j)]
-                            potentially_open_in_middle_minus = False
+                            potentially_gap_minus = False
                             empty_minus_counter = 0
                 elif self.get_btn_color(self.grid[picked_cell.row_index][picked_cell.col_index - i]) == "White":
                     if not other_color_inline_minus:
-                        potentially_open_in_middle_minus = True
+                        potentially_gap_minus = True
                         if i==4 and not other_color_inline_minus:
                             opened_minus = True
                         else:
                             empty_minus_counter += 1
-                        empty_minus_indexes.append(self.Cell(picked_cell.row_index, picked_cell.col_index - i))
+                        empty_cell = self.Cell(picked_cell.row_index, picked_cell.col_index - i, picked_cell, 0, -1)
+                        empty_minus_indexes.append(empty_cell)
 
                 else:
                     other_color_inline_minus = True
-                    potentially_open_in_middle_minus = False
+                    potentially_gap_minus = False
                     opened_minus = False
  
             # Right
             if picked_cell.col_index + i < Misc.GRID_SIZE:
                 if self.get_btn_color(self.grid[picked_cell.row_index][picked_cell.col_index + i]) in [color, "Black"]:
                     if not other_color_inline_plus:
-                        inline_plus_indexes.append(self.Cell(picked_cell.row_index, picked_cell.col_index + i))
-                        if potentially_open_in_middle_plus:
+                        inline_cell = self.Cell(picked_cell.row_index, picked_cell.col_index + i, picked_cell, 0, 1)
+                        inline_plus_indexes.append(inline_cell)
+                        if potentially_gap_plus:
                             for j in range(1, empty_plus_counter + 1):
-                                empty_middle_plus_indexes.append(self.Cell(picked_cell.row_index, picked_cell.col_index + i - j))
+                                gap_cell = self.Cell(picked_cell.row_index, picked_cell.col_index + i - j, picked_cell, 0, 1)
+                                gap_plus_indexes.append(gap_cell)
                                 empty_plus_indexes = [cell for cell in empty_plus_indexes if not (cell.row_index == picked_cell.row_index and cell.col_index == picked_cell.col_index + i - j)]
-                            potentially_open_in_middle_plus = False
+                            potentially_gap_plus = False
                             empty_plus_counter = 0
                 elif self.get_btn_color(self.grid[picked_cell.row_index][picked_cell.col_index + i]) == "White":
                     if not other_color_inline_plus:
-                        potentially_open_in_middle_plus = True
+                        potentially_gap_plus = True
                         if i==4 and not other_color_inline_plus:
                             opened_plus = True
                         else:
                             empty_plus_counter += 1
-                        empty_plus_indexes.append(self.Cell(picked_cell.row_index, picked_cell.col_index + i))
+                        empty_cell = self.Cell(picked_cell.row_index, picked_cell.col_index + i, picked_cell, 0, 1)
+                        empty_plus_indexes.append(empty_cell)
 
                 else:
                     other_color_inline_plus = True
-                    potentially_open_in_middle_plus = False
+                    potentially_gap_plus = False
                     opened_plus = False
                     
 
         self.set_inline_dict(color, picked_cell,
                             opened_minus, opened_plus,
                             inline_minus_indexes, inline_plus_indexes,
-                            empty_middle_minus_indexes, empty_middle_plus_indexes,
+                            gap_minus_indexes, gap_plus_indexes,
                             empty_minus_indexes, empty_plus_indexes)
 
         
@@ -411,12 +345,12 @@ class SequenceModel:
         empty_plus_counter = 0
         empty_minus_indexes = []
         empty_plus_indexes = []
-        empty_middle_minus_indexes = []
-        empty_middle_plus_indexes = []
+        gap_minus_indexes = []
+        gap_plus_indexes = []
         opened_minus = False
         opened_plus = False
-        potentially_open_in_middle_minus = False
-        potentially_open_in_middle_plus = False
+        potentially_gap_minus = False
+        potentially_gap_plus = False
         other_color_inline_minus = False
         other_color_inline_plus = False
         for i in range(1, Misc.INLINE_TO_WIN):
@@ -424,50 +358,56 @@ class SequenceModel:
             if picked_cell.row_index - i >= 0:
                 if self.get_btn_color(self.grid[picked_cell.row_index - i][picked_cell.col_index]) in [color, "Black"]:
                     if not other_color_inline_minus:
-                        inline_minus_indexes.append(self.Cell(picked_cell.row_index - i, picked_cell.col_index))
-                        if potentially_open_in_middle_minus:
+                        inline_cell = self.Cell(picked_cell.row_index - i, picked_cell.col_index, picked_cell, -1, 0)
+                        inline_minus_indexes.append(inline_cell)
+                        if potentially_gap_minus:
                             for j in range(1, empty_minus_counter + 1):
-                                empty_middle_minus_indexes.append(self.Cell(picked_cell.row_index - i + j, picked_cell.col_index))
+                                gap_cell = self.Cell(picked_cell.row_index - i + j, picked_cell.col_index, picked_cell, -1, 0)
+                                gap_minus_indexes.append(gap_cell)
                                 empty_minus_indexes = [cell for cell in empty_minus_indexes if not (cell.row_index == picked_cell.row_index - i + j and cell.col_index == picked_cell.col_index)]
-                            potentially_open_in_middle_minus = False
+                            potentially_gap_minus = False
                             empty_minus_counter = 0
                 elif self.get_btn_color(self.grid[picked_cell.row_index - i][picked_cell.col_index]) == "White":
                     if not other_color_inline_minus:
-                        potentially_open_in_middle_minus = True
+                        potentially_gap_minus = True
                         if i==4 and not other_color_inline_minus:
                             opened_minus = True
                         else:
                             empty_minus_counter += 1
-                        empty_minus_indexes.append(self.Cell(picked_cell.row_index - i, picked_cell.col_index))
+                        empty_cell = self.Cell(picked_cell.row_index - i, picked_cell.col_index, picked_cell, -1, 0)
+                        empty_minus_indexes.append(empty_cell)
 
                 else:
                     other_color_inline_minus = True
-                    potentially_open_in_middle_minus = False
+                    potentially_gap_minus = False
                     opened_minus = False
 
             # Down
             if picked_cell.row_index + i < Misc.GRID_SIZE:
                 if self.get_btn_color(self.grid[picked_cell.row_index + i][picked_cell.col_index]) in [color, "Black"]:
                     if not other_color_inline_plus:
-                        inline_plus_indexes.append(self.Cell(picked_cell.row_index + i, picked_cell.col_index))
-                        if potentially_open_in_middle_plus:
+                        inline_cell = self.Cell(picked_cell.row_index + i, picked_cell.col_index, picked_cell, 1, 0)
+                        inline_plus_indexes.append(inline_cell)
+                        if potentially_gap_plus:
                             for j in range(1, empty_plus_counter + 1):
-                                empty_middle_plus_indexes.append(self.Cell(picked_cell.row_index + i - j, picked_cell.col_index))
+                                gap_cell = self.Cell(picked_cell.row_index + i - j, picked_cell.col_index, picked_cell, 1, 0)
+                                gap_plus_indexes.append(gap_cell)
                                 empty_minus_indexes = [cell for cell in empty_minus_indexes if not (cell.row_index == picked_cell.row_index + i - j and cell.col_index == picked_cell.col_index)]
-                            potentially_open_in_middle_plus = False
+                            potentially_gap_plus = False
                             empty_plus_counter = 0
                 elif self.get_btn_color(self.grid[picked_cell.row_index + i][picked_cell.col_index]) == "White":
                     if not other_color_inline_plus:
-                        potentially_open_in_middle_plus = True
+                        potentially_gap_plus = True
                         if i==4 and not other_color_inline_plus:
                             opened_plus = True
                         else:
                             empty_plus_counter += 1
-                        empty_plus_indexes.append(self.Cell(picked_cell.row_index + i, picked_cell.col_index))
+                        empty_cell = self.Cell(picked_cell.row_index + i, picked_cell.col_index, picked_cell, 1, 0)
+                        empty_plus_indexes.append(empty_cell)
 
                 else:
                     other_color_inline_plus = True
-                    potentially_open_in_middle_plus = False
+                    potentially_gap_plus = False
                     opened_plus = False
 
         # self.set_inline_dict(color, picked_cell,
@@ -484,12 +424,12 @@ class SequenceModel:
         empty_plus_counter = 0
         empty_minus_indexes = []
         empty_plus_indexes = []
-        empty_middle_minus_indexes = []
-        empty_middle_plus_indexes = []
+        gap_minus_indexes = []
+        gap_plus_indexes = []
         opened_minus = False
         opened_plus = False
-        potentially_open_in_middle_minus = False
-        potentially_open_in_middle_plus = False
+        potentially_gap_minus = False
+        potentially_gap_plus = False
         other_color_inline_minus = False
         other_color_inline_plus = False
         for i in range(1, Misc.INLINE_TO_WIN):
@@ -497,48 +437,54 @@ class SequenceModel:
             if picked_cell.row_index - i >= 0 and picked_cell.col_index - i >= 0:
                 if self.get_btn_color(self.grid[picked_cell.row_index - i][picked_cell.col_index - i]) in [color, "Black"]:
                     if not other_color_inline_minus:
-                        inline_minus_indexes.append(self.Cell(picked_cell.row_index - i, picked_cell.col_index - i))
-                        if potentially_open_in_middle_minus:
+                        inline_cell = self.Cell(picked_cell.row_index - i, picked_cell.col_index - i, picked_cell, -1, -1)
+                        inline_minus_indexes.append(inline_cell)
+                        if potentially_gap_minus:
                             for j in range(1, empty_minus_counter + 1):
-                                empty_middle_minus_indexes.append(self.Cell(picked_cell.row_index - i + j, picked_cell.col_index - i + j))
+                                gap_cell = self.Cell(picked_cell.row_index - i + j, picked_cell.col_index - i + j, picked_cell, -1, -1)
+                                gap_minus_indexes.append(gap_cell)
                                 empty_minus_indexes = [cell for cell in empty_minus_indexes if not (cell.row_index == picked_cell.row_index - i + j and cell.col_index == picked_cell.col_index - i + j)]
-                            potentially_open_in_middle_minus = False
+                            potentially_gap_minus = False
                             empty_minus_counter = 0
                 elif self.get_btn_color(self.grid[picked_cell.row_index - i][picked_cell.col_index - i]) == "White":
                     if not other_color_inline_minus:
-                        potentially_open_in_middle_minus = True
+                        potentially_gap_minus = True
                         if i==4 and not other_color_inline_minus:
                             opened_minus = True
                         else:
                             empty_minus_counter += 1
-                        empty_minus_indexes.append(self.Cell(picked_cell.row_index - i, picked_cell.col_index - i))
+                        empty_cell = self.Cell(picked_cell.row_index - i, picked_cell.col_index - i, picked_cell, -1, -1)
+                        empty_minus_indexes.append(empty_cell)
                 else:
                     other_color_inline_minus = True
-                    potentially_open_in_middle_minus = False
+                    potentially_gap_minus = False
                     opened_minus = False
             
             # down-right
             if picked_cell.row_index + i < Misc.GRID_SIZE and picked_cell.col_index + i < Misc.GRID_SIZE:
                 if self.get_btn_color(self.grid[picked_cell.row_index + i][picked_cell.col_index + i]) in [color, "Black"]:
                     if not other_color_inline_plus:
-                        inline_plus_indexes.append(self.Cell(picked_cell.row_index + i, picked_cell.col_index + i))
-                        if potentially_open_in_middle_plus:
+                        inline_cell = self.Cell(picked_cell.row_index + i, picked_cell.col_index + i, picked_cell, 1, 1)
+                        inline_plus_indexes.append(inline_cell)
+                        if potentially_gap_plus:
                             for j in range(1, empty_plus_counter + 1):
-                                empty_middle_plus_indexes.append(self.Cell(picked_cell.row_index + i - j, picked_cell.col_index + i - j))
+                                gap_cell = self.Cell(picked_cell.row_index + i - j, picked_cell.col_index + i - j, picked_cell, 1, 1)
+                                gap_plus_indexes.append(gap_cell)
                                 empty_minus_indexes = [cell for cell in empty_minus_indexes if not (cell.row_index == picked_cell.row_index + i - j and cell.col_index == picked_cell.col_index + i - j)]
-                            potentially_open_in_middle_plus = False
+                            potentially_gap_plus = False
                             empty_plus_counter = 0
                 elif self.get_btn_color(self.grid[picked_cell.row_index + i][picked_cell.col_index + i]) == "White":
                     if not other_color_inline_plus:
-                        potentially_open_in_middle_plus = True
+                        potentially_gap_plus = True
                         if i==4 and not other_color_inline_plus:
                             opened_plus = True
                         else:
                             empty_plus_counter += 1
-                        empty_plus_indexes.append(self.Cell(picked_cell.row_index + i, picked_cell.col_index + i))
+                        empty_cell = self.Cell(picked_cell.row_index + i, picked_cell.col_index + i, picked_cell, 1, 1)
+                        empty_plus_indexes.append(empty_cell)
                 else:
                     other_color_inline_plus = True
-                    potentially_open_in_middle_plus = False
+                    potentially_gap_plus = False
                     opened_plus = False
 
         # self.set_inline_dict(color, picked_cell,
@@ -555,12 +501,12 @@ class SequenceModel:
         empty_plus_counter = 0
         empty_minus_indexes = []
         empty_plus_indexes = []
-        empty_middle_minus_indexes = []
-        empty_middle_plus_indexes = []
+        gap_minus_indexes = []
+        gap_plus_indexes = []
         opened_minus = False
         opened_plus = False
-        potentially_open_in_middle_minus = False
-        potentially_open_in_middle_plus = False
+        potentially_gap_minus = False
+        potentially_gap_plus = False
         other_color_inline_minus = False
         other_color_inline_plus = False
         for i in range(1, Misc.INLINE_TO_WIN):
@@ -568,48 +514,54 @@ class SequenceModel:
             if picked_cell.row_index + i < Misc.GRID_SIZE and picked_cell.col_index - i >= 0:
                 if self.get_btn_color(self.grid[picked_cell.row_index + i][picked_cell.col_index - i]) in [color, "Black"]:
                     if not other_color_inline_minus:
-                        inline_minus_indexes.append(self.Cell(picked_cell.row_index + i, picked_cell.col_index - i))
-                        if potentially_open_in_middle_minus:
+                        inline_cell = self.Cell(picked_cell.row_index + i, picked_cell.col_index - i, picked_cell, 1, -1)
+                        inline_minus_indexes.append(inline_cell)
+                        if potentially_gap_minus:
                             for j in range(1, empty_minus_counter + 1):
-                                empty_middle_minus_indexes.append(self.Cell(picked_cell.row_index + i - j, picked_cell.col_index - i + j))
+                                gap_cell = self.Cell(picked_cell.row_index + i - j, picked_cell.col_index - i + j, picked_cell, 1, -1)
+                                gap_minus_indexes.append(gap_cell)
                                 empty_minus_indexes = [cell for cell in empty_minus_indexes if not (cell.row_index == picked_cell.row_index + i - j and cell.col_index == picked_cell.col_index - i + j)]
-                            potentially_open_in_middle_minus = False
+                            potentially_gap_minus = False
                             empty_minus_counter = 0
                 elif self.get_btn_color(self.grid[picked_cell.row_index + i][picked_cell.col_index - i]) == "White":
                     if not other_color_inline_minus:
-                        potentially_open_in_middle_minus = True
+                        potentially_gap_minus = True
                         if i==4 and not other_color_inline_minus:
                             opened_minus = True
                         else:
                             empty_minus_counter += 1
-                        empty_minus_indexes.append(self.Cell(picked_cell.row_index + i, picked_cell.col_index - i))
+                        empty_cell = self.Cell(picked_cell.row_index + i, picked_cell.col_index - i, picked_cell, 1, -1)
+                        empty_minus_indexes.append(empty_cell)
                 else:
                     other_color_inline_minus = True
-                    potentially_open_in_middle_minus = False
+                    potentially_gap_minus = False
                     opened_minus = False
             
             # down-left
             if picked_cell.row_index - i >= 0 and picked_cell.col_index + i < Misc.GRID_SIZE:
                 if self.get_btn_color(self.grid[picked_cell.row_index - i][picked_cell.col_index + i]) in [color, "Black"]:
                     if not other_color_inline_plus:
-                        inline_plus_indexes.append(self.Cell(picked_cell.row_index - i, picked_cell.col_index + i))
-                        if potentially_open_in_middle_plus:
+                        inline_cell = self.Cell(picked_cell.row_index - i, picked_cell.col_index + i, picked_cell, -1, 1)
+                        inline_plus_indexes.append(inline_cell)
+                        if potentially_gap_plus:
                             for j in range(1, empty_plus_counter + 1):
-                                empty_middle_plus_indexes.append(self.Cell(picked_cell.row_index - i + j, picked_cell.col_index + i - j))
+                                gap_cell = self.Cell(picked_cell.row_index - i + j, picked_cell.col_index + i - j, picked_cell, -1, 1)
+                                gap_plus_indexes.append(gap_cell)
                                 empty_minus_indexes = [cell for cell in empty_minus_indexes if not (cell.row_index == picked_cell.row_index - i + j and cell.col_index == picked_cell.col_index + i - j)]
-                            potentially_open_in_middle_plus = False
+                            potentially_gap_plus = False
                             empty_plus_counter = 0
                 elif self.get_btn_color(self.grid[picked_cell.row_index - i][picked_cell.col_index + i]) == "White":
                     if not other_color_inline_plus:
-                        potentially_open_in_middle_plus = True
+                        potentially_gap_plus = True
                         if i==4 and not other_color_inline_plus:
                             opened_plus = True
                         else:
                             empty_plus_counter += 1
-                        empty_plus_indexes.append(self.Cell(picked_cell.row_index - i, picked_cell.col_index + i))
+                        empty_cell = self.Cell(picked_cell.row_index - i, picked_cell.col_index + i, picked_cell, -1, 1)
+                        empty_plus_indexes.append(empty_cell)
                 else:
                     other_color_inline_plus = True
-                    potentially_open_in_middle_plus = False
+                    potentially_gap_plus = False
                     opened_plus = False
 
         # self.set_inline_dict(color, picked_cell,

@@ -226,8 +226,9 @@ class SequenceModel:
         # -------------------------------
         def extract_valid_cells(inline_list, gap_list, empty_list):
             valid_inline = []
-            empty_middle = []
-            empties_used = 0
+            empty_gap = []
+            empty_ends = []
+            gaps_used = 0
             inline_used = 0
 
             # Rule 1: contiguous inline
@@ -240,39 +241,39 @@ class SequenceModel:
             for g in gap_list:
                 if inline_used >= MAX_INLINE:
                     break
-                if empties_used < MAX_EMPTY_MIDDLE:
-                    empty_middle.append(g)
-                    empties_used += 1
+                if gaps_used < MAX_EMPTY_MIDDLE:
+                    empty_gap.append(g)
+                    gaps_used += 1
                 else:
                     break
 
             # Rule 3: empties that still contribute
+            empties_to_add = inline_used + gaps_used 
             for e in empty_list:
                 if inline_used >= MAX_INLINE:
                     break
-                if empties_used < MAX_EMPTY_MIDDLE:
-                    empty_middle.append(e)
-                    empties_used += 1
+                if empties_to_add < Misc.INLINE_TO_WIN:
+                    empty_ends.append(e)
+                    empties_to_add += 1
                 else:
                     break
 
-            return valid_inline, empty_middle
-
+            return valid_inline, empty_gap, empty_ends
         # -------------------------------
         # Extract based on direction order
         # -------------------------------
         if direction_order[0] == "minus":
-            minus_inline, minus_middle = extract_valid_cells(
+            minus_inline, minus_middle, minus_ends = extract_valid_cells(
                 inline_minus_cells, gap_minus_cells, empty_minus_cells
             )
-            plus_inline, plus_middle = extract_valid_cells(
+            plus_inline, plus_middle, plus_ends = extract_valid_cells(
                 inline_plus_cells, gap_plus_cells, empty_plus_cells
             )
         else:
-            plus_inline, plus_middle = extract_valid_cells(
+            plus_inline, plus_middle, plus_ends = extract_valid_cells(
                 inline_plus_cells, gap_plus_cells, empty_plus_cells
             )
-            minus_inline, minus_middle = extract_valid_cells(
+            minus_inline, minus_middle, minus_ends = extract_valid_cells(
                 inline_minus_cells, gap_minus_cells, empty_minus_cells
             )
 

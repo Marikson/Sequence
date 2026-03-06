@@ -1,6 +1,7 @@
 from unittest import result
 from misc import Misc
 from typing import Iterable, Dict, Any, List
+from math import gcd
 
 class SequenceModel:
 
@@ -11,13 +12,15 @@ class SequenceModel:
             self.col_index = col
             self.relative_position_to_picked_cell = self.get_relative_position(other_cell, dx, dy) if other_cell else 0
 
+        
         def get_relative_position(self, other_cell, dx, dy):
+                
             """
             Computes relative position k such that:
-            self = picked_cell + k * (dx, dy)
+                self = picked_cell + k * (dx, dy)
 
             Returns:
-                int k     → valid relative position
+                int k     → valid relative position (negative on the opposite side of the canonical direction)
                 None      → if not on the same directional line
             """
             dr = self.row_index - other_cell.row_index
@@ -27,33 +30,102 @@ class SequenceModel:
             if dx == 0 and dy == 0:
                 return None
 
-            # Horizontal line
+            # --- Horizontal line (canonical: to the right is positive) ---
             if dx == 0:
                 if dr != 0:
                     return None
-                if dc % dy != 0:
+                # Must be an integer multiple of the step size (abs(dy))
+                step = abs(dy)
+                if step == 0:
                     return None
-                return dc // dy
+                if dc % step != 0:
+                    return None
+                # Use canonical step to the right: k is columns moved
+                return dc // step
 
-            # Vertical line
+            # --- Vertical line (canonical: downward is positive) ---
             if dy == 0:
                 if dc != 0:
                     return None
-                if dr % dx != 0:
+                step = abs(dx)
+                if step == 0:
                     return None
-                return dr // dx
+                if dr % step != 0:
+                    return None
+                # Use canonical step downward: k is rows moved
+                return dr // step
 
-            # Diagonal or general direction
-            if dr % dx != 0 or dc % dy != 0:
+            # --- General direction ---
+            # Check collinearity with (dx, dy)
+            if dr * dy != dc * dx:
                 return None
 
-            k1 = dr // dx
-            k2 = dc // dy
+            # Normalize direction to its minimal integer step (sx, sy)
+            g = gcd(abs(dx), abs(dy))
+            sx, sy = dx // g, dy // g
 
-            if k1 != k2:
-                return None
+            # Canonical orientation: make the first non-zero component positive
+            # (so sign of k reflects geometric side relative to this canonical direction)
+            if sx < 0 or (sx == 0 and sy < 0):
+                sx, sy = -sx, -sy
 
-            return k1
+            # Now k must satisfy dr = k*sx and dc = k*sy
+            if sx != 0:
+                if dr % sx != 0:
+                    return None
+                k = dr // sx
+            else:
+                if sy == 0 or dc % sy != 0:
+                    return None
+                k = dc // sy
+
+            return k
+
+        
+        
+        # def get_relative_position(self, other_cell, dx, dy):
+        #     """
+        #     Computes relative position k such that:
+        #     self = picked_cell + k * (dx, dy)
+
+        #     Returns:
+        #         int k     → valid relative position
+        #         None      → if not on the same directional line
+        #     """
+        #     dr = self.row_index - other_cell.row_index
+        #     dc = self.col_index - other_cell.col_index
+
+        #     # Invalid direction vector
+        #     if dx == 0 and dy == 0:
+        #         return None
+
+        #     # Horizontal line
+        #     if dx == 0:
+        #         if dr != 0:
+        #             return None
+        #         if dc % dy != 0:
+        #             return None
+        #         return dc // dy
+
+        #     # Vertical line
+        #     if dy == 0:
+        #         if dc != 0:
+        #             return None
+        #         if dr % dx != 0:
+        #             return None
+        #         return dr // dx
+
+        #     # Diagonal or general direction
+        #     if dr % dx != 0 or dc % dy != 0:
+        #         return None
+
+        #     k1 = dr // dx
+        #     k2 = dc // dy
+
+        #     if k1 != k2:
+        #         return None
+
+        #     return k1
 
 
         def are_neighbours(self, other_cell):
@@ -193,52 +265,55 @@ class SequenceModel:
             inline_weight = len(inline_list)
             gap_weight = len(gap_list) 
             empty_weight = len(empty_list)
+            universal_weight = 1
+            for c in inline_list:
+                universal_weight *= c.relative_position_to_picked_cell
+            universal_weight = abs(universal_weight) / len(inline_list) if inline_list else 0
+                
+            return inline_weight, gap_weight, empty_weight, universal_weight
 
-            return inline_weight, gap_weight, empty_weight
+        minus_inline_weight, minus_gap_weight, minus_empty_weight, minus_universal_weight = calculate_weights(inline_minus_cells, gap_minus_cells, empty_minus_cells)
+        plus_inline_weight, plus_gap_weight, plus_empty_weight, plus_universal_weight = calculate_weights(inline_plus_cells, gap_plus_cells, empty_plus_cells)
 
-        minus_inline_weight, minus_gap_weight, minus_empty_weight = calculate_weights(inline_minus_cells, gap_minus_cells, empty_minus_cells)
-        plus_inline_weight, plus_gap_weight, plus_empty_weight = calculate_weights(inline_plus_cells, gap_plus_cells, empty_plus_cells)
-
-        # -------------------------------
-        # Decide preferred processing order
-        # -------------------------------
-
-        if minus_inline_weight > plus_inline_weight:
-            direction_order = ["minus", "plus"]
-        elif plus_inline_weight > minus_inline_weight:
-            direction_order = ["plus", "minus"]
+        if minus_universal_weight < plus_universal_weight:
+            universal_direction_order = ["minus", "plus"]
         else:
-            if minus_gap_weight < plus_gap_weight:
-                direction_order = ["minus", "plus"]
-            elif plus_gap_weight < minus_gap_weight:
-                direction_order = ["plus", "minus"]
-            else:
-                if minus_empty_weight < plus_empty_weight:
-                    direction_order = ["minus", "plus"]
-                elif plus_empty_weight < minus_empty_weight:
-                    direction_order = ["plus", "minus"]
-                else:
-                    direction_order = ["minus", "plus"]
+            universal_direction_order = ["plus", "minus"]
+        
+
+        # if minus_inline_weight > plus_inline_weight:
+        #     direction_order = ["minus", "plus"]
+        # elif plus_inline_weight > minus_inline_weight:
+        #     direction_order = ["plus", "minus"]
+        # else:
+        #     if minus_gap_weight < plus_gap_weight:
+        #         direction_order = ["minus", "plus"]
+        #     elif plus_gap_weight < minus_gap_weight:
+        #         direction_order = ["plus", "minus"]
+        #     else:
+        #         if minus_empty_weight < plus_empty_weight:
+        #             direction_order = ["minus", "plus"]
+        #         elif plus_empty_weight < minus_empty_weight:
+        #             direction_order = ["plus", "minus"]
+        #         else:
+        #             direction_order = ["minus", "plus"]
             
 
         def extend_sequence(inline_cells, gap_cells, sequence_pattern, sequence_cells, sequence_starting_side):
             sorted_all_cells = sorted(inline_cells + gap_cells, key=lambda c: c.relative_position_to_picked_cell, reverse=True)
-            sorted_inline_cells = sorted(inline_cells, key=lambda c: c.relative_position_to_picked_cell)
-            sorted_gap_cells = sorted(gap_cells, key=lambda c: c.relative_position_to_picked_cell)
+            sorted_inline_cells = sorted(inline_cells, key=lambda c: c.relative_position_to_picked_cell)            
+            closet_inline_cell = sorted_inline_cells[0] if sorted_inline_cells else None
+            closest_inline_cell_rel_pos = abs(closet_inline_cell.relative_position_to_picked_cell) if closet_inline_cell else -5
             
             
-            closet_inline_cell = sorted_inline_cells[0]if sorted_inline_cells else None
-            furthest_inline_cell = sorted_inline_cells[-1] if sorted_inline_cells else None
-            # if closet_inline_cell != furthest_inline_cell:
             sorted_sequence_cells = sorted(sequence_cells, key=lambda c: c.relative_position_to_picked_cell)
             if sequence_starting_side == "minus":
                 sequence_starting_cell = sorted_sequence_cells[-1] if sorted_sequence_cells else None
             else:
                 sequence_starting_cell = sorted_sequence_cells[0] if sorted_sequence_cells else None
-            sequence_starting_cell_rel_pos = abs(sequence_starting_cell.relative_position_to_picked_cell) if sequence_starting_cell else None
+            sequence_starting_cell_rel_pos = sequence_starting_cell.relative_position_to_picked_cell if sequence_starting_cell else None
             
-            closest_inline_cell_rel_pos = abs(closet_inline_cell.relative_position_to_picked_cell) if closet_inline_cell else -5
-            extension_limit = closest_inline_cell_rel_pos - sequence_starting_cell_rel_pos
+            extension_limit = abs(closest_inline_cell_rel_pos - sequence_starting_cell_rel_pos)
             
             empty_cells = []
             sorted_all_cells_limited = sorted_all_cells[-extension_limit:] if extension_limit > 0 else sorted_all_cells
@@ -282,7 +357,7 @@ class SequenceModel:
         sequence_pattern = ["inline"]
         sequence_cells = [cell]
         gaps_to_empty_cells = []
-        if direction_order[0] == "minus":
+        if universal_direction_order[0] == "minus":
             sequence_pattern, sequence_cells = process_cells(inline_minus_cells, gap_minus_cells, sequence_pattern, sequence_cells)
             sequence_pattern, sequence_cells, gaps_to_empty_cells = extend_sequence(inline_plus_cells, gap_plus_cells, sequence_pattern, sequence_cells, "minus")
             if gaps_to_empty_cells:
@@ -297,7 +372,7 @@ class SequenceModel:
         inline_cells = []
         gap_counter = 0
         gap_cells = []
-        empty_tails = []
+        
         for i in range(len(sequence_pattern)):
             if sequence_pattern[i] == "inline":
                 inline_cells.append(sequence_cells[i])
@@ -306,30 +381,19 @@ class SequenceModel:
                 gap_cells.append(sequence_cells[i])
                 gap_counter += 1
 
-        
+        empty_tails = []
         open_minus = False
         open_plus = False
         if len(sequence_cells) < Misc.INLINE_TO_WIN:
-            limit = Misc.INLINE_TO_WIN - len(sequence_cells) + 1
-            i = 0
-            while (empty_plus_cells or empty_minus_cells) and limit:
-                if direction_order[0] == "minus":
-                    if i < len(empty_minus_cells):
-                        empty_cell = empty_minus_cells[i]
-                        open_minus = True
-                    elif i < len(empty_plus_cells):
-                        empty_cell = empty_plus_cells[i]
-                        open_plus = True
-                else:
-                    if i < len(empty_plus_cells):
-                        empty_cell = empty_plus_cells[i]
-                        open_plus = True
-                    elif i < len(empty_minus_cells):
-                        empty_cell = empty_minus_cells[i]
-                        open_minus = True
-                empty_tails.append(empty_cell)
-                limit -= 1
-                i += 1
+            limit = Misc.INLINE_TO_WIN - len(sequence_cells)
+            for i in range(0, limit):
+                if i < len(empty_minus_cells):
+                    empty_tails.append(empty_minus_cells[i])
+                    open_minus = True
+                if i < len(empty_plus_cells):
+                    empty_tails.append(empty_plus_cells[i])
+                    open_plus = True
+                
         
         one_ended = open_minus or open_plus
         two_ended = open_minus and open_plus

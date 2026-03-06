@@ -221,9 +221,50 @@ class SequenceModel:
                     direction_order = ["minus", "plus"]
             
 
+        def extend_sequence(inline_cells, gap_cells, sequence_pattern, sequence_cells, sequence_starting_side):
+            sorted_all_cells = sorted(inline_cells + gap_cells, key=lambda c: c.relative_position_to_picked_cell, reverse=True)
+            sorted_inline_cells = sorted(inline_cells, key=lambda c: c.relative_position_to_picked_cell)
+            sorted_gap_cells = sorted(gap_cells, key=lambda c: c.relative_position_to_picked_cell)
+            
+            
+            closet_inline_cell = sorted_inline_cells[0]if sorted_inline_cells else None
+            furthest_inline_cell = sorted_inline_cells[-1] if sorted_inline_cells else None
+            # if closet_inline_cell != furthest_inline_cell:
+            sorted_sequence_cells = sorted(sequence_cells, key=lambda c: c.relative_position_to_picked_cell)
+            if sequence_starting_side == "minus":
+                sequence_starting_cell = sorted_sequence_cells[-1] if sorted_sequence_cells else None
+            else:
+                sequence_starting_cell = sorted_sequence_cells[0] if sorted_sequence_cells else None
+            sequence_starting_cell_rel_pos = abs(sequence_starting_cell.relative_position_to_picked_cell) if sequence_starting_cell else None
+            
+            closest_inline_cell_rel_pos = abs(closet_inline_cell.relative_position_to_picked_cell) if closet_inline_cell else -5
+            extension_limit = closest_inline_cell_rel_pos - sequence_starting_cell_rel_pos
+            
+            empty_cells = []
+            sorted_all_cells_limited = sorted_all_cells[-extension_limit:] if extension_limit > 0 else sorted_all_cells
+                
+            
+            was_inline = False
+            for c in sorted_all_cells_limited:
+                if len(sequence_cells) < Misc.INLINE_TO_WIN:
+                    if abs(c.relative_position_to_picked_cell) <= extension_limit:
+                        if c in inline_cells:
+                            sequence_pattern.append("inline")
+                            sequence_cells.append(c)
+                            was_inline = True
+                        elif c in gap_cells and was_inline:
+                            sequence_pattern.append("gap")
+                            sequence_cells.append(c)
+                        else:
+                            empty_cells.append(c)         
+            
+            return sequence_pattern, sequence_cells, empty_cells
+
 
         def process_cells(inline_cells, gap_cells, sequence_pattern, sequence_cells):
             sorted_all_cells = sorted(inline_cells + gap_cells, key=lambda c: c.relative_position_to_picked_cell)
+            
+            
             for c in sorted_all_cells:
                 if len(sequence_cells) < Misc.INLINE_TO_WIN:
                     if c in inline_cells:
@@ -232,9 +273,6 @@ class SequenceModel:
                     elif c in gap_cells:
                         sequence_pattern.append("gap")
                         sequence_cells.append(c)
-                    # elif c in empty_cells:
-                    #     sequence_pattern.append("empty")
-                    #     sequence_cells.append(c)
 
             return sequence_pattern, sequence_cells
             
@@ -243,15 +281,19 @@ class SequenceModel:
         # -------------------------------
         sequence_pattern = ["inline"]
         sequence_cells = [cell]
+        gaps_to_empty_cells = []
         if direction_order[0] == "minus":
             sequence_pattern, sequence_cells = process_cells(inline_minus_cells, gap_minus_cells, sequence_pattern, sequence_cells)
-            sequence_pattern, sequence_cells = process_cells(inline_plus_cells, gap_plus_cells, sequence_pattern, sequence_cells)
+            sequence_pattern, sequence_cells, gaps_to_empty_cells = extend_sequence(inline_plus_cells, gap_plus_cells, sequence_pattern, sequence_cells, "minus")
+            if gaps_to_empty_cells:
+                empty_plus_cells = gaps_to_empty_cells
         else:
             sequence_pattern, sequence_cells = process_cells(inline_plus_cells, gap_plus_cells, sequence_pattern, sequence_cells)
-            sequence_pattern, sequence_cells = process_cells(inline_minus_cells, gap_minus_cells, sequence_pattern, sequence_cells)
-        
+            sequence_pattern, sequence_cells, gaps_to_empty_cells = extend_sequence(inline_minus_cells, gap_minus_cells, sequence_pattern, sequence_cells, "plus")
+            if gaps_to_empty_cells:
+                empty_minus_cells = gaps_to_empty_cells
 
-        inline = 1
+        inline = 0
         inline_cells = []
         gap_counter = 0
         gap_cells = []
@@ -259,7 +301,7 @@ class SequenceModel:
         for i in range(len(sequence_pattern)):
             if sequence_pattern[i] == "inline":
                 inline_cells.append(sequence_cells[i])
-                inline =+ 1
+                inline += 1
             elif sequence_pattern[i] == "gap":
                 gap_cells.append(sequence_cells[i])
                 gap_counter += 1
@@ -268,7 +310,7 @@ class SequenceModel:
         open_minus = False
         open_plus = False
         if len(sequence_cells) < Misc.INLINE_TO_WIN:
-            limit = Misc.INLINE_TO_WIN - len(sequence_cells)
+            limit = Misc.INLINE_TO_WIN - len(sequence_cells) + 1
             i = 0
             while (empty_plus_cells or empty_minus_cells) and limit:
                 if direction_order[0] == "minus":

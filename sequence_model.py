@@ -182,136 +182,129 @@ class SequenceModel:
     
     
     
-    def determine_inline(
-        self, cell,
-        opened_minus, opened_plus,
+    def determine_inline(self, cell,
         inline_minus_cells, inline_plus_cells,
         gap_minus_cells, gap_plus_cells,
-        empty_minus_cells, empty_plus_cells
-    ):
-        MAX_INLINE = 5
-        MAX_EMPTY_MIDDLE = 3
-
+        empty_minus_cells, empty_plus_cells):
         # -------------------------------
         # Weight calculation for direction
         # -------------------------------
         def calculate_weights(inline_list, gap_list, empty_list):
-            potential_weight = len(inline_list) + len(gap_list)
-            empty_penalty = len(gap_list) + len(empty_list)
-            return potential_weight, empty_penalty
+            inline_weight = len(inline_list)
+            gap_weight = len(gap_list) 
+            empty_weight = len(empty_list)
 
-        minus_p, minus_e = calculate_weights(
-            inline_minus_cells, gap_minus_cells, empty_minus_cells
-        )
-        plus_p, plus_e = calculate_weights(
-            inline_plus_cells, gap_plus_cells, empty_plus_cells
-        )
+            return inline_weight, gap_weight, empty_weight
+
+        minus_inline_weight, minus_gap_weight, minus_empty_weight = calculate_weights(inline_minus_cells, gap_minus_cells, empty_minus_cells)
+        plus_inline_weight, plus_gap_weight, plus_empty_weight = calculate_weights(inline_plus_cells, gap_plus_cells, empty_plus_cells)
 
         # -------------------------------
         # Decide preferred processing order
         # -------------------------------
-        if minus_p > plus_p:
+
+        if minus_inline_weight > plus_inline_weight:
             direction_order = ["minus", "plus"]
-        elif plus_p > minus_p:
+        elif plus_inline_weight > minus_inline_weight:
             direction_order = ["plus", "minus"]
         else:
-            # primary tie → use secondary weight
-            if minus_e < plus_e:
+            if minus_gap_weight < plus_gap_weight:
                 direction_order = ["minus", "plus"]
-            else:
+            elif plus_gap_weight < minus_gap_weight:
                 direction_order = ["plus", "minus"]
-
-        # -------------------------------
-        # Helper: extract usable inline + middle empties
-        # -------------------------------
-        def extract_valid_cells(inline_list, gap_list, empty_list):
-            valid_inline = []
-            empty_gap = []
-            empty_ends = []
-            gaps_used = 0
-            inline_used = 0
-
-            # Rule 1: contiguous inline
-            for c in inline_list:
-                if inline_used < MAX_INLINE:
-                    valid_inline.append(c)
-                    inline_used += 1
-
-            # Rule 2: gaps that can still be bridged
-            for g in gap_list:
-                if inline_used >= MAX_INLINE:
-                    break
-                if gaps_used < MAX_EMPTY_MIDDLE:
-                    empty_gap.append(g)
-                    gaps_used += 1
+            else:
+                if minus_empty_weight < plus_empty_weight:
+                    direction_order = ["minus", "plus"]
+                elif plus_empty_weight < minus_empty_weight:
+                    direction_order = ["plus", "minus"]
                 else:
-                    break
+                    direction_order = ["minus", "plus"]
+            
 
-            # Rule 3: empties that still contribute
-            empties_to_add = inline_used + gaps_used 
-            for e in empty_list:
-                if inline_used >= MAX_INLINE:
-                    break
-                if empties_to_add < Misc.INLINE_TO_WIN:
-                    empty_ends.append(e)
-                    empties_to_add += 1
-                else:
-                    break
 
-            return valid_inline, empty_gap, empty_ends
+        def process_cells(inline_cells, gap_cells, sequence_pattern, sequence_cells):
+            sorted_all_cells = sorted(inline_cells + gap_cells, key=lambda c: c.relative_position_to_picked_cell)
+            for c in sorted_all_cells:
+                if len(sequence_cells) < Misc.INLINE_TO_WIN:
+                    if c in inline_cells:
+                        sequence_pattern.append("inline")
+                        sequence_cells.append(c)
+                    elif c in gap_cells:
+                        sequence_pattern.append("gap")
+                        sequence_cells.append(c)
+                    # elif c in empty_cells:
+                    #     sequence_pattern.append("empty")
+                    #     sequence_cells.append(c)
+
+            return sequence_pattern, sequence_cells
+            
         # -------------------------------
-        # Extract based on direction order
+        # Process cells from preferred direction first
         # -------------------------------
+        sequence_pattern = ["inline"]
+        sequence_cells = [cell]
         if direction_order[0] == "minus":
-            minus_inline, minus_middle, minus_ends = extract_valid_cells(
-                inline_minus_cells, gap_minus_cells, empty_minus_cells
-            )
-            plus_inline, plus_middle, plus_ends = extract_valid_cells(
-                inline_plus_cells, gap_plus_cells, empty_plus_cells
-            )
+            sequence_pattern, sequence_cells = process_cells(inline_minus_cells, gap_minus_cells, sequence_pattern, sequence_cells)
+            sequence_pattern, sequence_cells = process_cells(inline_plus_cells, gap_plus_cells, sequence_pattern, sequence_cells)
         else:
-            plus_inline, plus_middle, plus_ends = extract_valid_cells(
-                inline_plus_cells, gap_plus_cells, empty_plus_cells
-            )
-            minus_inline, minus_middle, minus_ends = extract_valid_cells(
-                inline_minus_cells, gap_minus_cells, empty_minus_cells
-            )
+            sequence_pattern, sequence_cells = process_cells(inline_plus_cells, gap_plus_cells, sequence_pattern, sequence_cells)
+            sequence_pattern, sequence_cells = process_cells(inline_minus_cells, gap_minus_cells, sequence_pattern, sequence_cells)
+        
 
-        # -------------------------------
-        # Merge inline sequence
-        # -------------------------------
-        inline_cells = (
-            list(reversed(minus_inline)) +
-            [cell] +
-            plus_inline
-        )
+        inline = 1
+        inline_cells = []
+        gap_counter = 0
+        gap_cells = []
+        empty_tails = []
+        for i in range(len(sequence_pattern)):
+            if sequence_pattern[i] == "inline":
+                inline_cells.append(sequence_cells[i])
+                inline =+ 1
+            elif sequence_pattern[i] == "gap":
+                gap_cells.append(sequence_cells[i])
+                gap_counter += 1
 
-        inline_len = min(len(inline_cells), MAX_INLINE)
+        
+        open_minus = False
+        open_plus = False
+        if len(sequence_cells) < Misc.INLINE_TO_WIN:
+            limit = Misc.INLINE_TO_WIN - len(sequence_cells)
+            i = 0
+            while (empty_plus_cells or empty_minus_cells) and limit:
+                if direction_order[0] == "minus":
+                    if i < len(empty_minus_cells):
+                        empty_cell = empty_minus_cells[i]
+                        open_minus = True
+                    elif i < len(empty_plus_cells):
+                        empty_cell = empty_plus_cells[i]
+                        open_plus = True
+                else:
+                    if i < len(empty_plus_cells):
+                        empty_cell = empty_plus_cells[i]
+                        open_plus = True
+                    elif i < len(empty_minus_cells):
+                        empty_cell = empty_minus_cells[i]
+                        open_minus = True
+                empty_tails.append(empty_cell)
+                limit -= 1
+                i += 1
+        
+        one_ended = open_minus or open_plus
+        two_ended = open_minus and open_plus
+        open_in_middle = gap_counter > 0
+                
 
-        # Middle empties
-        empty_middle_cells = minus_middle + plus_middle
-        empty_middle_counter = len(empty_middle_cells)
 
-        # Tail empties
-        empty_tails = (
-            empty_minus_cells[len(minus_middle):] +
-            empty_plus_cells[len(plus_middle):]
-        )
-
-        # Opening characteristics
-        two_ended = opened_minus and opened_plus
-        one_ended = (opened_minus != opened_plus)
-        open_in_middle = empty_middle_counter > 0
 
         return {
-            "inline": inline_len,
+            "inline": inline,
             "open_in_middle": open_in_middle,
-            "empty_middle_counter": empty_middle_counter,
+            "empty_middle_counter": gap_counter,
             "one_ended": one_ended,
             "two_ended": two_ended,
             "inline_cells": inline_cells,
             "empty_cells": empty_tails,
-            "empty_middle_cells": empty_middle_cells
+            "empty_middle_cells": gap_cells
         }
 
 
@@ -342,11 +335,11 @@ class SequenceModel:
         
         if len(inline_minus_cells) + len(inline_plus_cells) + 1 == 1:
             return          
-
-        evaluated = self.determine_inline(cell, opened_minus, opened_plus,
-                            inline_minus_cells, inline_plus_cells,
-                            list(reversed(gap_minus_cells)), list(reversed(gap_plus_cells)),
-                            empty_minus_cells, empty_plus_cells)
+        merged_cells = [cell] + inline_minus_cells + inline_plus_cells + gap_minus_cells + gap_plus_cells
+        sorted_cells = sorted(merged_cells, key=lambda c: (c.relative_position_to_picked_cell))
+        evaluated = self.determine_inline(cell,inline_minus_cells, inline_plus_cells,
+                                          list(reversed(gap_minus_cells)), list(reversed(gap_plus_cells)),
+                                          empty_minus_cells, empty_plus_cells)
 
         
         self.update_inline_dict(color, evaluated)

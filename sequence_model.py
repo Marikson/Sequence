@@ -149,8 +149,8 @@ class SequenceModel:
 
     
     def check_winner(self):
-        for r in range(Misc.GRID_MAX_INDEX):
-            for c in range(Misc.GRID_MAX_INDEX):
+        for r in range(Misc.GRID_SIZE):
+            for c in range(Misc.GRID_SIZE):
                 color = self.get_btn_color(self.grid[r][c])
                 if color in ("White"):
                     continue

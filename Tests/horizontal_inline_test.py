@@ -175,7 +175,36 @@ class InlinePerColorHorizontalMinusNOGap(unittest.TestCase):
         
         winner = test_game.model.check_winner()
         self.assertEqual(winner, "Red")
-                
+   
+    def test_inline_minus_with_corner_as_4(self):
+        test_field = tk.Tk()
+        test_field.title("Test Field")
+    
+        test_game = Sequence()
+        test_game.create_grid(test_field)
+
+        for col in range(5, 9):
+            test_game.model.on_cell_click(0, col)
+            test_game.model.set_color("Red")
+        
+        color, picked_cell, opened_minus, opened_plus, inline_minus_cells, inline_plus_cells, \
+            gap_minus_cells, gap_plus_cells, empty_minus_cells, empty_plus_cells \
+            = test_game.model.check_inline_per_color_horizontal("Red")
+        self.assertEqual(color, "Red")
+        self.assertEqual(picked_cell.row_index, 0)
+        self.assertEqual(picked_cell.col_index, 8)
+        self.assertEqual(opened_minus, True)
+        self.assertEqual(opened_plus, False)
+        self.assertEqual(len(inline_minus_cells), 3)
+        self.assertEqual(len(inline_plus_cells), 1)
+        self.assertEqual(len(gap_minus_cells), 0)
+        self.assertEqual(len(gap_plus_cells), 0)
+        self.assertEqual(len(empty_minus_cells), 1)
+        self.assertEqual(len(empty_plus_cells), 0)
+        
+        winner = test_game.model.check_winner()
+        self.assertEqual(winner, "Red")          
+   
    
 class InlinePerColorHorizontalMinusGapped(unittest.TestCase):       
     def test_1_inline_minus_1_gap(self):
@@ -359,8 +388,8 @@ class InlinePerColorHorizontalMinusGapped(unittest.TestCase):
     
         winner = test_game.model.check_winner()
         self.assertEqual(winner, False)   
-        
-        
+          
+             
 class InlinePerColorHorizontalPlusNOGap(unittest.TestCase):          
     def test_0_inline(self):
         test_field = tk.Tk()
@@ -534,6 +563,35 @@ class InlinePerColorHorizontalPlusNOGap(unittest.TestCase):
         winner = test_game.model.check_winner()
         self.assertEqual(winner, "Red")
         
+    def test_inline_minus_with_corner_as_4(self):
+        test_field = tk.Tk()
+        test_field.title("Test Field")
+    
+        test_game = Sequence()
+        test_game.create_grid(test_field)
+
+        for col in range(4, 0, -1):
+            test_game.model.on_cell_click(0, col)
+            test_game.model.set_color("Red")
+        
+        color, picked_cell, opened_minus, opened_plus, inline_minus_cells, inline_plus_cells, \
+            gap_minus_cells, gap_plus_cells, empty_minus_cells, empty_plus_cells \
+            = test_game.model.check_inline_per_color_horizontal("Red")
+        self.assertEqual(color, "Red")
+        self.assertEqual(picked_cell.row_index, 0)
+        self.assertEqual(picked_cell.col_index, 1)
+        self.assertEqual(opened_minus, False)
+        self.assertEqual(opened_plus, True)
+        self.assertEqual(len(inline_minus_cells), 1)
+        self.assertEqual(len(inline_plus_cells), 3)
+        self.assertEqual(len(gap_minus_cells), 0)
+        self.assertEqual(len(gap_plus_cells), 0)
+        self.assertEqual(len(empty_minus_cells), 0)
+        self.assertEqual(len(empty_plus_cells), 1)
+        
+        winner = test_game.model.check_winner()
+        self.assertEqual(winner, "Red")
+
 
 class InlinePerColorHorizontalPlusGapped(unittest.TestCase):       
     def test_1_inline_plus_1_gap(self):

@@ -1,6 +1,6 @@
 class Misc:
-    GRID_SIZE = 10   # 10x10 grid
-    CELL_SIZE = 40   # pixel size of each cell
+    GRID_SIZE = 10
+    GRID_MAX_INDEX = GRID_SIZE - 1
     PROBABILITY_TO_COLOR_FIELD = 16 / 104
     WILLING_TO_BLOCK_PROBABILITY = 0.25
     INLINE_TO_WIN = 5

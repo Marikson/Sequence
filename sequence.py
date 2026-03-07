@@ -13,7 +13,8 @@ class Sequence:
         for r in range(Misc.GRID_SIZE):
             row = []
             for c in range(Misc.GRID_SIZE):
-                if (r == 0 and c == 0) or (r == 0 and c == Misc.GRID_SIZE - 1) or (r == Misc.GRID_SIZE - 1 and c == 0) or (r == Misc.GRID_SIZE - 1 and c == Misc.GRID_SIZE - 1):
+                if (r == 0 and c == 0) or (r == 0 and c == Misc.GRID_MAX_INDEX) or \
+                    (r == Misc.GRID_MAX_INDEX and c == 0) or (r == Misc.GRID_MAX_INDEX and c == Misc.GRID_MAX_INDEX):
                     btn = tk.Button(
                         sequence_field,
                         width=4, height=2,
@@ -34,7 +35,7 @@ class Sequence:
         self.model.grid = cells
 
         # Make rows and columns resize properly
-        for i in range(Misc.GRID_SIZE):
+        for i in range(Misc.GRID_MAX_INDEX):
             sequence_field.grid_rowconfigure(i, weight=1)
             sequence_field.grid_columnconfigure(i, weight=1)
     
@@ -78,10 +79,8 @@ class Sequence:
             
             self.cell_picking()
             self.model.set_color(current_color)
-            self.model.check_inline_per_color_horizontal(current_color)
-            self.model.check_inline_per_color_vertical(current_color)
-            self.model.check_inline_per_color_diagonal(current_color)
-            self.model.check_inline_per_color_inverted_diagonal(current_color)
+            self.model.check_inline_per_color(current_color)
+            
 
             # color_probability = round(self.model.calculate_win_probability(current_color), 3)
             # self.represent_probability(color_probability)

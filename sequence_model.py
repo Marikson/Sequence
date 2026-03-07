@@ -82,16 +82,16 @@ class SequenceModel:
 
 
 
-        def are_neighbours(self, other_cell):
-            for i in range(self.row_index - 1, self.row_index + 2):
-                if i < 0 or i >= Misc.GRID_SIZE:
-                    continue
-                for j in range(self.col_index - 1, self.col_index + 2):
-                    if j < 0 or j >= Misc.GRID_SIZE:
-                        continue
-                    if i == other_cell.row_index and j == other_cell.col_index:
-                        return True
-            return False
+        # def are_neighbours(self, other_cell):
+        #     for i in range(self.row_index - 1, self.row_index + 2):
+        #         if i < 0 or i >= Misc.GRID_SIZE:
+        #             continue
+        #         for j in range(self.col_index - 1, self.col_index + 2):
+        #             if j < 0 or j >= Misc.GRID_SIZE:
+        #                 continue
+        #             if i == other_cell.row_index and j == other_cell.col_index:
+        #                 return True
+        #     return False
 
     def __init__(self):
         self.grid = None
@@ -149,14 +149,14 @@ class SequenceModel:
 
     
     def check_winner(self):
-        for r in range(Misc.GRID_SIZE):
-            for c in range(Misc.GRID_SIZE):
+        for r in range(Misc.GRID_MAX_INDEX):
+            for c in range(Misc.GRID_MAX_INDEX):
                 color_code = self.get_btn_color(self.grid[r][c])
                 if color_code in ("White"):
                     continue
 
                 # Down
-                if c <= Misc.GRID_SIZE - Misc.INLINE_TO_WIN:
+                if c <= Misc.GRID_MAX_INDEX - Misc.INLINE_TO_WIN:
                     if all(self.get_btn_color(self.grid[r][c + i]) in [color_code, "Black"] for i in range(Misc.INLINE_TO_WIN)):
                         return color_code
                     
@@ -166,7 +166,7 @@ class SequenceModel:
                         return color_code
 
                 # Right
-                if r <= Misc.GRID_SIZE - Misc.INLINE_TO_WIN:
+                if r <= Misc.GRID_MAX_INDEX - Misc.INLINE_TO_WIN:
                     if all(self.get_btn_color(self.grid[r + i][c]) in [color_code, "Black"] for i in range(Misc.INLINE_TO_WIN)):
                         return color_code
                     
@@ -176,17 +176,17 @@ class SequenceModel:
                         return color_code
 
                 # down-right
-                if r <= Misc.GRID_SIZE - Misc.INLINE_TO_WIN and c <= Misc.GRID_SIZE - Misc.INLINE_TO_WIN:
+                if r <= Misc.GRID_MAX_INDEX - Misc.INLINE_TO_WIN and c <= Misc.GRID_MAX_INDEX - Misc.INLINE_TO_WIN:
                     if all(self.get_btn_color(self.grid[r + i][c + i]) in [color_code, "Black"] for i in range(Misc.INLINE_TO_WIN)):
                         return color_code
 
                 # up-right
-                if r >= 4 and c <= Misc.GRID_SIZE - Misc.INLINE_TO_WIN:
+                if r >= 4 and c <= Misc.GRID_MAX_INDEX - Misc.INLINE_TO_WIN:
                     if all(self.get_btn_color(self.grid[r - i][c + i]) in [color_code, "Black"] for i in range(Misc.INLINE_TO_WIN)):
                         return color_code
                     
                 # down-left
-                if r <= Misc.GRID_SIZE - Misc.INLINE_TO_WIN and c >= 4:
+                if r <= Misc.GRID_MAX_INDEX - Misc.INLINE_TO_WIN and c >= 4:
                     if all(self.get_btn_color(self.grid[r + i][c - i]) in [color_code, "Black"] for i in range(Misc.INLINE_TO_WIN)):
                         return color_code
 
@@ -204,8 +204,6 @@ class SequenceModel:
             self.grid[self.picked_cell.row_index][self.picked_cell.col_index].config(state="disabled")
 
 
-    
-    
     
     def determine_inline(self, cell,
         inline_minus_cells, inline_plus_cells,
@@ -368,10 +366,6 @@ class SequenceModel:
         }
 
 
-
-
-
-
     def get_empty_indexes(self, indexes_tracked, empty_minus_indexes, empty_plus_indexes):
         i = 0
         empty_indexes = []
@@ -395,8 +389,7 @@ class SequenceModel:
         
         if len(inline_minus_cells) + len(inline_plus_cells) + 1 == 1:
             return          
-        merged_cells = [cell] + inline_minus_cells + inline_plus_cells + gap_minus_cells + gap_plus_cells
-        sorted_cells = sorted(merged_cells, key=lambda c: (c.relative_position_to_picked_cell))
+
         evaluated = self.determine_inline(cell,inline_minus_cells, inline_plus_cells,
                                           list(reversed(gap_minus_cells)), list(reversed(gap_plus_cells)),
                                           empty_minus_cells, empty_plus_cells)
@@ -451,6 +444,28 @@ class SequenceModel:
         # return color_who_picked_probability
         
 
+    def check_inline_per_color(self, color):
+        color, picked_cell, opened_minus, opened_plus, inline_minus_cells, inline_plus_cells, \
+        gap_minus_cells, gap_plus_cells, empty_minus_cells, empty_plus_cells \
+                = self.check_inline_per_color_horizontal(color)
+        self.set_inline_dict(color, picked_cell, opened_minus, opened_plus, inline_minus_cells, inline_plus_cells, gap_minus_cells, gap_plus_cells, empty_minus_cells, empty_plus_cells)
+        
+        color, picked_cell, opened_minus, opened_plus, inline_minus_cells, inline_plus_cells, \
+        gap_minus_cells, gap_plus_cells, empty_minus_cells, empty_plus_cells \
+                = self.check_inline_per_color_vertical(color)
+        self.set_inline_dict(color, picked_cell, opened_minus, opened_plus, inline_minus_cells, inline_plus_cells, gap_minus_cells, gap_plus_cells, empty_minus_cells, empty_plus_cells)
+        
+        color, picked_cell, opened_minus, opened_plus, inline_minus_cells, inline_plus_cells, \
+        gap_minus_cells, gap_plus_cells, empty_minus_cells, empty_plus_cells \
+                = self.check_inline_per_color_diagonal(color)
+        self.set_inline_dict(color, picked_cell, opened_minus, opened_plus, inline_minus_cells, inline_plus_cells, gap_minus_cells, gap_plus_cells, empty_minus_cells, empty_plus_cells)
+        
+        color, picked_cell, opened_minus, opened_plus, inline_minus_cells, inline_plus_cells, \
+        gap_minus_cells, gap_plus_cells, empty_minus_cells, empty_plus_cells \
+                = self.check_inline_per_color_inverted_diagonal(color)
+        self.set_inline_dict(color, picked_cell, opened_minus, opened_plus, inline_minus_cells, inline_plus_cells, gap_minus_cells, gap_plus_cells, empty_minus_cells, empty_plus_cells)
+    
+    
 
     def check_inline_per_color_horizontal(self, color):
         # Horizontal
@@ -485,7 +500,7 @@ class SequenceModel:
                 elif self.get_btn_color(self.grid[self.picked_cell.row_index][self.picked_cell.col_index - i]) == "White":
                     if not other_color_inline_minus:
                         potentially_gap_minus = True
-                        if i==4 and not other_color_inline_minus:
+                        if (i==4 or self.picked_cell.col_index + i == 0) and not other_color_inline_minus:
                             opened_minus = True
                         else:
                             empty_minus_counter += 1
@@ -498,7 +513,7 @@ class SequenceModel:
                     opened_minus = False
  
             # Right
-            if self.picked_cell.col_index + i < Misc.GRID_SIZE:
+            if self.picked_cell.col_index + i <= Misc.GRID_MAX_INDEX:
                 if self.get_btn_color(self.grid[self.picked_cell.row_index][self.picked_cell.col_index + i]) in [color, "Black"]:
                     if not other_color_inline_plus:
                         inline_cell = self.Cell(self.picked_cell.row_index, self.picked_cell.col_index + i, self.picked_cell, 0, 1)
@@ -513,7 +528,7 @@ class SequenceModel:
                 elif self.get_btn_color(self.grid[self.picked_cell.row_index][self.picked_cell.col_index + i]) == "White":
                     if not other_color_inline_plus:
                         potentially_gap_plus = True
-                        if i==4 and not other_color_inline_plus:
+                        if (i==4 or self.picked_cell.col_index + i == Misc.GRID_MAX_INDEX) and not other_color_inline_plus:
                             opened_plus = True
                         else:
                             empty_plus_counter += 1
@@ -525,17 +540,41 @@ class SequenceModel:
                     potentially_gap_plus = False
                     opened_plus = False
                     
-        return color, self.picked_cell, opened_minus, opened_plus, \
+        return color, self.picked_cell,\
+                opened_minus, opened_plus, \
                 inline_minus_cells, inline_plus_cells, \
                 gap_minus_cells, gap_plus_cells, \
                 empty_minus_cells, empty_plus_cells
-        
-        self.set_inline_dict(color, self.picked_cell,
-                            opened_minus, opened_plus,
-                            inline_minus_cells, inline_plus_cells,
-                            gap_minus_cells, gap_plus_cells,
-                            empty_minus_cells, empty_plus_cells)
+    
 
+
+    def cehck_inline_per_color_multi(self, color, dx, dy):
+        if dx < 0 and dy == 0:
+            # Horizontal miuns
+            return self.check_inline_per_color_horizontal(color)
+        elif dx > 0 and dy == 0:
+            # Horizontal plus
+            return self.check_inline_per_color_horizontal(color)
+        elif dx == 0 and dy < 0:
+            # Vertical minus
+            return self.check_inline_per_color_vertical(color)
+        elif dx == 0 and dy > 0:
+            # Vertical plus
+            return self.check_inline_per_color_vertical(color)
+        elif dx < 0 and dy < 0:
+            # Diagonal minus
+            return self.check_inline_per_color_diagonal(color)
+        elif dx > 0 and dy > 0:
+            # Diagonal plus
+            return self.check_inline_per_color_diagonal(color)
+        elif dx < 0 and dy > 0:
+            # Inverted diagonal minus
+            return self.check_inline_per_color_inverted_diagonal(color)
+        elif dx > 0 and dy < 0:
+            # Inverted diagonal plus
+            return self.check_inline_per_color_inverted_diagonal(color)
+        else:
+            raise ValueError("Invalid direction vector (dx, dy)")
 
     def check_inline_per_color_vertical(self, color):
         # Vertical
@@ -570,7 +609,7 @@ class SequenceModel:
                 elif self.get_btn_color(self.grid[self.picked_cell.row_index - i][self.picked_cell.col_index]) == "White":
                     if not other_color_inline_minus:
                         potentially_gap_minus = True
-                        if i==4 and not other_color_inline_minus:
+                        if (i==4 or self.picked_cell.row_index -i == 0) and not other_color_inline_minus:
                             opened_minus = True
                         else:
                             empty_minus_counter += 1
@@ -583,7 +622,7 @@ class SequenceModel:
                     opened_minus = False
 
             # Down
-            if self.picked_cell.row_index + i < Misc.GRID_SIZE:
+            if self.picked_cell.row_index + i <= Misc.GRID_MAX_INDEX:
                 if self.get_btn_color(self.grid[self.picked_cell.row_index + i][self.picked_cell.col_index]) in [color, "Black"]:
                     if not other_color_inline_plus:
                         inline_cell = self.Cell(self.picked_cell.row_index + i, self.picked_cell.col_index, self.picked_cell, 1, 0)
@@ -598,7 +637,7 @@ class SequenceModel:
                 elif self.get_btn_color(self.grid[self.picked_cell.row_index + i][self.picked_cell.col_index]) == "White":
                     if not other_color_inline_plus:
                         potentially_gap_plus = True
-                        if i==4 and not other_color_inline_plus:
+                        if (i==4 or self.picked_cell.row_index + i == Misc.GRID_MAX_INDEX) and not other_color_inline_plus:
                             opened_plus = True
                         else:
                             empty_plus_counter += 1
@@ -610,11 +649,11 @@ class SequenceModel:
                     potentially_gap_plus = False
                     opened_plus = False
 
-        self.set_inline_dict(color, self.picked_cell,
-                            opened_minus, opened_plus,
-                            inline_minus_cells, inline_plus_cells,
-                            gap_minus_cells, gap_plus_cells,
-                            empty_minus_cells, empty_plus_cells)
+        return color, self.picked_cell,\
+                opened_minus, opened_plus, \
+                inline_minus_cells, inline_plus_cells, \
+                gap_minus_cells, gap_plus_cells, \
+                empty_minus_cells, empty_plus_cells
 
         
     def check_inline_per_color_diagonal(self, color):
@@ -650,7 +689,8 @@ class SequenceModel:
                 elif self.get_btn_color(self.grid[self.picked_cell.row_index - i][self.picked_cell.col_index - i]) == "White":
                     if not other_color_inline_minus:
                         potentially_gap_minus = True
-                        if i==4 and not other_color_inline_minus:
+                        if (i==4 or self.picked_cell.row_index - i == 0 and self.picked_cell.col_index - i == 0) \
+                            and not other_color_inline_minus:
                             opened_minus = True
                         else:
                             empty_minus_counter += 1
@@ -662,7 +702,7 @@ class SequenceModel:
                     opened_minus = False
             
             # down-right
-            if self.picked_cell.row_index + i < Misc.GRID_SIZE and self.picked_cell.col_index + i < Misc.GRID_SIZE:
+            if self.picked_cell.row_index + i <= Misc.GRID_MAX_INDEX and self.picked_cell.col_index + i <= Misc.GRID_MAX_INDEX:
                 if self.get_btn_color(self.grid[self.picked_cell.row_index + i][self.picked_cell.col_index + i]) in [color, "Black"]:
                     if not other_color_inline_plus:
                         inline_cell = self.Cell(self.picked_cell.row_index + i, self.picked_cell.col_index + i, self.picked_cell, 1, 1)
@@ -677,7 +717,8 @@ class SequenceModel:
                 elif self.get_btn_color(self.grid[self.picked_cell.row_index + i][self.picked_cell.col_index + i]) == "White":
                     if not other_color_inline_plus:
                         potentially_gap_plus = True
-                        if i==4 and not other_color_inline_plus:
+                        if (i==4 or self.picked_cell.row_index + i == Misc.GRID_MAX_INDEX and self.picked_cell.col_index + i == Misc.GRID_MAX_INDEX) \
+                            and not other_color_inline_plus:
                             opened_plus = True
                         else:
                             empty_plus_counter += 1
@@ -688,11 +729,11 @@ class SequenceModel:
                     potentially_gap_plus = False
                     opened_plus = False
 
-        self.set_inline_dict(color, self.picked_cell,
-                            opened_minus, opened_plus,
-                            inline_minus_cells, inline_plus_cells,
-                            gap_minus_cells, gap_plus_cells,
-                            empty_minus_cells, empty_plus_cells)
+        return color, self.picked_cell,\
+                opened_minus, opened_plus, \
+                inline_minus_cells, inline_plus_cells, \
+                gap_minus_cells, gap_plus_cells, \
+                empty_minus_cells, empty_plus_cells
 
         
     def check_inline_per_color_inverted_diagonal(self, color):
@@ -713,7 +754,7 @@ class SequenceModel:
         other_color_inline_plus = False
         for i in range(1, Misc.INLINE_TO_WIN):
             # up-right
-            if self.picked_cell.row_index + i < Misc.GRID_SIZE and self.picked_cell.col_index - i >= 0:
+            if self.picked_cell.row_index + i <= Misc.GRID_MAX_INDEX and self.picked_cell.col_index - i >= 0:
                 if self.get_btn_color(self.grid[self.picked_cell.row_index + i][self.picked_cell.col_index - i]) in [color, "Black"]:
                     if not other_color_inline_minus:
                         inline_cell = self.Cell(self.picked_cell.row_index + i, self.picked_cell.col_index - i, self.picked_cell, 1, -1)
@@ -728,7 +769,8 @@ class SequenceModel:
                 elif self.get_btn_color(self.grid[self.picked_cell.row_index + i][self.picked_cell.col_index - i]) == "White":
                     if not other_color_inline_minus:
                         potentially_gap_minus = True
-                        if i==4 and not other_color_inline_minus:
+                        if (i==4 or self.picked_cell.row_index + i == Misc.GRID_MAX_INDEX and self.picked_cell.col_index - i == 0) \
+                            and not other_color_inline_minus:
                             opened_minus = True
                         else:
                             empty_minus_counter += 1
@@ -740,7 +782,7 @@ class SequenceModel:
                     opened_minus = False
             
             # down-left
-            if self.picked_cell.row_index - i >= 0 and self.picked_cell.col_index + i < Misc.GRID_SIZE:
+            if self.picked_cell.row_index - i >= 0 and self.picked_cell.col_index + i <= Misc.GRID_MAX_INDEX:
                 if self.get_btn_color(self.grid[self.picked_cell.row_index - i][self.picked_cell.col_index + i]) in [color, "Black"]:
                     if not other_color_inline_plus:
                         inline_cell = self.Cell(self.picked_cell.row_index - i, self.picked_cell.col_index + i, self.picked_cell, -1, 1)
@@ -755,7 +797,8 @@ class SequenceModel:
                 elif self.get_btn_color(self.grid[self.picked_cell.row_index - i][self.picked_cell.col_index + i]) == "White":
                     if not other_color_inline_plus:
                         potentially_gap_plus = True
-                        if i==4 and not other_color_inline_plus:
+                        if (i==4 or self.picked_cell.row_index - i == 0 and self.picked_cell.col_index + i == Misc.GRID_MAX_INDEX) \
+                            and not other_color_inline_plus:
                             opened_plus = True
                         else:
                             empty_plus_counter += 1
@@ -766,11 +809,11 @@ class SequenceModel:
                     potentially_gap_plus = False
                     opened_plus = False
 
-        self.set_inline_dict(color, self.picked_cell,
-                            opened_minus, opened_plus,
-                            inline_minus_cells, inline_plus_cells,
-                            gap_minus_cells, gap_plus_cells,
-                            empty_minus_cells, empty_plus_cells)
+        return color, self.picked_cell,\
+                opened_minus, opened_plus, \
+                inline_minus_cells, inline_plus_cells, \
+                gap_minus_cells, gap_plus_cells, \
+                empty_minus_cells, empty_plus_cells
 
         
 

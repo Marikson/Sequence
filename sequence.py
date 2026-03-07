@@ -51,7 +51,7 @@ class Sequence:
             self.model.grid[0][0].winfo_toplevel().update()
 
         r, c = self.model.clicked_cell["r"], self.model.clicked_cell["c"]
-        return self.model.Cell(r, c)
+        self.model.picked_cell = self.model.Cell(r, c)
     
 
     def represent_probability(self, probability):
@@ -75,10 +75,13 @@ class Sequence:
         while any(btn["state"] != "disabled" for row in self.model.grid for btn in row):
             current_color = Misc.turn[color_index]
             print(f"Current turn: {current_color}")
-            self.model.clicked_cell = {"r": None, "c": None}
-            picked_cell = self.pick_cell()
+            
+            self.pick_cell()
             self.model.set_color(current_color)
-            self.model.check_inline_per_color(current_color, picked_cell)
+            self.model.check_inline_per_color_horizontal(current_color)
+            self.model.check_inline_per_color_vertical(current_color)
+            self.model.check_inline_per_color_diagonal(current_color)
+            self.model.check_inline_per_color_inverted_diagonal(current_color)
 
             # color_probability = round(self.model.calculate_win_probability(current_color), 3)
             # self.represent_probability(color_probability)

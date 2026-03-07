@@ -151,51 +151,51 @@ class SequenceModel:
     def check_winner(self):
         for r in range(Misc.GRID_MAX_INDEX):
             for c in range(Misc.GRID_MAX_INDEX):
-                color_code = self.get_btn_color(self.grid[r][c])
-                if color_code in ("White"):
+                color = self.get_btn_color(self.grid[r][c])
+                if color in ("White"):
                     continue
 
-                # Down
-                if c <= Misc.GRID_MAX_INDEX - Misc.INLINE_TO_WIN:
-                    if all(self.get_btn_color(self.grid[r][c + i]) in [color_code, "Black"] for i in range(Misc.INLINE_TO_WIN)):
-                        return color_code
-                    
-                # Up
-                if c >= 4:
-                    if all(self.get_btn_color(self.grid[r][c - i]) in [color_code, "Black"] for i in range(Misc.INLINE_TO_WIN)):
-                        return color_code
-
                 # Right
-                if r <= Misc.GRID_MAX_INDEX - Misc.INLINE_TO_WIN:
-                    if all(self.get_btn_color(self.grid[r + i][c]) in [color_code, "Black"] for i in range(Misc.INLINE_TO_WIN)):
-                        return color_code
+                if c <= Misc.GRID_SIZE - Misc.INLINE_TO_WIN:
+                    if all(self.get_btn_color(self.grid[r][c + i]) in [color, "Black"] for i in range(Misc.INLINE_TO_WIN)):
+                        return color
                     
                 # Left
+                if c >= 4:
+                    if all(self.get_btn_color(self.grid[r][c - i]) in [color, "Black"] for i in range(Misc.INLINE_TO_WIN)):
+                        return color
+
+                # Down
+                if r <= Misc.GRID_SIZE - Misc.INLINE_TO_WIN:
+                    if all(self.get_btn_color(self.grid[r + i][c]) in [color, "Black"] for i in range(Misc.INLINE_TO_WIN)):
+                        return color
+                    
+                # Up
                 if r >= 4:
-                    if all(self.get_btn_color(self.grid[r - i][c]) in [color_code, "Black"] for i in range(Misc.INLINE_TO_WIN)):
-                        return color_code
+                    if all(self.get_btn_color(self.grid[r - i][c]) in [color, "Black"] for i in range(Misc.INLINE_TO_WIN)):
+                        return color
 
                 # down-right
-                if r <= Misc.GRID_MAX_INDEX - Misc.INLINE_TO_WIN and c <= Misc.GRID_MAX_INDEX - Misc.INLINE_TO_WIN:
-                    if all(self.get_btn_color(self.grid[r + i][c + i]) in [color_code, "Black"] for i in range(Misc.INLINE_TO_WIN)):
-                        return color_code
+                if r <= Misc.GRID_SIZE - Misc.INLINE_TO_WIN and c <= Misc.GRID_SIZE - Misc.INLINE_TO_WIN:
+                    if all(self.get_btn_color(self.grid[r + i][c + i]) in [color, "Black"] for i in range(Misc.INLINE_TO_WIN)):
+                        return color
 
                 # up-right
-                if r >= 4 and c <= Misc.GRID_MAX_INDEX - Misc.INLINE_TO_WIN:
-                    if all(self.get_btn_color(self.grid[r - i][c + i]) in [color_code, "Black"] for i in range(Misc.INLINE_TO_WIN)):
-                        return color_code
+                if r >= 4 and c <= Misc.GRID_SIZE - Misc.INLINE_TO_WIN:
+                    if all(self.get_btn_color(self.grid[r - i][c + i]) in [color, "Black"] for i in range(Misc.INLINE_TO_WIN)):
+                        return color
                     
                 # down-left
-                if r <= Misc.GRID_MAX_INDEX - Misc.INLINE_TO_WIN and c >= 4:
-                    if all(self.get_btn_color(self.grid[r + i][c - i]) in [color_code, "Black"] for i in range(Misc.INLINE_TO_WIN)):
-                        return color_code
+                if r <= Misc.GRID_SIZE - Misc.INLINE_TO_WIN and c >= 4:
+                    if all(self.get_btn_color(self.grid[r + i][c - i]) in [color, "Black"] for i in range(Misc.INLINE_TO_WIN)):
+                        return color
 
                 # up-left
                 if r >= 4 and c >= 4:
-                    if all(self.get_btn_color(self.grid[r - i][c - i]) in [color_code, "Black"] for i in range(Misc.INLINE_TO_WIN)):
-                        return color_code    
+                    if all(self.get_btn_color(self.grid[r - i][c - i]) in [color, "Black"] for i in range(Misc.INLINE_TO_WIN)):
+                        return color    
 
-        return None
+        return False
     
 
     def set_color(self, color=None):
@@ -500,7 +500,7 @@ class SequenceModel:
                 elif self.get_btn_color(self.grid[self.picked_cell.row_index][self.picked_cell.col_index - i]) == "White":
                     if not other_color_inline_minus:
                         potentially_gap_minus = True
-                        if (i==4 or self.picked_cell.col_index + i == 0) and not other_color_inline_minus:
+                        if (i==4 or self.picked_cell.col_index - i == 0) and not other_color_inline_minus:
                             opened_minus = True
                         else:
                             empty_minus_counter += 1
@@ -547,35 +547,6 @@ class SequenceModel:
                 empty_minus_cells, empty_plus_cells
     
 
-
-    def cehck_inline_per_color_multi(self, color, dx, dy):
-        if dx < 0 and dy == 0:
-            # Horizontal miuns
-            return self.check_inline_per_color_horizontal(color)
-        elif dx > 0 and dy == 0:
-            # Horizontal plus
-            return self.check_inline_per_color_horizontal(color)
-        elif dx == 0 and dy < 0:
-            # Vertical minus
-            return self.check_inline_per_color_vertical(color)
-        elif dx == 0 and dy > 0:
-            # Vertical plus
-            return self.check_inline_per_color_vertical(color)
-        elif dx < 0 and dy < 0:
-            # Diagonal minus
-            return self.check_inline_per_color_diagonal(color)
-        elif dx > 0 and dy > 0:
-            # Diagonal plus
-            return self.check_inline_per_color_diagonal(color)
-        elif dx < 0 and dy > 0:
-            # Inverted diagonal minus
-            return self.check_inline_per_color_inverted_diagonal(color)
-        elif dx > 0 and dy < 0:
-            # Inverted diagonal plus
-            return self.check_inline_per_color_inverted_diagonal(color)
-        else:
-            raise ValueError("Invalid direction vector (dx, dy)")
-
     def check_inline_per_color_vertical(self, color):
         # Vertical
         inline_minus_cells = []
@@ -609,7 +580,7 @@ class SequenceModel:
                 elif self.get_btn_color(self.grid[self.picked_cell.row_index - i][self.picked_cell.col_index]) == "White":
                     if not other_color_inline_minus:
                         potentially_gap_minus = True
-                        if (i==4 or self.picked_cell.row_index -i == 0) and not other_color_inline_minus:
+                        if (i==4 or self.picked_cell.row_index - i == 0) and not other_color_inline_minus:
                             opened_minus = True
                         else:
                             empty_minus_counter += 1

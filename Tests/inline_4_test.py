@@ -12,7 +12,7 @@ class Inline4TestHorizontalMinus(unittest.TestCase):
 
         for c in range(1, 4):
             test_game.model.clicked_cell = {"r": 0, "c": c}
-            r, c = test_game.pick_cell()
+            r, c = test_game.cell_picking()
             test_game.model.set_color("Red")
         test_game.model.check_inline_per_color("Red", r, c)
         self.assertEqual(test_game.model.inline_dict["Red"]["inline"], 4)
@@ -32,7 +32,7 @@ class Inline4TestHorizontalMinus(unittest.TestCase):
             if c == 1:
                 continue
             test_game.model.clicked_cell = {"r": 0, "c": c}
-            r, c = test_game.pick_cell()
+            r, c = test_game.cell_picking()
             test_game.model.set_color("Red")
         test_game.model.check_inline_per_color("Red", r, c)
         self.assertEqual(test_game.model.inline_dict["Red"]["inline"], 4)
@@ -52,7 +52,7 @@ class Inline4TestHorizontalMinus(unittest.TestCase):
             if c == 3:
                 continue
             test_game.model.clicked_cell = {"r": 0, "c": c}
-            r, c = test_game.pick_cell()
+            r, c = test_game.cell_picking()
             test_game.model.set_color("Red")
         test_game.model.check_inline_per_color("Red", r, c)
         self.assertEqual(test_game.model.inline_dict["Red"]["inline"], 4)
@@ -72,7 +72,7 @@ class Inline4TestHorizontalMinus(unittest.TestCase):
             if c == 2:
                 continue
             test_game.model.clicked_cell = {"r": 0, "c": c}
-            r, c = test_game.pick_cell()
+            r, c = test_game.cell_picking()
             test_game.model.set_color("Red")
         test_game.model.check_inline_per_color("Red", r, c)
         self.assertEqual(test_game.model.inline_dict["Red"]["inline"], 4)
@@ -91,7 +91,7 @@ class Inline4TestHorizontalMinus(unittest.TestCase):
 
         for c in range(1, 5):
             test_game.model.clicked_cell = {"r": 1, "c": c}
-            r, c = test_game.pick_cell()
+            r, c = test_game.cell_picking()
             test_game.model.set_color("Red")
         test_game.model.check_inline_per_color("Red", r, c)
         self.assertEqual(test_game.model.inline_dict["Red"]["inline"], 4)
@@ -111,7 +111,7 @@ class Inline4TestHorizontalMinus(unittest.TestCase):
             if c == 2:
                 continue
             test_game.model.clicked_cell = {"r": 1, "c": c}
-            r, c = test_game.pick_cell()
+            r, c = test_game.cell_picking()
             test_game.model.set_color("Red")
         test_game.model.check_inline_per_color("Red", r, c)
         self.assertEqual(test_game.model.inline_dict["Red"]["inline"], 4)
@@ -131,7 +131,7 @@ class Inline4TestHorizontalMinus(unittest.TestCase):
             if c == 4:
                 continue
             test_game.model.clicked_cell = {"r": 0, "c": c}
-            r, c = test_game.pick_cell()
+            r, c = test_game.cell_picking()
             test_game.model.set_color("Red")
         test_game.model.check_inline_per_color("Red", r, c)
         self.assertEqual(test_game.model.inline_dict["Red"]["inline"], 4)
@@ -151,7 +151,7 @@ class Inline4TestHorizontalMinus(unittest.TestCase):
             if c == 3:
                 continue
             test_game.model.clicked_cell = {"r": 0, "c": c}
-            r, c = test_game.pick_cell()
+            r, c = test_game.cell_picking()
             test_game.model.set_color("Red")
         test_game.model.check_inline_per_color("Red", r, c)
         self.assertEqual(test_game.model.inline_dict["Red"]["inline"], 4)
@@ -171,7 +171,7 @@ class Inline4TestHorizontalPlus(unittest.TestCase):
 
         for c in range(8, 5, -1):
             test_game.model.clicked_cell = {"r": 0, "c": c}
-            r, c = test_game.pick_cell()
+            r, c = test_game.cell_picking()
             test_game.model.set_color("Red")
         test_game.model.check_inline_per_color("Red", r, c)
         self.assertEqual(test_game.model.inline_dict["Red"]["inline"], 4)
@@ -191,7 +191,7 @@ class Inline4TestHorizontalPlus(unittest.TestCase):
             if c == 8:
                 continue
             test_game.model.clicked_cell = {"r": 0, "c": c}
-            r, c = test_game.pick_cell()
+            r, c = test_game.cell_picking()
             test_game.model.set_color("Red")
         test_game.model.check_inline_per_color("Red", r, c)
         self.assertEqual(test_game.model.inline_dict["Red"]["inline"], 4)
@@ -211,7 +211,7 @@ class Inline4TestHorizontalPlus(unittest.TestCase):
             if c == 6:
                 continue
             test_game.model.clicked_cell = {"r": 0, "c": c}
-            r, c = test_game.pick_cell()
+            r, c = test_game.cell_picking()
             test_game.model.set_color("Red")
         test_game.model.check_inline_per_color("Red", r, c)
         self.assertEqual(test_game.model.inline_dict["Red"]["inline"], 4)
@@ -231,7 +231,7 @@ class Inline4TestHorizontalPlus(unittest.TestCase):
             if c == 7:
                 continue
             test_game.model.clicked_cell = {"r": 0, "c": c}
-            r, c = test_game.pick_cell()
+            r, c = test_game.cell_picking()
             test_game.model.set_color("Red")
         test_game.model.check_inline_per_color("Red", r, c)
         self.assertEqual(test_game.model.inline_dict["Red"]["inline"], 4)
@@ -250,7 +250,7 @@ class Inline4TestHorizontalPlus(unittest.TestCase):
 
         for c in range(8, 4, -1):
             test_game.model.clicked_cell = {"r": 1, "c": c}
-            r, c = test_game.pick_cell()
+            r, c = test_game.cell_picking()
             test_game.model.set_color("Red")
         test_game.model.check_inline_per_color("Red", r, c)
         self.assertEqual(test_game.model.inline_dict["Red"]["inline"], 4)
@@ -270,7 +270,7 @@ class Inline4TestHorizontalPlus(unittest.TestCase):
             if c == 7:
                 continue
             test_game.model.clicked_cell = {"r": 1, "c": c}
-            r, c = test_game.pick_cell()
+            r, c = test_game.cell_picking()
             test_game.model.set_color("Red")
         test_game.model.check_inline_per_color("Red", r, c)
         self.assertEqual(test_game.model.inline_dict["Red"]["inline"], 4)
@@ -290,7 +290,7 @@ class Inline4TestHorizontalPlus(unittest.TestCase):
             if c == 5:
                 continue
             test_game.model.clicked_cell = {"r": 0, "c": c}
-            r, c = test_game.pick_cell()
+            r, c = test_game.cell_picking()
             test_game.model.set_color("Red")
         test_game.model.check_inline_per_color("Red", r, c)
         self.assertEqual(test_game.model.inline_dict["Red"]["inline"], 4)
@@ -310,7 +310,7 @@ class Inline4TestHorizontalPlus(unittest.TestCase):
             if c == 6:
                 continue
             test_game.model.clicked_cell = {"r": 0, "c": c}
-            r, c = test_game.pick_cell()
+            r, c = test_game.cell_picking()
             test_game.model.set_color("Red")
         test_game.model.check_inline_per_color("Red", r, c)
         self.assertEqual(test_game.model.inline_dict["Red"]["inline"], 4)
@@ -330,7 +330,7 @@ class Inline4TestVerticalMinus(unittest.TestCase):
 
         for r in range(1, 4):
             test_game.model.clicked_cell = {"r": r, "c": 0}
-            r, c = test_game.pick_cell()
+            r, c = test_game.cell_picking()
             test_game.model.set_color("Red")
         test_game.model.check_inline_per_color("Red", r, c)
         self.assertEqual(test_game.model.inline_dict["Red"]["inline"], 4)
@@ -350,7 +350,7 @@ class Inline4TestVerticalMinus(unittest.TestCase):
             if r == 1:
                 continue
             test_game.model.clicked_cell = {"r": r, "c": 0}
-            r, c = test_game.pick_cell()
+            r, c = test_game.cell_picking()
             test_game.model.set_color("Red")
         test_game.model.check_inline_per_color("Red", r, c)
         self.assertEqual(test_game.model.inline_dict["Red"]["inline"], 4)
@@ -370,7 +370,7 @@ class Inline4TestVerticalMinus(unittest.TestCase):
             if r == 3:
                 continue
             test_game.model.clicked_cell = {"r": r, "c": 0}
-            r, c = test_game.pick_cell()
+            r, c = test_game.cell_picking()
             test_game.model.set_color("Red")
         test_game.model.check_inline_per_color("Red", r, c)
         self.assertEqual(test_game.model.inline_dict["Red"]["inline"], 4)
@@ -390,7 +390,7 @@ class Inline4TestVerticalMinus(unittest.TestCase):
             if r == 2:
                 continue
             test_game.model.clicked_cell = {"r": r, "c": 0}
-            r, c = test_game.pick_cell()
+            r, c = test_game.cell_picking()
             test_game.model.set_color("Red")
         test_game.model.check_inline_per_color("Red", r, c)
         self.assertEqual(test_game.model.inline_dict["Red"]["inline"], 4)
@@ -409,7 +409,7 @@ class Inline4TestVerticalMinus(unittest.TestCase):
 
         for r in range(1, 5):
             test_game.model.clicked_cell = {"r": 1, "c": r}
-            r, c = test_game.pick_cell()
+            r, c = test_game.cell_picking()
             test_game.model.set_color("Red")
         test_game.model.check_inline_per_color("Red", r, c)
         self.assertEqual(test_game.model.inline_dict["Red"]["inline"], 4)
@@ -429,7 +429,7 @@ class Inline4TestVerticalMinus(unittest.TestCase):
             if r == 1:
                 continue
             test_game.model.clicked_cell = {"r": r, "c": 1}
-            r, c = test_game.pick_cell()
+            r, c = test_game.cell_picking()
             test_game.model.set_color("Red")
         test_game.model.check_inline_per_color("Red", r, c)
         self.assertEqual(test_game.model.inline_dict["Red"]["inline"], 4)
@@ -449,7 +449,7 @@ class Inline4TestVerticalMinus(unittest.TestCase):
             if r == 3:
                 continue
             test_game.model.clicked_cell = {"r": 0, "c": r}
-            r, c = test_game.pick_cell()
+            r, c = test_game.cell_picking()
             test_game.model.set_color("Red")
         test_game.model.check_inline_per_color("Red", r, c)
         self.assertEqual(test_game.model.inline_dict["Red"]["inline"], 4)
@@ -469,7 +469,7 @@ class Inline4TestVerticalMinus(unittest.TestCase):
             if r == 2:
                 continue
             test_game.model.clicked_cell = {"r": r, "c": 0}
-            r, c = test_game.pick_cell()
+            r, c = test_game.cell_picking()
             test_game.model.set_color("Red")
         test_game.model.check_inline_per_color("Red", r, c)
         self.assertEqual(test_game.model.inline_dict["Red"]["inline"], 4)
@@ -489,7 +489,7 @@ class Inline4TestVerticalPlus(unittest.TestCase):
 
         for r in range(8, 5, -1):
             test_game.model.clicked_cell = {"r": r, "c": 0}
-            r, c = test_game.pick_cell()
+            r, c = test_game.cell_picking()
             test_game.model.set_color("Red")
         test_game.model.check_inline_per_color("Red", r, c)
         self.assertEqual(test_game.model.inline_dict["Red"]["inline"], 4)
@@ -509,7 +509,7 @@ class Inline4TestVerticalPlus(unittest.TestCase):
             if r == 8:
                 continue
             test_game.model.clicked_cell = {"r": r, "c": 0}
-            r, c = test_game.pick_cell()
+            r, c = test_game.cell_picking()
             test_game.model.set_color("Red")
         test_game.model.check_inline_per_color("Red", r, c)
         self.assertEqual(test_game.model.inline_dict["Red"]["inline"], 4)
@@ -529,7 +529,7 @@ class Inline4TestVerticalPlus(unittest.TestCase):
             if r == 6:
                 continue
             test_game.model.clicked_cell = {"r": r, "c": 0}
-            r, c = test_game.pick_cell()
+            r, c = test_game.cell_picking()
             test_game.model.set_color("Red")
         test_game.model.check_inline_per_color("Red", r, c)
         self.assertEqual(test_game.model.inline_dict["Red"]["inline"], 4)
@@ -549,7 +549,7 @@ class Inline4TestVerticalPlus(unittest.TestCase):
             if r == 7:
                 continue
             test_game.model.clicked_cell = {"r": r, "c": 0}
-            r, c = test_game.pick_cell()
+            r, c = test_game.cell_picking()
             test_game.model.set_color("Red")
         test_game.model.check_inline_per_color("Red", r, c)
         self.assertEqual(test_game.model.inline_dict["Red"]["inline"], 4)
@@ -568,7 +568,7 @@ class Inline4TestVerticalPlus(unittest.TestCase):
 
         for r in range(8, 4, -1):
             test_game.model.clicked_cell = {"r": r, "c": 1}
-            r, c = test_game.pick_cell()
+            r, c = test_game.cell_picking()
             test_game.model.set_color("Red")
         test_game.model.check_inline_per_color("Red", r, c)
         self.assertEqual(test_game.model.inline_dict["Red"]["inline"], 4)
@@ -588,7 +588,7 @@ class Inline4TestVerticalPlus(unittest.TestCase):
             if r == 8:
                 continue
             test_game.model.clicked_cell = {"r": r, "c": 1}
-            r, c = test_game.pick_cell()
+            r, c = test_game.cell_picking()
             test_game.model.set_color("Red")
         test_game.model.check_inline_per_color("Red", r, c)
         self.assertEqual(test_game.model.inline_dict["Red"]["inline"], 4)
@@ -608,7 +608,7 @@ class Inline4TestVerticalPlus(unittest.TestCase):
             if r == 6:
                 continue
             test_game.model.clicked_cell = {"r": r, "c": 1}
-            r, c = test_game.pick_cell()
+            r, c = test_game.cell_picking()
             test_game.model.set_color("Red")
         test_game.model.check_inline_per_color("Red", r, c)
         self.assertEqual(test_game.model.inline_dict["Red"]["inline"], 4)
@@ -628,7 +628,7 @@ class Inline4TestVerticalPlus(unittest.TestCase):
                 if r == 7:
                     continue
                 test_game.model.clicked_cell = {"r": r, "c": 1}
-                r, c = test_game.pick_cell()
+                r, c = test_game.cell_picking()
                 test_game.model.set_color("Red")
             test_game.model.check_inline_per_color("Red", r, c)
             self.assertEqual(test_game.model.inline_dict["Red"]["inline"], 4)
@@ -648,7 +648,7 @@ class Inline4TestDiagonalUpLeft(unittest.TestCase):
 
         for i in range(1, 4):
             test_game.model.clicked_cell = {"r": i, "c": i}
-            r, c = test_game.pick_cell()
+            r, c = test_game.cell_picking()
             test_game.model.set_color("Red")
         test_game.model.check_inline_per_color("Red", r, c)
         self.assertEqual(test_game.model.inline_dict["Red"]["inline"], 4)
@@ -668,7 +668,7 @@ class Inline4TestDiagonalUpLeft(unittest.TestCase):
             if i == 1:
                 continue
             test_game.model.clicked_cell = {"r": i, "c": i}
-            r, c = test_game.pick_cell()
+            r, c = test_game.cell_picking()
             test_game.model.set_color("Red")
         test_game.model.check_inline_per_color("Red", r, c)
         self.assertEqual(test_game.model.inline_dict["Red"]["inline"], 4)
@@ -688,7 +688,7 @@ class Inline4TestDiagonalUpLeft(unittest.TestCase):
             if i == 3:
                 continue
             test_game.model.clicked_cell = {"r": i, "c": i}
-            r, c = test_game.pick_cell()
+            r, c = test_game.cell_picking()
             test_game.model.set_color("Red")
         test_game.model.check_inline_per_color("Red", r, c)
         self.assertEqual(test_game.model.inline_dict["Red"]["inline"], 4)
@@ -708,7 +708,7 @@ class Inline4TestDiagonalUpLeft(unittest.TestCase):
             if i == 2:
                 continue
             test_game.model.clicked_cell = {"r": i, "c": i}
-            r, c = test_game.pick_cell()
+            r, c = test_game.cell_picking()
             test_game.model.set_color("Red")
         test_game.model.check_inline_per_color("Red", r, c)
         self.assertEqual(test_game.model.inline_dict["Red"]["inline"], 4)
@@ -727,7 +727,7 @@ class Inline4TestDiagonalUpLeft(unittest.TestCase):
 
         for i in range(1, 5):
             test_game.model.clicked_cell = {"r": 2+i, "c": i}
-            r, c = test_game.pick_cell()
+            r, c = test_game.cell_picking()
             test_game.model.set_color("Red")
         test_game.model.check_inline_per_color("Red", r, c)
         self.assertEqual(test_game.model.inline_dict["Red"]["inline"], 4)
@@ -747,7 +747,7 @@ class Inline4TestDiagonalUpLeft(unittest.TestCase):
             if i == 2:
                 continue
             test_game.model.clicked_cell = {"r": 2+i, "c": i}
-            r, c = test_game.pick_cell()
+            r, c = test_game.cell_picking()
             test_game.model.set_color("Red")
         test_game.model.check_inline_per_color("Red", r, c)
         self.assertEqual(test_game.model.inline_dict["Red"]["inline"], 4)
@@ -767,7 +767,7 @@ class Inline4TestDiagonalUpLeft(unittest.TestCase):
             if i == 4:
                 continue
             test_game.model.clicked_cell = {"r": 2+i, "c": i}
-            r, c = test_game.pick_cell()
+            r, c = test_game.cell_picking()
             test_game.model.set_color("Red")
         test_game.model.check_inline_per_color("Red", r, c)
         self.assertEqual(test_game.model.inline_dict["Red"]["inline"], 4)
@@ -787,7 +787,7 @@ class Inline4TestDiagonalUpLeft(unittest.TestCase):
             if i == 3:
                 continue
             test_game.model.clicked_cell = {"r": 2+i, "c": i}
-            r, c = test_game.pick_cell()
+            r, c = test_game.cell_picking()
             test_game.model.set_color("Red")
         test_game.model.check_inline_per_color("Red", r, c)
         self.assertEqual(test_game.model.inline_dict["Red"]["inline"], 4)
@@ -807,7 +807,7 @@ class Inline4TestDiagonalUpRight(unittest.TestCase):
 
         for i in range(1, 4):
             test_game.model.clicked_cell = {"r": i, "c": 9-i}
-            r, c = test_game.pick_cell()
+            r, c = test_game.cell_picking()
             test_game.model.set_color("Red")
         test_game.model.check_inline_per_color("Red", r, c)
         self.assertEqual(test_game.model.inline_dict["Red"]["inline"], 4)
@@ -827,7 +827,7 @@ class Inline4TestDiagonalUpRight(unittest.TestCase):
             if i == 1:
                 continue
             test_game.model.clicked_cell = {"r": i, "c": 9-i}
-            r, c = test_game.pick_cell()
+            r, c = test_game.cell_picking()
             test_game.model.set_color("Red")
         test_game.model.check_inline_per_color("Red", r, c)
         self.assertEqual(test_game.model.inline_dict["Red"]["inline"], 4)
@@ -847,7 +847,7 @@ class Inline4TestDiagonalUpRight(unittest.TestCase):
             if i == 3:
                 continue
             test_game.model.clicked_cell = {"r": i, "c": 9-i}
-            r, c = test_game.pick_cell()
+            r, c = test_game.cell_picking()
             test_game.model.set_color("Red")
         test_game.model.check_inline_per_color("Red", r, c)
         self.assertEqual(test_game.model.inline_dict["Red"]["inline"], 4)
@@ -867,7 +867,7 @@ class Inline4TestDiagonalUpRight(unittest.TestCase):
             if i == 2:
                 continue
             test_game.model.clicked_cell = {"r": i, "c": 9-i}
-            r, c = test_game.pick_cell()
+            r, c = test_game.cell_picking()
             test_game.model.set_color("Red")
         test_game.model.check_inline_per_color("Red", r, c)
         self.assertEqual(test_game.model.inline_dict["Red"]["inline"], 4)
@@ -886,7 +886,7 @@ class Inline4TestDiagonalUpRight(unittest.TestCase):
 
         for i in range(1, 5):
             test_game.model.clicked_cell = {"r": 2+i, "c": 9-i}
-            r, c = test_game.pick_cell()
+            r, c = test_game.cell_picking()
             test_game.model.set_color("Red")
         test_game.model.check_inline_per_color("Red", r, c)
         self.assertEqual(test_game.model.inline_dict["Red"]["inline"], 4)
@@ -906,7 +906,7 @@ class Inline4TestDiagonalUpRight(unittest.TestCase):
             if i == 2:
                 continue
             test_game.model.clicked_cell = {"r": 2+i, "c": 9-i}
-            r, c = test_game.pick_cell()
+            r, c = test_game.cell_picking()
             test_game.model.set_color("Red")
         test_game.model.check_inline_per_color("Red", r, c)
         self.assertEqual(test_game.model.inline_dict["Red"]["inline"], 4)
@@ -926,7 +926,7 @@ class Inline4TestDiagonalUpRight(unittest.TestCase):
             if i == 4:
                 continue
             test_game.model.clicked_cell = {"r": 2+i, "c": 9-i}
-            r, c = test_game.pick_cell()
+            r, c = test_game.cell_picking()
             test_game.model.set_color("Red")
         test_game.model.check_inline_per_color("Red", r, c)
         self.assertEqual(test_game.model.inline_dict["Red"]["inline"], 4)
@@ -946,7 +946,7 @@ class Inline4TestDiagonalUpRight(unittest.TestCase):
             if i == 3:
                 continue
             test_game.model.clicked_cell = {"r": 2+i, "c": 9-i}
-            r, c = test_game.pick_cell()
+            r, c = test_game.cell_picking()
             test_game.model.set_color("Red")
         test_game.model.check_inline_per_color("Red", r, c)
         self.assertEqual(test_game.model.inline_dict["Red"]["inline"], 4)
@@ -966,7 +966,7 @@ class Inline4TestDiagonalDownLeft(unittest.TestCase):
 
         for i in range(1, 4):
             test_game.model.clicked_cell = {"r": 9-i, "c": i}
-            r, c = test_game.pick_cell()
+            r, c = test_game.cell_picking()
             test_game.model.set_color("Red")
         test_game.model.check_inline_per_color("Red", r, c)
         self.assertEqual(test_game.model.inline_dict["Red"]["inline"], 4)
@@ -986,7 +986,7 @@ class Inline4TestDiagonalDownLeft(unittest.TestCase):
             if i == 1:
                 continue
             test_game.model.clicked_cell = {"r": 9-i, "c": i}
-            r, c = test_game.pick_cell()
+            r, c = test_game.cell_picking()
             test_game.model.set_color("Red")
         test_game.model.check_inline_per_color("Red", r, c)
         self.assertEqual(test_game.model.inline_dict["Red"]["inline"], 4)
@@ -1006,7 +1006,7 @@ class Inline4TestDiagonalDownLeft(unittest.TestCase):
             if i == 3:
                 continue
             test_game.model.clicked_cell = {"r": 9-i, "c": i}
-            r, c = test_game.pick_cell()
+            r, c = test_game.cell_picking()
             test_game.model.set_color("Red")
         test_game.model.check_inline_per_color("Red", r, c)
         self.assertEqual(test_game.model.inline_dict["Red"]["inline"], 4)
@@ -1026,7 +1026,7 @@ class Inline4TestDiagonalDownLeft(unittest.TestCase):
             if i == 2:
                 continue
             test_game.model.clicked_cell = {"r": 9-i, "c": i}
-            r, c = test_game.pick_cell()
+            r, c = test_game.cell_picking()
             test_game.model.set_color("Red")
         test_game.model.check_inline_per_color("Red", r, c)
         self.assertEqual(test_game.model.inline_dict["Red"]["inline"], 4)
@@ -1045,7 +1045,7 @@ class Inline4TestDiagonalDownLeft(unittest.TestCase):
 
         for i in range(1, 5):
             test_game.model.clicked_cell = {"r": 9-i, "c": 2+i}
-            r, c = test_game.pick_cell()
+            r, c = test_game.cell_picking()
             test_game.model.set_color("Red")
         test_game.model.check_inline_per_color("Red", r, c)
         self.assertEqual(test_game.model.inline_dict["Red"]["inline"], 4)
@@ -1065,7 +1065,7 @@ class Inline4TestDiagonalDownLeft(unittest.TestCase):
             if i == 2:
                 continue
             test_game.model.clicked_cell = {"r": 9-i, "c": 2+i}
-            r, c = test_game.pick_cell()
+            r, c = test_game.cell_picking()
             test_game.model.set_color("Red")
         test_game.model.check_inline_per_color("Red", r, c)
         self.assertEqual(test_game.model.inline_dict["Red"]["inline"], 4)
@@ -1085,7 +1085,7 @@ class Inline4TestDiagonalDownLeft(unittest.TestCase):
             if i == 4:
                 continue
             test_game.model.clicked_cell = {"r": 9-i, "c": 2+i}
-            r, c = test_game.pick_cell()
+            r, c = test_game.cell_picking()
             test_game.model.set_color("Red")
         test_game.model.check_inline_per_color("Red", r, c)
         self.assertEqual(test_game.model.inline_dict["Red"]["inline"], 4)
@@ -1105,7 +1105,7 @@ class Inline4TestDiagonalDownLeft(unittest.TestCase):
             if i == 3:
                 continue
             test_game.model.clicked_cell = {"r": 9-i, "c": 2+i}
-            r, c = test_game.pick_cell()
+            r, c = test_game.cell_picking()
             test_game.model.set_color("Red")
         test_game.model.check_inline_per_color("Red", r, c)
         self.assertEqual(test_game.model.inline_dict["Red"]["inline"], 4)
@@ -1125,7 +1125,7 @@ class Inline4TestDiagonalDownRight(unittest.TestCase):
 
         for i in range(1, 5):
             test_game.model.clicked_cell = {"r": 9-i, "c": 9-i}
-            r, c = test_game.pick_cell()
+            r, c = test_game.cell_picking()
             test_game.model.set_color("Red")
         test_game.model.check_inline_per_color("Red", r, c)
         self.assertEqual(test_game.model.inline_dict["Red"]["inline"], 4)
@@ -1145,7 +1145,7 @@ class Inline4TestDiagonalDownRight(unittest.TestCase):
             if i == 1:
                 continue
             test_game.model.clicked_cell = {"r": 9-i, "c": 9-i}
-            r, c = test_game.pick_cell()
+            r, c = test_game.cell_picking()
             test_game.model.set_color("Red")
         test_game.model.check_inline_per_color("Red", r, c)
         self.assertEqual(test_game.model.inline_dict["Red"]["inline"], 4)
@@ -1165,7 +1165,7 @@ class Inline4TestDiagonalDownRight(unittest.TestCase):
             if i == 3:
                 continue
             test_game.model.clicked_cell = {"r": 9-i, "c": 9-i}
-            r, c = test_game.pick_cell()
+            r, c = test_game.cell_picking()
             test_game.model.set_color("Red")
         test_game.model.check_inline_per_color("Red", r, c)
         self.assertEqual(test_game.model.inline_dict["Red"]["inline"], 4)
@@ -1185,7 +1185,7 @@ class Inline4TestDiagonalDownRight(unittest.TestCase):
             if i == 2:
                 continue
             test_game.model.clicked_cell = {"r": 9-i, "c": 9-i}
-            r, c = test_game.pick_cell()
+            r, c = test_game.cell_picking()
             test_game.model.set_color("Red")
         test_game.model.check_inline_per_color("Red", r, c)
         self.assertEqual(test_game.model.inline_dict["Red"]["inline"], 4)
@@ -1204,7 +1204,7 @@ class Inline4TestDiagonalDownRight(unittest.TestCase):
 
         for i in range(1, 5):
             test_game.model.clicked_cell = {"r": 9-i, "c": 8-i}
-            r, c = test_game.pick_cell()
+            r, c = test_game.cell_picking()
             test_game.model.set_color("Red")
         test_game.model.check_inline_per_color("Red", r, c)
         self.assertEqual(test_game.model.inline_dict["Red"]["inline"], 4)
@@ -1224,7 +1224,7 @@ class Inline4TestDiagonalDownRight(unittest.TestCase):
             if i == 2:
                 continue
             test_game.model.clicked_cell = {"r": 9-i, "c": 8-i}
-            r, c = test_game.pick_cell()
+            r, c = test_game.cell_picking()
             test_game.model.set_color("Red")
         test_game.model.check_inline_per_color("Red", r, c)
         self.assertEqual(test_game.model.inline_dict["Red"]["inline"], 4)
@@ -1244,7 +1244,7 @@ class Inline4TestDiagonalDownRight(unittest.TestCase):
             if i == 4:
                 continue
             test_game.model.clicked_cell = {"r": 9-i, "c": 8-i}
-            r, c = test_game.pick_cell()
+            r, c = test_game.cell_picking()
             test_game.model.set_color("Red")
         test_game.model.check_inline_per_color("Red", r, c)
         self.assertEqual(test_game.model.inline_dict["Red"]["inline"], 4)
@@ -1264,7 +1264,7 @@ class Inline4TestDiagonalDownRight(unittest.TestCase):
             if i == 3:
                 continue
             test_game.model.clicked_cell = {"r": 9-i, "c": 8-i}
-            r, c = test_game.pick_cell()
+            r, c = test_game.cell_picking()
             test_game.model.set_color("Red")
         test_game.model.check_inline_per_color("Red", r, c)
         self.assertEqual(test_game.model.inline_dict["Red"]["inline"], 4)

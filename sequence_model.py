@@ -95,7 +95,6 @@ class SequenceModel:
 
     def __init__(self):
         self.grid = None
-        self.clicked_cell = {"r": None, "c": None}
         self.picked_cell = None
         
         self.inline_dict = {
@@ -142,8 +141,7 @@ class SequenceModel:
 
 
     def on_cell_click(self, row, col):
-        self.clicked_cell["r"] = row
-        self.clicked_cell["c"] = col
+        self.picked_cell = self.Cell(row, col)
 
 
     def get_btn_color(self, btn):
@@ -233,8 +231,7 @@ class SequenceModel:
         minus_inline_weight, minus_gap_weight, minus_empty_weight = calculate_weights(inline_minus_cells, gap_minus_cells, empty_minus_cells)
         plus_inline_weight, plus_gap_weight, plus_empty_weight = calculate_weights(inline_plus_cells, gap_plus_cells, empty_plus_cells)
         
-        direction_order = get_direction_order(minus_inline_weight, plus_inline_weight, minus_gap_weight, plus_gap_weight, minus_empty_weight, plus_empty_weight)
-            
+        
         def get_direction_order(minus_inline_weight, plus_inline_weight, minus_gap_weight, plus_gap_weight, minus_empty_weight, plus_empty_weight):
             if minus_inline_weight > plus_inline_weight:
                 return ["minus", "plus"]
@@ -252,6 +249,8 @@ class SequenceModel:
                         return ["plus", "minus"]
                     else:
                         return ["minus", "plus"]
+        
+        direction_order = get_direction_order(minus_inline_weight, plus_inline_weight, minus_gap_weight, plus_gap_weight, minus_empty_weight, plus_empty_weight)
         
 
         def extend_sequence(inline_cells, gap_cells, sequence_pattern, sequence_cells, sequence_starting_side):

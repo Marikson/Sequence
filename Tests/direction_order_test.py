@@ -11,7 +11,7 @@ class DirectionOrderTest(unittest.TestCase):
         test_game.create_grid(test_field)
 
         test_game.model.clicked_cell = {"r": 0, "c": 1}
-        r, c = test_game.pick_cell()
+        r, c = test_game.cell_picking()
         test_game.model.set_color("Red")
         test_game.model.check_inline_per_color("Red", r, c)
         

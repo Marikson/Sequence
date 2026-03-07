@@ -46,14 +46,14 @@ class Sequence:
         self.model.grid = []
 
 
-    def pick_cell(self):
-        while self.model.clicked_cell["r"] is None or self.model.clicked_cell["c"] is None:
+    def cell_picking(self):
+        while self.model.picked_cell is None:
             self.model.grid[0][0].winfo_toplevel().update()
-
-        r, c = self.model.clicked_cell["r"], self.model.clicked_cell["c"]
-        self.model.picked_cell = self.model.Cell(r, c)
     
 
+    def reset_picked_cell(self):
+        self.model.picked_cell = None
+    
     def represent_probability(self, probability):
 
         fig = tpl.figure()
@@ -76,7 +76,7 @@ class Sequence:
             current_color = Misc.turn[color_index]
             print(f"Current turn: {current_color}")
             
-            self.pick_cell()
+            self.cell_picking()
             self.model.set_color(current_color)
             self.model.check_inline_per_color_horizontal(current_color)
             self.model.check_inline_per_color_vertical(current_color)
@@ -98,7 +98,7 @@ class Sequence:
                 # self.delete_grid()
                 break
             
-
+            self.reset_picked_cell()
 
 def main():
     field_template = tk.Tk()

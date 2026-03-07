@@ -12,6 +12,6 @@ class InlinePerColorHorizontal(unittest.TestCase):
         test_game.create_grid(test_field)
 
         test_game.model.clicked_cell = {"r": 2, "c": 1}
-        picked_cell = test_game.pick_cell()
+        picked_cell = test_game.cell_picking()
         test_game.model.set_color("Red")
         test_game.model.check_inline_per_color_horizontal("Red", picked_cell)

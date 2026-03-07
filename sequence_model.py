@@ -602,7 +602,7 @@ class SequenceModel:
                             for j in range(1, empty_plus_counter + 1):
                                 gap_cell = self.Cell(self.picked_cell.row_index + i - j, self.picked_cell.col_index, self.picked_cell, 1, 0)
                                 gap_plus_cells.append(gap_cell)
-                                empty_minus_cells = [cell for cell in empty_minus_cells if not (cell.row_index == self.picked_cell.row_index + i - j and cell.col_index == self.picked_cell.col_index)]
+                                empty_plus_cells = [cell for cell in empty_plus_cells if not (cell.row_index == self.picked_cell.row_index + i - j and cell.col_index == self.picked_cell.col_index)]
                             potentially_gap_plus = False
                             empty_plus_counter = 0
                 elif self.get_btn_color(self.grid[self.picked_cell.row_index + i][self.picked_cell.col_index]) == "White":

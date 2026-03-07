@@ -3,7 +3,7 @@ import tkinter as tk
 from sequence import Sequence
 
 
-class InlinePerColorHorizontalMinusNOGap(unittest.TestCase):
+class InlinePerColorVerticalMinusNOGap(unittest.TestCase):
     def test_0_inline(self):
         test_field = tk.Tk()
         test_field.title("Test Field")
@@ -38,16 +38,16 @@ class InlinePerColorHorizontalMinusNOGap(unittest.TestCase):
         test_game = Sequence()
         test_game.create_grid(test_field)
 
-        for col in range(4, 6):
-            test_game.model.on_cell_click(4, col)
+        for row in range(4, 6):
+            test_game.model.on_cell_click(row, 4)
             test_game.model.set_color("Red")
         
         color, picked_cell, opened_minus, opened_plus, inline_minus_cells, inline_plus_cells, \
             gap_minus_cells, gap_plus_cells, empty_minus_cells, empty_plus_cells \
-            = test_game.model.check_inline_per_color_horizontal("Red")
+            = test_game.model.check_inline_per_color_vertical("Red")
         self.assertEqual(color, "Red")
-        self.assertEqual(picked_cell.row_index, 4)
-        self.assertEqual(picked_cell.col_index, 5)
+        self.assertEqual(picked_cell.row_index, 5)
+        self.assertEqual(picked_cell.col_index, 4)
         self.assertEqual(opened_minus, True)
         self.assertEqual(opened_plus, True)
         self.assertEqual(len(inline_minus_cells), 1)
@@ -67,16 +67,16 @@ class InlinePerColorHorizontalMinusNOGap(unittest.TestCase):
         test_game = Sequence()
         test_game.create_grid(test_field)
 
-        for col in range(4, 7):
-            test_game.model.on_cell_click(4, col)
+        for row in range(4, 7):
+            test_game.model.on_cell_click(row, 4)
             test_game.model.set_color("Red")
         
         color, picked_cell, opened_minus, opened_plus, inline_minus_cells, inline_plus_cells, \
             gap_minus_cells, gap_plus_cells, empty_minus_cells, empty_plus_cells \
-            = test_game.model.check_inline_per_color_horizontal("Red")
+            = test_game.model.check_inline_per_color_vertical("Red")
         self.assertEqual(color, "Red")
-        self.assertEqual(picked_cell.row_index, 4)
-        self.assertEqual(picked_cell.col_index, 6)
+        self.assertEqual(picked_cell.row_index, 6)
+        self.assertEqual(picked_cell.col_index, 4)
         self.assertEqual(opened_minus, True)
         self.assertEqual(opened_plus, True)
         self.assertEqual(len(inline_minus_cells), 2)
@@ -96,16 +96,16 @@ class InlinePerColorHorizontalMinusNOGap(unittest.TestCase):
         test_game = Sequence()
         test_game.create_grid(test_field)
 
-        for col in range(4, 8):
-            test_game.model.on_cell_click(4, col)
+        for row in range(4, 8):
+            test_game.model.on_cell_click(row, 4)
             test_game.model.set_color("Red")
         
         color, picked_cell, opened_minus, opened_plus, inline_minus_cells, inline_plus_cells, \
             gap_minus_cells, gap_plus_cells, empty_minus_cells, empty_plus_cells \
-            = test_game.model.check_inline_per_color_horizontal("Red")
+            = test_game.model.check_inline_per_color_vertical("Red")
         self.assertEqual(color, "Red")
-        self.assertEqual(picked_cell.row_index, 4)
-        self.assertEqual(picked_cell.col_index, 7)
+        self.assertEqual(picked_cell.row_index, 7)
+        self.assertEqual(picked_cell.col_index, 4)
         self.assertEqual(opened_minus, True)
         self.assertEqual(opened_plus, True)
         self.assertEqual(len(inline_minus_cells), 3)
@@ -125,16 +125,16 @@ class InlinePerColorHorizontalMinusNOGap(unittest.TestCase):
         test_game = Sequence()
         test_game.create_grid(test_field)
 
-        for col in range(4, 9):
-            test_game.model.on_cell_click(4, col)
+        for row in range(4, 9):
+            test_game.model.on_cell_click(row, 4)
             test_game.model.set_color("Red")
         
         color, picked_cell, opened_minus, opened_plus, inline_minus_cells, inline_plus_cells, \
             gap_minus_cells, gap_plus_cells, empty_minus_cells, empty_plus_cells \
-            = test_game.model.check_inline_per_color_horizontal("Red")
+            = test_game.model.check_inline_per_color_vertical("Red")
         self.assertEqual(color, "Red")
-        self.assertEqual(picked_cell.row_index, 4)
-        self.assertEqual(picked_cell.col_index, 8)
+        self.assertEqual(picked_cell.row_index, 8)
+        self.assertEqual(picked_cell.col_index, 4)
         self.assertEqual(opened_minus, False)
         self.assertEqual(opened_plus, True)
         self.assertEqual(len(inline_minus_cells), 4)
@@ -154,16 +154,16 @@ class InlinePerColorHorizontalMinusNOGap(unittest.TestCase):
         test_game = Sequence()
         test_game.create_grid(test_field)
 
-        for col in range(5, 10):
-            test_game.model.on_cell_click(4, col)
+        for row in range(5, 10):
+            test_game.model.on_cell_click(row, 4)
             test_game.model.set_color("Red")
         
         color, picked_cell, opened_minus, opened_plus, inline_minus_cells, inline_plus_cells, \
             gap_minus_cells, gap_plus_cells, empty_minus_cells, empty_plus_cells \
-            = test_game.model.check_inline_per_color_horizontal("Red")
+            = test_game.model.check_inline_per_color_vertical("Red")
         self.assertEqual(color, "Red")
-        self.assertEqual(picked_cell.row_index, 4)
-        self.assertEqual(picked_cell.col_index, 9)
+        self.assertEqual(picked_cell.row_index, 9)
+        self.assertEqual(picked_cell.col_index, 4)
         self.assertEqual(opened_minus, False)
         self.assertEqual(opened_plus, False)
         self.assertEqual(len(inline_minus_cells), 4)
@@ -177,7 +177,7 @@ class InlinePerColorHorizontalMinusNOGap(unittest.TestCase):
         self.assertEqual(winner, "Red")
                 
    
-class InlinePerColorHorizontalMinusGapped(unittest.TestCase):       
+class InlinePerColorVerticalMinusGapped(unittest.TestCase):       
     def test_1_inline_minus_1_gap(self):
         test_field = tk.Tk()
         test_field.title("Test Field")
@@ -185,16 +185,16 @@ class InlinePerColorHorizontalMinusGapped(unittest.TestCase):
         test_game = Sequence()
         test_game.create_grid(test_field)
 
-        for col in range(4, 7, 2):
-            test_game.model.on_cell_click(4, col)
+        for row in range(4, 7, 2):
+            test_game.model.on_cell_click(row, 4)
             test_game.model.set_color("Red")
         
         color, picked_cell, opened_minus, opened_plus, inline_minus_cells, inline_plus_cells, \
             gap_minus_cells, gap_plus_cells, empty_minus_cells, empty_plus_cells \
-            = test_game.model.check_inline_per_color_horizontal("Red")
+            = test_game.model.check_inline_per_color_vertical("Red")
         self.assertEqual(color, "Red")
-        self.assertEqual(picked_cell.row_index, 4)
-        self.assertEqual(picked_cell.col_index, 6)
+        self.assertEqual(picked_cell.row_index, 6)
+        self.assertEqual(picked_cell.col_index, 4)
         self.assertEqual(opened_minus, True)
         self.assertEqual(opened_plus, True)
         self.assertEqual(len(inline_minus_cells), 1)
@@ -214,16 +214,16 @@ class InlinePerColorHorizontalMinusGapped(unittest.TestCase):
         test_game = Sequence()
         test_game.create_grid(test_field)
 
-        for col in range(4, 8, 3):
-            test_game.model.on_cell_click(4, col)
+        for row in range(4, 8, 3):
+            test_game.model.on_cell_click(row, 4)
             test_game.model.set_color("Red")
         
         color, picked_cell, opened_minus, opened_plus, inline_minus_cells, inline_plus_cells, \
             gap_minus_cells, gap_plus_cells, empty_minus_cells, empty_plus_cells \
-            = test_game.model.check_inline_per_color_horizontal("Red")
+            = test_game.model.check_inline_per_color_vertical("Red")
         self.assertEqual(color, "Red")
-        self.assertEqual(picked_cell.row_index, 4)
-        self.assertEqual(picked_cell.col_index, 7)
+        self.assertEqual(picked_cell.row_index, 7)
+        self.assertEqual(picked_cell.col_index, 4)
         self.assertEqual(opened_minus, True)
         self.assertEqual(opened_plus, True)
         self.assertEqual(len(inline_minus_cells), 1)
@@ -243,16 +243,16 @@ class InlinePerColorHorizontalMinusGapped(unittest.TestCase):
         test_game = Sequence()
         test_game.create_grid(test_field)
 
-        for col in range(4, 9, 4):
-            test_game.model.on_cell_click(4, col)
+        for row in range(4, 9, 4):
+            test_game.model.on_cell_click(row, 4)
             test_game.model.set_color("Red")
         
         color, picked_cell, opened_minus, opened_plus, inline_minus_cells, inline_plus_cells, \
             gap_minus_cells, gap_plus_cells, empty_minus_cells, empty_plus_cells \
-            = test_game.model.check_inline_per_color_horizontal("Red")
+            = test_game.model.check_inline_per_color_vertical("Red")
         self.assertEqual(color, "Red")
-        self.assertEqual(picked_cell.row_index, 4)
-        self.assertEqual(picked_cell.col_index, 8)
+        self.assertEqual(picked_cell.row_index, 8)
+        self.assertEqual(picked_cell.col_index, 4)
         self.assertEqual(opened_minus, False)
         self.assertEqual(opened_plus, True)
         self.assertEqual(len(inline_minus_cells), 1)
@@ -274,17 +274,17 @@ class InlinePerColorHorizontalMinusGapped(unittest.TestCase):
 
         test_game.model.on_cell_click(4, 4)
         test_game.model.set_color("Red")
-        test_game.model.on_cell_click(4, 7)
+        test_game.model.on_cell_click(7, 4)
         test_game.model.set_color("Red")
-        test_game.model.on_cell_click(4, 8)
+        test_game.model.on_cell_click(8, 4)
         test_game.model.set_color("Red")
         
         color, picked_cell, opened_minus, opened_plus, inline_minus_cells, inline_plus_cells, \
             gap_minus_cells, gap_plus_cells, empty_minus_cells, empty_plus_cells \
-            = test_game.model.check_inline_per_color_horizontal("Red")
+            = test_game.model.check_inline_per_color_vertical("Red")
         self.assertEqual(color, "Red")
-        self.assertEqual(picked_cell.row_index, 4)
-        self.assertEqual(picked_cell.col_index, 8)
+        self.assertEqual(picked_cell.row_index, 8)
+        self.assertEqual(picked_cell.col_index, 4)
         self.assertEqual(opened_minus, False)
         self.assertEqual(opened_plus, True)
         self.assertEqual(len(inline_minus_cells), 2)
@@ -307,18 +307,18 @@ class InlinePerColorHorizontalMinusGapped(unittest.TestCase):
 
         test_game.model.on_cell_click(4, 4)
         test_game.model.set_color("Red")
-        test_game.model.on_cell_click(4, 5)
+        test_game.model.on_cell_click(5, 4)
         test_game.model.set_color("Red")
-        test_game.model.on_cell_click(4, 8)
+        test_game.model.on_cell_click(8, 4)
         test_game.model.set_color("Red")
         
         
         color, picked_cell, opened_minus, opened_plus, inline_minus_cells, inline_plus_cells, \
             gap_minus_cells, gap_plus_cells, empty_minus_cells, empty_plus_cells \
-            = test_game.model.check_inline_per_color_horizontal("Red")
+            = test_game.model.check_inline_per_color_vertical("Red")
         self.assertEqual(color, "Red")
-        self.assertEqual(picked_cell.row_index, 4)
-        self.assertEqual(picked_cell.col_index, 8)
+        self.assertEqual(picked_cell.row_index, 8)
+        self.assertEqual(picked_cell.col_index, 4)
         self.assertEqual(opened_minus, False)
         self.assertEqual(opened_plus, True)
         self.assertEqual(len(inline_minus_cells), 2)
@@ -338,16 +338,16 @@ class InlinePerColorHorizontalMinusGapped(unittest.TestCase):
         test_game = Sequence()
         test_game.create_grid(test_field)
 
-        for col in range(4, 9, 2):
-            test_game.model.on_cell_click(4, col)
+        for row in range(4, 9, 2):
+            test_game.model.on_cell_click(row, 4)
             test_game.model.set_color("Red")
         
         color, picked_cell, opened_minus, opened_plus, inline_minus_cells, inline_plus_cells, \
             gap_minus_cells, gap_plus_cells, empty_minus_cells, empty_plus_cells \
-            = test_game.model.check_inline_per_color_horizontal("Red")
+            = test_game.model.check_inline_per_color_vertical("Red")
         self.assertEqual(color, "Red")
-        self.assertEqual(picked_cell.row_index, 4)
-        self.assertEqual(picked_cell.col_index, 8)
+        self.assertEqual(picked_cell.row_index, 8)
+        self.assertEqual(picked_cell.col_index, 4)
         self.assertEqual(opened_minus, False)
         self.assertEqual(opened_plus, True)
         self.assertEqual(len(inline_minus_cells), 2)
@@ -361,7 +361,7 @@ class InlinePerColorHorizontalMinusGapped(unittest.TestCase):
         self.assertEqual(winner, False)   
         
         
-class InlinePerColorHorizontalPlusNOGap(unittest.TestCase):          
+class InlinePerColorVerticalPlusNOGap(unittest.TestCase):          
     def test_0_inline(self):
         test_field = tk.Tk()
         test_field.title("Test Field")
@@ -395,14 +395,14 @@ class InlinePerColorHorizontalPlusNOGap(unittest.TestCase):
     
         test_game = Sequence()
         test_game.create_grid(test_field)
-        
-        for col in range(5, 3, -1):
-            test_game.model.on_cell_click(4, col)
+
+        for row in range(5, 3, -1):
+            test_game.model.on_cell_click(row, 4)
             test_game.model.set_color("Red")
         
         color, picked_cell, opened_minus, opened_plus, inline_minus_cells, inline_plus_cells, \
             gap_minus_cells, gap_plus_cells, empty_minus_cells, empty_plus_cells \
-            = test_game.model.check_inline_per_color_horizontal("Red")
+            = test_game.model.check_inline_per_color_vertical("Red")
         self.assertEqual(color, "Red")
         self.assertEqual(picked_cell.row_index, 4)
         self.assertEqual(picked_cell.col_index, 4)
@@ -425,16 +425,16 @@ class InlinePerColorHorizontalPlusNOGap(unittest.TestCase):
         test_game = Sequence()
         test_game.create_grid(test_field)
 
-        for col in range(5, 2, -1):
-            test_game.model.on_cell_click(4, col)
+        for row in range(5, 2, -1):
+            test_game.model.on_cell_click(row, 4)
             test_game.model.set_color("Red")
         
         color, picked_cell, opened_minus, opened_plus, inline_minus_cells, inline_plus_cells, \
             gap_minus_cells, gap_plus_cells, empty_minus_cells, empty_plus_cells \
-            = test_game.model.check_inline_per_color_horizontal("Red")
+            = test_game.model.check_inline_per_color_vertical("Red")
         self.assertEqual(color, "Red")
-        self.assertEqual(picked_cell.row_index, 4)
-        self.assertEqual(picked_cell.col_index, 3)
+        self.assertEqual(picked_cell.row_index, 3)
+        self.assertEqual(picked_cell.col_index, 4)
         self.assertEqual(opened_minus, True)
         self.assertEqual(opened_plus, True)
         self.assertEqual(len(inline_minus_cells), 0)
@@ -454,16 +454,16 @@ class InlinePerColorHorizontalPlusNOGap(unittest.TestCase):
         test_game = Sequence()
         test_game.create_grid(test_field)
 
-        for col in range(5, 1, -1):
-            test_game.model.on_cell_click(4, col)
+        for row in range(5, 1, -1):
+            test_game.model.on_cell_click(row, 4)
             test_game.model.set_color("Red")
         
         color, picked_cell, opened_minus, opened_plus, inline_minus_cells, inline_plus_cells, \
             gap_minus_cells, gap_plus_cells, empty_minus_cells, empty_plus_cells \
-            = test_game.model.check_inline_per_color_horizontal("Red")
+            = test_game.model.check_inline_per_color_vertical("Red")
         self.assertEqual(color, "Red")
-        self.assertEqual(picked_cell.row_index, 4)
-        self.assertEqual(picked_cell.col_index, 2)
+        self.assertEqual(picked_cell.row_index, 2)
+        self.assertEqual(picked_cell.col_index, 4)
         self.assertEqual(opened_minus, True)
         self.assertEqual(opened_plus, True)
         self.assertEqual(len(inline_minus_cells), 0)
@@ -483,16 +483,16 @@ class InlinePerColorHorizontalPlusNOGap(unittest.TestCase):
         test_game = Sequence()
         test_game.create_grid(test_field)
 
-        for col in range(5, 0, -1):
-            test_game.model.on_cell_click(4, col)
+        for row in range(5, 0, -1):
+            test_game.model.on_cell_click(row, 4)
             test_game.model.set_color("Red")
         
         color, picked_cell, opened_minus, opened_plus, inline_minus_cells, inline_plus_cells, \
             gap_minus_cells, gap_plus_cells, empty_minus_cells, empty_plus_cells \
-            = test_game.model.check_inline_per_color_horizontal("Red")
+            = test_game.model.check_inline_per_color_vertical("Red")
         self.assertEqual(color, "Red")
-        self.assertEqual(picked_cell.row_index, 4)
-        self.assertEqual(picked_cell.col_index, 1)
+        self.assertEqual(picked_cell.row_index, 1)
+        self.assertEqual(picked_cell.col_index, 4)
         self.assertEqual(opened_minus, True)
         self.assertEqual(opened_plus, False)
         self.assertEqual(len(inline_minus_cells), 0)
@@ -512,16 +512,16 @@ class InlinePerColorHorizontalPlusNOGap(unittest.TestCase):
         test_game = Sequence()
         test_game.create_grid(test_field)
 
-        for col in range(4, -1, -1):
-            test_game.model.on_cell_click(4, col)
+        for row in range(4, -1, -1):
+            test_game.model.on_cell_click(row, 4)
             test_game.model.set_color("Red")
         
         color, picked_cell, opened_minus, opened_plus, inline_minus_cells, inline_plus_cells, \
             gap_minus_cells, gap_plus_cells, empty_minus_cells, empty_plus_cells \
-            = test_game.model.check_inline_per_color_horizontal("Red")
+            = test_game.model.check_inline_per_color_vertical("Red")
         self.assertEqual(color, "Red")
-        self.assertEqual(picked_cell.row_index, 4)
-        self.assertEqual(picked_cell.col_index, 0)
+        self.assertEqual(picked_cell.row_index, 0)
+        self.assertEqual(picked_cell.col_index, 4)
         self.assertEqual(opened_minus, False)
         self.assertEqual(opened_plus, False)
         self.assertEqual(len(inline_minus_cells), 0)
@@ -535,7 +535,7 @@ class InlinePerColorHorizontalPlusNOGap(unittest.TestCase):
         self.assertEqual(winner, "Red")
         
 
-class InlinePerColorHorizontalPlusGapped(unittest.TestCase):       
+class InlinePerColorVerticalPlusGapped(unittest.TestCase):       
     def test_1_inline_plus_1_gap(self):
         test_field = tk.Tk()
         test_field.title("Test Field")
@@ -543,16 +543,16 @@ class InlinePerColorHorizontalPlusGapped(unittest.TestCase):
         test_game = Sequence()
         test_game.create_grid(test_field)
 
-        for col in range(5, 2, -2):
-            test_game.model.on_cell_click(4, col)
+        for row in range(5, 2, -2):
+            test_game.model.on_cell_click(row, 4)
             test_game.model.set_color("Red")
         
         color, picked_cell, opened_minus, opened_plus, inline_minus_cells, inline_plus_cells, \
             gap_minus_cells, gap_plus_cells, empty_minus_cells, empty_plus_cells \
-            = test_game.model.check_inline_per_color_horizontal("Red")
+            = test_game.model.check_inline_per_color_vertical("Red")
         self.assertEqual(color, "Red")
-        self.assertEqual(picked_cell.row_index, 4)
-        self.assertEqual(picked_cell.col_index, 3)
+        self.assertEqual(picked_cell.row_index, 3)
+        self.assertEqual(picked_cell.col_index, 4)
         self.assertEqual(opened_minus, True)
         self.assertEqual(opened_plus, True)
         self.assertEqual(len(inline_minus_cells), 0)
@@ -572,16 +572,16 @@ class InlinePerColorHorizontalPlusGapped(unittest.TestCase):
         test_game = Sequence()
         test_game.create_grid(test_field)
 
-        for col in range(5, 1, -3):
-            test_game.model.on_cell_click(4, col)
+        for row in range(5, 1, -3):
+            test_game.model.on_cell_click(row, 4)
             test_game.model.set_color("Red")
         
         color, picked_cell, opened_minus, opened_plus, inline_minus_cells, inline_plus_cells, \
             gap_minus_cells, gap_plus_cells, empty_minus_cells, empty_plus_cells \
-            = test_game.model.check_inline_per_color_horizontal("Red")
+            = test_game.model.check_inline_per_color_vertical("Red")
         self.assertEqual(color, "Red")
-        self.assertEqual(picked_cell.row_index, 4)
-        self.assertEqual(picked_cell.col_index, 2)
+        self.assertEqual(picked_cell.row_index, 2)
+        self.assertEqual(picked_cell.col_index, 4)
         self.assertEqual(opened_minus, True)
         self.assertEqual(opened_plus, True)
         self.assertEqual(len(inline_minus_cells), 0)
@@ -601,16 +601,16 @@ class InlinePerColorHorizontalPlusGapped(unittest.TestCase):
         test_game = Sequence()
         test_game.create_grid(test_field)
 
-        for col in range(5, 0, -4):
-            test_game.model.on_cell_click(4, col)
+        for row in range(5, 0, -4):
+            test_game.model.on_cell_click(row, 4)
             test_game.model.set_color("Red")
         
         color, picked_cell, opened_minus, opened_plus, inline_minus_cells, inline_plus_cells, \
             gap_minus_cells, gap_plus_cells, empty_minus_cells, empty_plus_cells \
-            = test_game.model.check_inline_per_color_horizontal("Red")
+            = test_game.model.check_inline_per_color_vertical("Red")
         self.assertEqual(color, "Red")
-        self.assertEqual(picked_cell.row_index, 4)
-        self.assertEqual(picked_cell.col_index, 1)
+        self.assertEqual(picked_cell.row_index, 1)
+        self.assertEqual(picked_cell.col_index, 4)
         self.assertEqual(opened_minus, True)
         self.assertEqual(opened_plus, False)
         self.assertEqual(len(inline_minus_cells), 0)
@@ -630,19 +630,19 @@ class InlinePerColorHorizontalPlusGapped(unittest.TestCase):
         test_game = Sequence()
         test_game.create_grid(test_field)
 
-        test_game.model.on_cell_click(4, 5)
+        test_game.model.on_cell_click(5, 5)
         test_game.model.set_color("Red")
-        test_game.model.on_cell_click(4, 2)
+        test_game.model.on_cell_click(2, 5)
         test_game.model.set_color("Red")
-        test_game.model.on_cell_click(4, 1)
+        test_game.model.on_cell_click(1, 5)
         test_game.model.set_color("Red")
         
         color, picked_cell, opened_minus, opened_plus, inline_minus_cells, inline_plus_cells, \
             gap_minus_cells, gap_plus_cells, empty_minus_cells, empty_plus_cells \
-            = test_game.model.check_inline_per_color_horizontal("Red")
+            = test_game.model.check_inline_per_color_vertical("Red")
         self.assertEqual(color, "Red")
-        self.assertEqual(picked_cell.row_index, 4)
-        self.assertEqual(picked_cell.col_index, 1)
+        self.assertEqual(picked_cell.row_index, 1)
+        self.assertEqual(picked_cell.col_index, 5)
         self.assertEqual(opened_minus, True)
         self.assertEqual(opened_plus, False)
         self.assertEqual(len(inline_minus_cells), 0)
@@ -663,20 +663,20 @@ class InlinePerColorHorizontalPlusGapped(unittest.TestCase):
         test_game.create_grid(test_field)
 
 
+        test_game.model.on_cell_click(5, 5)
+        test_game.model.set_color("Red")
         test_game.model.on_cell_click(4, 5)
         test_game.model.set_color("Red")
-        test_game.model.on_cell_click(4, 4)
-        test_game.model.set_color("Red")
-        test_game.model.on_cell_click(4, 1)
+        test_game.model.on_cell_click(1, 5)
         test_game.model.set_color("Red")
         
         
         color, picked_cell, opened_minus, opened_plus, inline_minus_cells, inline_plus_cells, \
             gap_minus_cells, gap_plus_cells, empty_minus_cells, empty_plus_cells \
-            = test_game.model.check_inline_per_color_horizontal("Red")
+            = test_game.model.check_inline_per_color_vertical("Red")
         self.assertEqual(color, "Red")
-        self.assertEqual(picked_cell.row_index, 4)
-        self.assertEqual(picked_cell.col_index, 1)
+        self.assertEqual(picked_cell.row_index, 1)
+        self.assertEqual(picked_cell.col_index, 5)
         self.assertEqual(opened_minus, True)
         self.assertEqual(opened_plus, False)
         self.assertEqual(len(inline_minus_cells), 0)
@@ -696,16 +696,16 @@ class InlinePerColorHorizontalPlusGapped(unittest.TestCase):
         test_game = Sequence()
         test_game.create_grid(test_field)
 
-        for col in range(5, 0, -2):
-            test_game.model.on_cell_click(4, col)
+        for row in range(5, 0, -2):
+            test_game.model.on_cell_click(row, 5)
             test_game.model.set_color("Red")
         
         color, picked_cell, opened_minus, opened_plus, inline_minus_cells, inline_plus_cells, \
             gap_minus_cells, gap_plus_cells, empty_minus_cells, empty_plus_cells \
-            = test_game.model.check_inline_per_color_horizontal("Red")
+            = test_game.model.check_inline_per_color_vertical("Red")
         self.assertEqual(color, "Red")
-        self.assertEqual(picked_cell.row_index, 4)
-        self.assertEqual(picked_cell.col_index, 1)
+        self.assertEqual(picked_cell.row_index, 1)
+        self.assertEqual(picked_cell.col_index, 5)
         self.assertEqual(opened_minus, True)
         self.assertEqual(opened_plus, False)
         self.assertEqual(len(inline_minus_cells), 0)

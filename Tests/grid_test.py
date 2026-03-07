@@ -44,8 +44,10 @@ class SequenceTest(unittest.TestCase):
 
         # Simulate a cell click
         test_game.model.on_cell_click(2, 3)
-        test_game.model.picked_cell.row_index = 2
-        test_game.model.picked_cell.col_index = 3
+        self.assertEqual(test_game.model.picked_cell.row_index, 2)
+        self.assertEqual(test_game.model.picked_cell.col_index, 3)
+        self.assertEqual(test_game.model.grid[2][3]["bg"], "White")
+        self.assertEqual(test_game.model.grid[2][3]["state"], "normal")
     
     def test_coloring_cell(self):
         test_field = tk.Tk()
@@ -58,6 +60,7 @@ class SequenceTest(unittest.TestCase):
         test_game.model.on_cell_click(2, 3)
         test_game.model.set_color("Red")
         self.assertEqual(test_game.model.grid[2][3]["bg"], "Red")
+        self.assertEqual(test_game.model.grid[2][3]["state"], "disabled")
 
 
 if __name__ == '__main__':

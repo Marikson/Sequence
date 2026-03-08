@@ -660,7 +660,7 @@ class SequenceModel:
                 elif self.get_btn_color(self.grid[self.picked_cell.row_index - i][self.picked_cell.col_index - i]) == "White":
                     if not other_color_inline_minus:
                         potentially_gap_minus = True
-                        if (i==4 or self.picked_cell.row_index - i == 0 and self.picked_cell.col_index - i == 0) \
+                        if (i==4 or self.picked_cell.row_index - i == 0 or self.picked_cell.col_index - i == 0) \
                             and not other_color_inline_minus:
                             opened_minus = True
                         else:
@@ -682,13 +682,13 @@ class SequenceModel:
                             for j in range(1, empty_plus_counter + 1):
                                 gap_cell = self.Cell(self.picked_cell.row_index + i - j, self.picked_cell.col_index + i - j, self.picked_cell, 1, 1)
                                 gap_plus_cells.append(gap_cell)
-                                empty_minus_cells = [cell for cell in empty_minus_cells if not (cell.row_index == self.picked_cell.row_index + i - j and cell.col_index == self.picked_cell.col_index + i - j)]
+                                empty_plus_cells = [cell for cell in empty_plus_cells if not (cell.row_index == self.picked_cell.row_index + i - j and cell.col_index == self.picked_cell.col_index + i - j)]
                             potentially_gap_plus = False
                             empty_plus_counter = 0
                 elif self.get_btn_color(self.grid[self.picked_cell.row_index + i][self.picked_cell.col_index + i]) == "White":
                     if not other_color_inline_plus:
                         potentially_gap_plus = True
-                        if (i==4 or self.picked_cell.row_index + i == Misc.GRID_MAX_INDEX and self.picked_cell.col_index + i == Misc.GRID_MAX_INDEX) \
+                        if (i==4 or self.picked_cell.row_index + i == Misc.GRID_MAX_INDEX or self.picked_cell.col_index + i == Misc.GRID_MAX_INDEX) \
                             and not other_color_inline_plus:
                             opened_plus = True
                         else:
@@ -740,7 +740,7 @@ class SequenceModel:
                 elif self.get_btn_color(self.grid[self.picked_cell.row_index + i][self.picked_cell.col_index - i]) == "White":
                     if not other_color_inline_minus:
                         potentially_gap_minus = True
-                        if (i==4 or self.picked_cell.row_index + i == Misc.GRID_MAX_INDEX and self.picked_cell.col_index - i == 0) \
+                        if (i==4 or self.picked_cell.row_index + i == Misc.GRID_MAX_INDEX or self.picked_cell.col_index - i == 0) \
                             and not other_color_inline_minus:
                             opened_minus = True
                         else:
@@ -768,7 +768,7 @@ class SequenceModel:
                 elif self.get_btn_color(self.grid[self.picked_cell.row_index - i][self.picked_cell.col_index + i]) == "White":
                     if not other_color_inline_plus:
                         potentially_gap_plus = True
-                        if (i==4 or self.picked_cell.row_index - i == 0 and self.picked_cell.col_index + i == Misc.GRID_MAX_INDEX) \
+                        if (i==4 or self.picked_cell.row_index - i == 0 or self.picked_cell.col_index + i == Misc.GRID_MAX_INDEX) \
                             and not other_color_inline_plus:
                             opened_plus = True
                         else:

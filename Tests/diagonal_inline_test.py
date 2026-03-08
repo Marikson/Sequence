@@ -334,9 +334,9 @@ class InlinePerColorDiagonalMinusGapped(unittest.TestCase):
         test_game.create_grid(test_field)
 
 
-        test_game.model.on_cell_click(4, 6)
+        test_game.model.on_cell_click(4, 5)
         test_game.model.set_color("Red")
-        test_game.model.on_cell_click(5, 7)
+        test_game.model.on_cell_click(5, 6)
         test_game.model.set_color("Red")
         test_game.model.on_cell_click(8, 9)
         test_game.model.set_color("Red")
@@ -355,7 +355,7 @@ class InlinePerColorDiagonalMinusGapped(unittest.TestCase):
         self.assertEqual(len(gap_minus_cells), 2)
         self.assertEqual(len(gap_plus_cells), 0)
         self.assertEqual(len(empty_minus_cells), 0)
-        self.assertEqual(len(empty_plus_cells), 1)
+        self.assertEqual(len(empty_plus_cells), 0)
         
         winner = test_game.model.check_winner()
         self.assertEqual(winner, False)

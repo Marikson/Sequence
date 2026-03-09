@@ -141,6 +141,8 @@ class SequenceModel:
 
 
     def on_cell_click(self, row, col):
+        if row < 0 or row >= Misc.GRID_SIZE or col < 0 or col >= Misc.GRID_SIZE:
+            return
         self.picked_cell = self.Cell(row, col)
 
 
@@ -724,7 +726,7 @@ class SequenceModel:
         other_color_inline_minus = False
         other_color_inline_plus = False
         for i in range(1, Misc.INLINE_TO_WIN):
-            # up-right
+            # down-left
             if self.picked_cell.row_index + i <= Misc.GRID_MAX_INDEX and self.picked_cell.col_index - i >= 0:
                 if self.get_btn_color(self.grid[self.picked_cell.row_index + i][self.picked_cell.col_index - i]) in [color, "Black"]:
                     if not other_color_inline_minus:
@@ -752,7 +754,7 @@ class SequenceModel:
                     potentially_gap_minus = False
                     opened_minus = False
             
-            # down-left
+            # up-right
             if self.picked_cell.row_index - i >= 0 and self.picked_cell.col_index + i <= Misc.GRID_MAX_INDEX:
                 if self.get_btn_color(self.grid[self.picked_cell.row_index - i][self.picked_cell.col_index + i]) in [color, "Black"]:
                     if not other_color_inline_plus:
@@ -762,7 +764,7 @@ class SequenceModel:
                             for j in range(1, empty_plus_counter + 1):
                                 gap_cell = self.Cell(self.picked_cell.row_index - i + j, self.picked_cell.col_index + i - j, self.picked_cell, -1, 1)
                                 gap_plus_cells.append(gap_cell)
-                                empty_minus_cells = [cell for cell in empty_minus_cells if not (cell.row_index == self.picked_cell.row_index - i + j and cell.col_index == self.picked_cell.col_index + i - j)]
+                                empty_plus_cells = [cell for cell in empty_plus_cells if not (cell.row_index == self.picked_cell.row_index - i + j and cell.col_index == self.picked_cell.col_index + i - j)]
                             potentially_gap_plus = False
                             empty_plus_counter = 0
                 elif self.get_btn_color(self.grid[self.picked_cell.row_index - i][self.picked_cell.col_index + i]) == "White":

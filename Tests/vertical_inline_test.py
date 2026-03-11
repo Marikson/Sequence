@@ -777,7 +777,7 @@ class InlinePerColorVerticalPlusGapped(unittest.TestCase):
         self.assertEqual(winner, "Red")
 
     
-class OtherColorInlinePerColorHorizontalMinus(unittest.TestCase):
+class OtherColorInlinePerColorVerticalMinus(unittest.TestCase):
     def test_other_color_inline_in_middle(self):
         test_field = tk.Tk()
         test_field.title("Test Field")
@@ -912,7 +912,7 @@ class OtherColorInlinePerColorHorizontalMinus(unittest.TestCase):
         self.assertEqual(winner, False)
         
         
-class OtherColorInlinePerColorHorizontalPlus(unittest.TestCase):
+class OtherColorInlinePerColorVerticalPlus(unittest.TestCase):
     def test_other_color_inline_in_middle(self):
         test_field = tk.Tk()
         test_field.title("Test Field")

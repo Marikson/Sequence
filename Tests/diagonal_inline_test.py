@@ -834,6 +834,277 @@ class InlinePerColorDiagonalPlusGapped(unittest.TestCase):
         winner = test_game.model.check_winner()
         self.assertEqual(winner, False)   
           
+          
+class OtherColorInlinePerColorDiagonalMinus(unittest.TestCase):
+    def test_other_color_inline_in_middle(self):
+        test_field = tk.Tk()
+        test_field.title("Test Field")
+    
+        test_game = Sequence()
+        test_game.create_grid(test_field)
+
+        test_game.model.on_cell_click(3, 4)
+        test_game.model.set_color("Blue")
+
+        for i in range(0, 5, 2):
+            test_game.model.on_cell_click(2 + i, 3 + i)
+            test_game.model.set_color("Red")
+        
+        color, picked_cell, opened_minus, opened_plus, inline_minus_cells, inline_plus_cells, \
+            gap_minus_cells, gap_plus_cells, empty_minus_cells, empty_plus_cells \
+            = test_game.model.check_inline_per_color_diagonal("Red")
+        self.assertEqual(color, "Red")
+        self.assertEqual(picked_cell.row_index, 6)
+        self.assertEqual(picked_cell.col_index, 7)
+        self.assertEqual(opened_minus, False)
+        self.assertEqual(opened_plus, True)
+        self.assertEqual(len(inline_minus_cells), 1)
+        self.assertEqual(len(inline_plus_cells), 0)
+        self.assertEqual(len(gap_minus_cells), 1)
+        self.assertEqual(len(gap_plus_cells), 0)
+        self.assertEqual(len(empty_minus_cells), 0)
+        self.assertEqual(len(empty_plus_cells), 2)
+        
+        
+        winner = test_game.model.check_winner()
+        self.assertEqual(winner, False)
+        
+    
+    def test_other_color_inline_in_middle_mirrored(self):
+        test_field = tk.Tk()
+        test_field.title("Test Field")
+    
+        test_game = Sequence()
+        test_game.create_grid(test_field)
+
+        test_game.model.on_cell_click(5, 6)
+        test_game.model.set_color("Blue")
+
+        for i in range(0, 5, 2):
+            test_game.model.on_cell_click(2 + i, 3 + i)
+            test_game.model.set_color("Red")
+        
+        color, picked_cell, opened_minus, opened_plus, inline_minus_cells, inline_plus_cells, \
+            gap_minus_cells, gap_plus_cells, empty_minus_cells, empty_plus_cells \
+            = test_game.model.check_inline_per_color_diagonal("Red")
+        self.assertEqual(color, "Red")
+        self.assertEqual(picked_cell.row_index, 6)
+        self.assertEqual(picked_cell.col_index, 7)
+        self.assertEqual(opened_minus, False)
+        self.assertEqual(opened_plus, True)
+        self.assertEqual(len(inline_minus_cells), 0)
+        self.assertEqual(len(inline_plus_cells), 0)
+        self.assertEqual(len(gap_minus_cells), 0)
+        self.assertEqual(len(gap_plus_cells), 0)
+        self.assertEqual(len(empty_minus_cells), 0)
+        self.assertEqual(len(empty_plus_cells), 2)
+        
+        
+        winner = test_game.model.check_winner()
+        self.assertEqual(winner, False)    
+    
+        
+    def test_other_color_inline_on_end(self):
+        test_field = tk.Tk()
+        test_field.title("Test Field")
+    
+        test_game = Sequence()
+        test_game.create_grid(test_field)
+
+        test_game.model.on_cell_click(1, 2)
+        test_game.model.set_color("Blue")
+
+        for i in range(0, 4):
+            test_game.model.on_cell_click(2 + i, 3 + i)
+            test_game.model.set_color("Red")
+        
+        color, picked_cell, opened_minus, opened_plus, inline_minus_cells, inline_plus_cells, \
+            gap_minus_cells, gap_plus_cells, empty_minus_cells, empty_plus_cells \
+            = test_game.model.check_inline_per_color_diagonal("Red")
+        self.assertEqual(color, "Red")
+        self.assertEqual(picked_cell.row_index, 5)
+        self.assertEqual(picked_cell.col_index, 6)
+        self.assertEqual(opened_minus, False)
+        self.assertEqual(opened_plus, True)
+        self.assertEqual(len(inline_minus_cells), 3)
+        self.assertEqual(len(inline_plus_cells), 0)
+        self.assertEqual(len(gap_minus_cells), 0)
+        self.assertEqual(len(gap_plus_cells), 0)
+        self.assertEqual(len(empty_minus_cells), 0)
+        self.assertEqual(len(empty_plus_cells), 3)
+        
+        winner = test_game.model.check_winner()
+        self.assertEqual(winner, False)
+        
+        
+    def test_other_color_inline_on_end_mirrored(self):
+        test_field = tk.Tk()
+        test_field.title("Test Field")
+    
+        test_game = Sequence()
+        test_game.create_grid(test_field)
+
+        test_game.model.on_cell_click(6, 7)
+        test_game.model.set_color("Blue")
+
+        for i in range(0, 4):
+            test_game.model.on_cell_click(2 + i, 3 + i)
+            test_game.model.set_color("Red")
+        
+        color, picked_cell, opened_minus, opened_plus, inline_minus_cells, inline_plus_cells, \
+            gap_minus_cells, gap_plus_cells, empty_minus_cells, empty_plus_cells \
+            = test_game.model.check_inline_per_color_diagonal("Red")
+        self.assertEqual(color, "Red")
+        self.assertEqual(picked_cell.row_index, 5)
+        self.assertEqual(picked_cell.col_index, 6)
+        self.assertEqual(opened_minus, True)
+        self.assertEqual(opened_plus, False)
+        self.assertEqual(len(inline_minus_cells), 3)
+        self.assertEqual(len(inline_plus_cells), 0)
+        self.assertEqual(len(gap_minus_cells), 0)
+        self.assertEqual(len(gap_plus_cells), 0)
+        self.assertEqual(len(empty_minus_cells), 1)
+        self.assertEqual(len(empty_plus_cells), 0)
+        
+        winner = test_game.model.check_winner()
+        self.assertEqual(winner, False)
+        
+        
+class OtherColorInlinePerColorDiagonalPlus(unittest.TestCase):
+    def test_other_color_inline_in_middle(self):
+        test_field = tk.Tk()
+        test_field.title("Test Field")
+    
+        test_game = Sequence()
+        test_game.create_grid(test_field)
+
+        
+        test_game.model.on_cell_click(3, 4)
+        test_game.model.set_color("Blue")
+
+        for i in range(0, 5, 2):
+            test_game.model.on_cell_click(6 - i, 7 - i)
+            test_game.model.set_color("Red")
+        
+        color, picked_cell, opened_minus, opened_plus, inline_minus_cells, inline_plus_cells, \
+            gap_minus_cells, gap_plus_cells, empty_minus_cells, empty_plus_cells \
+            = test_game.model.check_inline_per_color_diagonal("Red")
+        self.assertEqual(color, "Red")
+        self.assertEqual(picked_cell.row_index, 2)
+        self.assertEqual(picked_cell.col_index, 3)
+        self.assertEqual(opened_minus, True)
+        self.assertEqual(opened_plus, False)
+        self.assertEqual(len(inline_minus_cells), 0)
+        self.assertEqual(len(inline_plus_cells), 0)
+        self.assertEqual(len(gap_minus_cells), 0)
+        self.assertEqual(len(gap_plus_cells), 0)
+        self.assertEqual(len(empty_minus_cells), 2)
+        self.assertEqual(len(empty_plus_cells), 0)
+        
+        
+        winner = test_game.model.check_winner()
+        self.assertEqual(winner, False)
+        
+    
+    def test_other_color_inline_in_middle_mirrored(self):
+        test_field = tk.Tk()
+        test_field.title("Test Field")
+    
+        test_game = Sequence()
+        test_game.create_grid(test_field)
+
+        test_game.model.on_cell_click(5, 6)
+        test_game.model.set_color("Blue")
+
+        for i in range(0, 5, 2):
+            test_game.model.on_cell_click(6 - i, 7 - i)
+            test_game.model.set_color("Red")
+        
+        color, picked_cell, opened_minus, opened_plus, inline_minus_cells, inline_plus_cells, \
+            gap_minus_cells, gap_plus_cells, empty_minus_cells, empty_plus_cells \
+            = test_game.model.check_inline_per_color_diagonal("Red")
+        self.assertEqual(color, "Red")
+        self.assertEqual(picked_cell.row_index, 2)
+        self.assertEqual(picked_cell.col_index, 3)
+        self.assertEqual(opened_minus, True)
+        self.assertEqual(opened_plus, False)
+        self.assertEqual(len(inline_minus_cells), 0)
+        self.assertEqual(len(inline_plus_cells), 1)
+        self.assertEqual(len(gap_minus_cells), 0)
+        self.assertEqual(len(gap_plus_cells), 1)
+        self.assertEqual(len(empty_minus_cells), 2)
+        self.assertEqual(len(empty_plus_cells), 0)
+        
+        
+        winner = test_game.model.check_winner()
+        self.assertEqual(winner, False)    
+    
+        
+    def test_other_color_inline_on_end(self):
+        test_field = tk.Tk()
+        test_field.title("Test Field")
+    
+        test_game = Sequence()
+        test_game.create_grid(test_field)
+        
+        test_game.model.on_cell_click(2, 3)
+        test_game.model.set_color("Blue")
+
+        for i in range(0, 4):
+            test_game.model.on_cell_click(6 - i, 7 - i)
+            test_game.model.set_color("Red")
+        
+        color, picked_cell, opened_minus, opened_plus, inline_minus_cells, inline_plus_cells, \
+            gap_minus_cells, gap_plus_cells, empty_minus_cells, empty_plus_cells \
+            = test_game.model.check_inline_per_color_diagonal("Red")
+        self.assertEqual(color, "Red")
+        self.assertEqual(picked_cell.row_index, 3)
+        self.assertEqual(picked_cell.col_index, 4)
+        self.assertEqual(opened_minus, False)
+        self.assertEqual(opened_plus, True)
+        self.assertEqual(len(inline_minus_cells), 0)
+        self.assertEqual(len(inline_plus_cells), 3)
+        self.assertEqual(len(gap_minus_cells), 0)
+        self.assertEqual(len(gap_plus_cells), 0)
+        self.assertEqual(len(empty_minus_cells), 0)
+        self.assertEqual(len(empty_plus_cells), 1)
+        
+        winner = test_game.model.check_winner()
+        self.assertEqual(winner, False)
+        
+        
+    def test_other_color_inline_on_end_mirrored(self):
+        test_field = tk.Tk()
+        test_field.title("Test Field")
+    
+        test_game = Sequence()
+        test_game.create_grid(test_field)
+        
+        test_game.model.on_cell_click(7, 8)
+        test_game.model.set_color("Blue")
+
+        for i in range(0, 4):
+            test_game.model.on_cell_click(6 - i, 7 - i)
+            test_game.model.set_color("Red")
+        
+        color, picked_cell, opened_minus, opened_plus, inline_minus_cells, inline_plus_cells, \
+            gap_minus_cells, gap_plus_cells, empty_minus_cells, empty_plus_cells \
+            = test_game.model.check_inline_per_color_diagonal("Red")
+        self.assertEqual(color, "Red")
+        self.assertEqual(picked_cell.row_index, 3)
+        self.assertEqual(picked_cell.col_index, 4)
+        self.assertEqual(opened_minus, True)
+        self.assertEqual(opened_plus, False)
+        self.assertEqual(len(inline_minus_cells), 0)
+        self.assertEqual(len(inline_plus_cells), 3)
+        self.assertEqual(len(gap_minus_cells), 0)
+        self.assertEqual(len(gap_plus_cells), 0)
+        self.assertEqual(len(empty_minus_cells), 3)
+        self.assertEqual(len(empty_plus_cells), 0)
+        
+        winner = test_game.model.check_winner()
+        self.assertEqual(winner, False)
+            
     
 if __name__ == '__main__':
     unittest.main()

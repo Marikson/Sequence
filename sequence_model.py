@@ -207,14 +207,7 @@ class SequenceModel:
             return inline_count, inline_weight, gap_weight, empty_weight
     
     
-    def determine_inline(self, cell,
-        inline_minus_cells, inline_plus_cells,
-        gap_minus_cells, gap_plus_cells,
-        empty_minus_cells, empty_plus_cells):
-        # --------------------------------
-        # Helper methods
-        # --------------------------------
-        def get_direction_order(minus_count, plus_count, minus_inline_weight, plus_inline_weight, minus_gap_weight, plus_gap_weight, minus_empty_weight, plus_empty_weight):
+    def get_direction_order(self, minus_count, plus_count, minus_inline_weight, plus_inline_weight, minus_gap_weight, plus_gap_weight, minus_empty_weight, plus_empty_weight):
             if minus_count > plus_count:
                 return ["minus", "plus"]
             elif plus_count > minus_count:
@@ -237,6 +230,14 @@ class SequenceModel:
                         else:
                             return ["minus", "plus"]
         
+    
+    def determine_inline(self, cell,
+        inline_minus_cells, inline_plus_cells,
+        gap_minus_cells, gap_plus_cells,
+        empty_minus_cells, empty_plus_cells):
+        # --------------------------------
+        # Helper methods
+        # --------------------------------
         
         def extend_sequence(inline_cells, gap_cells, sequence_pattern, sequence_cells, sequence_starting_side):
             sorted_extension_cells = sorted(inline_cells + gap_cells, key=lambda c: abs(c.relative_position_to_picked_cell), reverse=True)
@@ -248,11 +249,14 @@ class SequenceModel:
             sorted_sequence_cells = sorted(sequence_cells, key=lambda c: abs(c.relative_position_to_picked_cell))
             sequence_starting_cell = sorted_sequence_cells[-1] if sorted_sequence_cells else None
             sequence_starting_cell_rel_pos = sequence_starting_cell.relative_position_to_picked_cell if sequence_starting_cell else None
-            extension_limit = abs(closest_inline_cell_rel_pos) - abs(sequence_starting_cell_rel_pos) if sequence_starting_cell_rel_pos is not None else 0
+            extension_limit = abs(abs(closest_inline_cell_rel_pos) - abs(sequence_starting_cell_rel_pos)) if sequence_starting_cell_rel_pos is not None else 0
             
-            empty_cells = []
             sorted_extension_cells_limited = sorted_extension_cells[-extension_limit:] if extension_limit > 0 else sorted_extension_cells
                 
+            if extension_limit == 0:
+                empty_cells = list(reversed(sorted_extension_cells))[:-1]
+            else:
+                empty_cells = []
             
             was_inline = False
             for c in sorted_extension_cells_limited:
@@ -292,7 +296,7 @@ class SequenceModel:
         minus_count, minus_inline_weight, minus_gap_weight, minus_empty_weight = self.calculate_weights(inline_minus_cells, gap_minus_cells, empty_minus_cells)
         plus_count, plus_inline_weight, plus_gap_weight, plus_empty_weight = self.calculate_weights(inline_plus_cells, gap_plus_cells, empty_plus_cells)
         
-        direction_order = get_direction_order(minus_count, plus_count, minus_inline_weight, plus_inline_weight, minus_gap_weight, plus_gap_weight, minus_empty_weight, plus_empty_weight)
+        direction_order = self.get_direction_order(minus_count, plus_count, minus_inline_weight, plus_inline_weight, minus_gap_weight, plus_gap_weight, minus_empty_weight, plus_empty_weight)
         
         
         # -------------------------------

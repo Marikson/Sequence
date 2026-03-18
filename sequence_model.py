@@ -81,18 +81,6 @@ class SequenceModel:
             return k
 
 
-
-        # def are_neighbours(self, other_cell):
-        #     for i in range(self.row_index - 1, self.row_index + 2):
-        #         if i < 0 or i >= Misc.GRID_SIZE:
-        #             continue
-        #         for j in range(self.col_index - 1, self.col_index + 2):
-        #             if j < 0 or j >= Misc.GRID_SIZE:
-        #                 continue
-        #             if i == other_cell.row_index and j == other_cell.col_index:
-        #                 return True
-        #     return False
-
     def __init__(self):
         self.grid = None
         self.picked_cell = None
@@ -138,8 +126,6 @@ class SequenceModel:
         }
         
         
-
-
     def on_cell_click(self, row, col):
         if row < 0 or row >= Misc.GRID_SIZE or col < 0 or col >= Misc.GRID_SIZE:
             return
@@ -205,7 +191,20 @@ class SequenceModel:
             self.grid[self.picked_cell.row_index][self.picked_cell.col_index].config(bg=color)
             self.grid[self.picked_cell.row_index][self.picked_cell.col_index].config(state="disabled")
 
-
+    
+    def calculate_weights(self, inline_list, gap_list, empty_list):
+            inline_rel_pos_prduct = 1
+            for cell in inline_list:
+                inline_rel_pos_prduct *= cell.relative_position_to_picked_cell
+            inline_weight = int(abs(inline_rel_pos_prduct) / len(inline_list)) if inline_list else 100
+            gap_rel_pos_prduct = 1
+            for cell in gap_list:
+                gap_rel_pos_prduct *= cell.relative_position_to_picked_cell
+            gap_weight = int(abs(gap_rel_pos_prduct) / len(gap_list)) if gap_list else 100
+            empty_weight = len(empty_list)
+            
+            return inline_weight, gap_weight, empty_weight
+    
     
     def determine_inline(self, cell,
         inline_minus_cells, inline_plus_cells,
@@ -214,22 +213,9 @@ class SequenceModel:
         # -------------------------------
         # Weight calculation for direction
         # -------------------------------
-        def calculate_weights(inline_list, gap_list, empty_list):
-            inline_rel_pos_prduct = 1
-            for cell in inline_list:
-                inline_rel_pos_prduct *= cell.relative_position_to_picked_cell
-            inline_weight = int(abs(inline_rel_pos_prduct) / len(inline_list)) if inline_list else 100
-            gap_rel_pos_prduct = 1
-            for cell in gap_list:
-                gap_rel_pos_prduct *= cell.relative_position_to_picked_cell
-            gap_weight = int(abs(gap_rel_pos_prduct) / len(gap_list)) if gap_list else 0
-            empty_weight = len(empty_list)
-            
-                
-            return inline_weight, gap_weight, empty_weight
-
-        minus_inline_weight, minus_gap_weight, minus_empty_weight = calculate_weights(inline_minus_cells, gap_minus_cells, empty_minus_cells)
-        plus_inline_weight, plus_gap_weight, plus_empty_weight = calculate_weights(inline_plus_cells, gap_plus_cells, empty_plus_cells)
+        
+        minus_inline_weight, minus_gap_weight, minus_empty_weight = self.calculate_weights(inline_minus_cells, gap_minus_cells, empty_minus_cells)
+        plus_inline_weight, plus_gap_weight, plus_empty_weight = self.calculate_weights(inline_plus_cells, gap_plus_cells, empty_plus_cells)
         
         
         def get_direction_order(minus_inline_weight, plus_inline_weight, minus_gap_weight, plus_gap_weight, minus_empty_weight, plus_empty_weight):
@@ -368,19 +354,6 @@ class SequenceModel:
         }
 
 
-    def get_empty_indexes(self, indexes_tracked, empty_minus_indexes, empty_plus_indexes):
-        i = 0
-        empty_indexes = []
-        while indexes_tracked <= Misc.INLINE_TO_WIN:
-            if i < len(empty_minus_indexes):
-                empty_indexes.append(empty_minus_indexes[i])
-                indexes_tracked += 1
-            if i < len(empty_plus_indexes):
-                empty_indexes.append(empty_plus_indexes[i])
-                indexes_tracked += 1
-            i += 1
-        return empty_indexes
-
 
     def set_inline_dict(self, color, cell: Cell,
                             opened_minus, opened_plus,
@@ -425,8 +398,6 @@ class SequenceModel:
             self.inline_dict[color]["empty_middle_cells"] = evaluated["empty_middle_cells"]
 
         # self.inline_dict[color]["round_to_come_again"] = len(Misc.turn) - 1
-
-
 
 
     def calculate_win_probability(self, color_who_picked):

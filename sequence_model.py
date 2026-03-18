@@ -210,23 +210,18 @@ class SequenceModel:
         inline_minus_cells, inline_plus_cells,
         gap_minus_cells, gap_plus_cells,
         empty_minus_cells, empty_plus_cells):
-        # -------------------------------
-        # Weight calculation for direction
-        # -------------------------------
-        
-        minus_inline_weight, minus_gap_weight, minus_empty_weight = self.calculate_weights(inline_minus_cells, gap_minus_cells, empty_minus_cells)
-        plus_inline_weight, plus_gap_weight, plus_empty_weight = self.calculate_weights(inline_plus_cells, gap_plus_cells, empty_plus_cells)
-        
-        
+        # --------------------------------
+        # Helper methods
+        # --------------------------------
         def get_direction_order(minus_inline_weight, plus_inline_weight, minus_gap_weight, plus_gap_weight, minus_empty_weight, plus_empty_weight):
-            if minus_inline_weight > plus_inline_weight:
+            if minus_inline_weight < plus_inline_weight:
                 return ["minus", "plus"]
-            elif plus_inline_weight > minus_inline_weight:
+            elif plus_inline_weight < minus_inline_weight:
                 return ["plus", "minus"]
             else:
-                if minus_gap_weight > plus_gap_weight:
+                if minus_gap_weight < plus_gap_weight:
                     return ["minus", "plus"]
-                elif plus_gap_weight > minus_gap_weight:
+                elif plus_gap_weight < minus_gap_weight:
                     return ["plus", "minus"]
                 else:
                     if minus_empty_weight > plus_empty_weight:
@@ -236,9 +231,7 @@ class SequenceModel:
                     else:
                         return ["minus", "plus"]
         
-        direction_order = get_direction_order(minus_inline_weight, plus_inline_weight, minus_gap_weight, plus_gap_weight, minus_empty_weight, plus_empty_weight)
         
-
         def extend_sequence(inline_cells, gap_cells, sequence_pattern, sequence_cells, sequence_starting_side):
             sorted_all_cells = sorted(inline_cells + gap_cells, key=lambda c: c.relative_position_to_picked_cell, reverse=True)
             sorted_inline_cells = sorted(inline_cells, key=lambda c: c.relative_position_to_picked_cell)            
@@ -274,8 +267,8 @@ class SequenceModel:
                             empty_cells.append(c)         
             
             return sequence_pattern, sequence_cells, empty_cells
-
-
+        
+        
         def process_cells(inline_cells, gap_cells, sequence_pattern, sequence_cells):
             sorted_all_cells = sorted(inline_cells + gap_cells, key=lambda c: c.relative_position_to_picked_cell)
             
@@ -290,13 +283,24 @@ class SequenceModel:
                         sequence_cells.append(c)
 
             return sequence_pattern, sequence_cells
-            
+        
+        # -------------------------------
+        # Weight calculation and direction determination
+        # -------------------------------
+        
+        minus_inline_weight, minus_gap_weight, minus_empty_weight = self.calculate_weights(inline_minus_cells, gap_minus_cells, empty_minus_cells)
+        plus_inline_weight, plus_gap_weight, plus_empty_weight = self.calculate_weights(inline_plus_cells, gap_plus_cells, empty_plus_cells)
+        
+        direction_order = get_direction_order(minus_inline_weight, plus_inline_weight, minus_gap_weight, plus_gap_weight, minus_empty_weight, plus_empty_weight)
+        
+        
         # -------------------------------
         # Process cells from preferred direction first
         # -------------------------------
         sequence_pattern = ["inline"]
         sequence_cells = [cell]
         gaps_to_empty_cells = []
+        
         if direction_order[0] == "minus":
             sequence_pattern, sequence_cells = process_cells(inline_minus_cells, gap_minus_cells, sequence_pattern, sequence_cells)
             sequence_pattern, sequence_cells, gaps_to_empty_cells = extend_sequence(inline_plus_cells, gap_plus_cells, sequence_pattern, sequence_cells, "minus")
@@ -308,6 +312,10 @@ class SequenceModel:
             if gaps_to_empty_cells:
                 empty_minus_cells = gaps_to_empty_cells
 
+
+        # -------------------------------
+        # Evaluate sequence and return results
+        # -------------------------------
         inline = 0
         inline_cells = []
         gap_counter = 0
@@ -339,8 +347,6 @@ class SequenceModel:
         two_ended = open_minus and open_plus
         open_in_middle = gap_counter > 0
                 
-
-
 
         return {
             "inline": inline,

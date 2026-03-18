@@ -55,10 +55,17 @@ class Sequence:
     def reset_picked_cell(self):
         self.model.picked_cell = None
     
-    def represent_probability(self, probability):
-
+    def represent_probability(self, inline_dict):
+        
+        
+        values = [round(inline_dict["Green"]["winning_probability"]*100, 1), 
+                  round(inline_dict["Blue"]["winning_probability"]*100, 1), 
+                  round(inline_dict["Red"]["winning_probability"]*100, 1)]
         fig = tpl.figure()
-        fig.barh([round(probability*100), 25, 39], force_ascii=False, max_width=50)
+        fig.barh(values, force_ascii=False, max_width=50)
+        
+        # bind_edges = [0, 1]
+        # fig.hist(values, bind_edges, orientation="horizontal", force_ascii=False)
         all_charts = fig.get_string()
 
         split_chart = all_charts.split("\n")
@@ -68,6 +75,10 @@ class Sequence:
         for color in Misc.turn:
             color_code = Misc.colors_selection[color]
             line = split_chart[Misc.turn.index(color)]
+            if len(line.split(']')[0]) <= 4:
+                line = line.replace("]", "%]  ")
+            else:
+                line = line.replace("]", "%] ")
             Misc.print_hex_color(f"{line}", color_code)
 
 
@@ -81,9 +92,7 @@ class Sequence:
             self.model.set_color(current_color)
             self.model.check_inline_per_color(current_color)
             
-
-            # color_probability = round(self.model.calculate_win_probability(current_color), 3)
-            # self.represent_probability(color_probability)
+            self.represent_probability(self.model.inline_dict)
    
             color_index = (color_index + 1) if color_index < len(Misc.turn) - 1 else 0
 

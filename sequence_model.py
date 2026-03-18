@@ -382,8 +382,7 @@ class SequenceModel:
 
         
         self.update_inline_dict(color, evaluated)
-
-        calculated_probability = self.calculate_win_probability(color)
+        self.calculate_win_probability(color)
         
 
 
@@ -413,21 +412,167 @@ class SequenceModel:
         # self.inline_dict[color]["round_to_come_again"] = len(Misc.turn) - 1
 
 
-    def calculate_win_probability(self, color_who_picked):
-        pass
-
-        # if self.inline_dict[color_who_picked]["two_ended"] and self.inline_dict[color_who_picked]["inline"] == 4:
-        #     probability_multiplyer = 2
-        # else:
-        #     probability_multiplyer = 1
-        # color_who_picked_missing_cells_to_win = Misc.INLINE_TO_WIN - self.inline_dict[color_who_picked]["inline"]
-        # probability_other_color_willing_to_block = color_who_picked_missing_cells_to_win * Misc.WILLING_TO_BLOCK_PROBABILITY * probability_multiplyer
-
-
-        # color_who_picked_probability = (1 - color_who_picked_missing_cells_to_win * Misc.PROBABILITY_TO_COLOR_FIELD) * probability_multiplyer  \
-        #                                 * probability_other_color_willing_to_block * self.inline_dict[color_who_picked]["round_to_come_again"]
+    def calculate_dynamic_blocking_willingness(self, inline, one_ended, two_ended, open_in_middle):
+        """
+        Dynamically calculate blocking willingness based on threat level.
         
-        # return color_who_picked_probability
+        Key insight: If a player has a two-ended potential sequence (e.g., 4 inline open on both sides),
+        BOTH upcoming players must coordinate to block at least one side each, otherwise the threat
+        player will win on their next turn.
+        
+        Returns:
+            tuple: (block_attempt_prob, coordination_factor)
+                - block_attempt_prob: How likely each opponent is to attempt blocking
+                - coordination_factor: Multiplier for coordinated blocking (two-ended threats)
+        """
+        base_willingness = Misc.WILLING_TO_BLOCK_PROBABILITY  # 0.25
+        
+        if inline >= 4:
+            if two_ended:
+                # CRITICAL THREAT: Two-ended 4-inline = guaranteed win unless BOTH opponents block
+                # Both players MUST block (one each side) or lose
+                # Willingness approaches 1.0 (survival mode)
+                block_attempt_prob = min(0.95, base_willingness * 4.0)
+                # Coordination factor: both players need to succeed
+                # If either fails to block their side, threat player wins
+                coordination_factor = 2.0  # Need to block 2 positions
+            elif one_ended:
+                # HIGH THREAT: One-ended 4-inline = can win with one placement
+                # At least one opponent should block
+                block_attempt_prob = min(0.85, base_willingness * 3.0)
+                coordination_factor = 1.0  # Only 1 position to block
+            elif open_in_middle:
+                # MEDIUM-HIGH THREAT: 4-inline with gap
+                block_attempt_prob = min(0.70, base_willingness * 2.5)
+                coordination_factor = 1.0
+            else:
+                # Blocked on both ends, only middle gaps matter
+                block_attempt_prob = base_willingness * 1.5
+                coordination_factor = 1.0
+        elif inline == 3:
+            if two_ended:
+                # MEDIUM THREAT: Could become critical next turn
+                block_attempt_prob = min(0.60, base_willingness * 2.0)
+                coordination_factor = 1.5
+            elif one_ended:
+                block_attempt_prob = base_willingness * 1.5
+                coordination_factor = 1.0
+            else:
+                block_attempt_prob = base_willingness
+                coordination_factor = 1.0
+        elif inline == 2:
+            # LOW THREAT: Early game, low priority to block
+            block_attempt_prob = base_willingness * 0.5
+            coordination_factor = 1.0
+        else:
+            # MINIMAL THREAT
+            block_attempt_prob = base_willingness * 0.25
+            coordination_factor = 1.0
+        
+        return block_attempt_prob, coordination_factor
+
+
+    def calculate_win_probability(self, color_who_picked):
+        """
+        Calculate win probability for a color based on:
+        - inline: number of contiguous same-colored fields
+        - open_in_middle: whether there's a gap in the sequence
+        - empty_middle_counter: number of gaps
+        - one_ended: sequence open on one end
+        - two_ended: sequence open on both ends (doubles chance to complete)
+        
+        Also factors in blocking: with 3 players, if a player has 4 inline,
+        the other 2 players (who play before this player's next turn) will
+        try to block. Dynamic blocking willingness based on threat level.
+        
+        CRITICAL: For two-ended sequences, BOTH opponents must block (one each side)
+        or the threat player wins.
+        """
+        data = self.inline_dict[color_who_picked]
+        inline = data["inline"]
+        open_in_middle = data["open_in_middle"]
+        empty_middle_counter = data["empty_middle_counter"]
+        one_ended = data["one_ended"]
+        two_ended = data["two_ended"]
+        
+        # Base probability to place a field
+        p = Misc.PROBABILITY_TO_COLOR_FIELD  # 16/104 ≈ 0.154
+        
+        # How many fields needed to complete the sequence
+        missing_cells = Misc.INLINE_TO_WIN - inline
+        
+        # If already won or no progress
+        if missing_cells <= 0:
+            return 1.0
+        if inline == 0:
+            return 0.0
+        
+        # --- Open-ended multiplier ---
+        # Two-ended sequence with 4 inline: 2 ways to complete (either end)
+        # P(complete) = 2p - p^2 ≈ 2p for small p
+        if two_ended and inline == 4:
+            completion_multiplier = 2.0
+        elif one_ended:
+            completion_multiplier = 1.0
+        else:
+            # Sequence is blocked on both ends - can only win via middle gaps
+            completion_multiplier = 0.5 if open_in_middle else 0.0
+        
+        # --- Gap penalty ---
+        # Gaps in the middle require additional placements
+        gap_penalty = (1 - p) ** empty_middle_counter if empty_middle_counter > 0 else 1.0
+        
+        # --- Base win probability ---
+        # Probability to place the required missing cells
+        base_probability = (p ** missing_cells) * completion_multiplier * gap_penalty
+        
+        # --- Dynamic Blocking factor (3 players) ---
+        num_players = len(Misc.turn) if len(Misc.turn) > 1 else 3
+        opponents_before_next_turn = num_players - 1  # 2 opponents in 3-player game
+        
+        # Get dynamic blocking parameters based on threat level
+        block_attempt_prob, coordination_factor = self.calculate_dynamic_blocking_willingness(
+            inline, one_ended, two_ended, open_in_middle
+        )
+        
+        if inline >= 3 and (one_ended or two_ended or open_in_middle):
+            # Block success probability = willingness * chance to have right card
+            block_success_prob = p
+            
+            if two_ended and inline >= 4:
+                # SPECIAL CASE: Two-ended threat requires BOTH opponents to block
+                # Player 1 blocks side A, Player 2 blocks side B
+                # Probability both succeed = P(player1 blocks) * P(player2 blocks)
+                single_block_success = block_attempt_prob * block_success_prob
+                
+                # For threat player to survive: at least one side must remain unblocked
+                # P(at least one side unblocked) = 1 - P(both sides blocked)
+                # P(both sides blocked) = P(side A blocked) * P(side B blocked)
+                # Since 2 opponents and 2 sides, each opponent targets one side
+                prob_side_blocked = single_block_success
+                prob_both_sides_blocked = prob_side_blocked ** 2
+                
+                # Threat player wins if at least one side is NOT blocked
+                blocking_survival = 1 - prob_both_sides_blocked
+            else:
+                # Standard blocking: any opponent can block the single open position
+                single_opponent_blocks = block_attempt_prob * block_success_prob
+                prob_no_one_blocks = (1 - single_opponent_blocks) ** opponents_before_next_turn
+                blocking_survival = prob_no_one_blocks
+        else:
+            # Low threat: unlikely to be blocked
+            blocking_survival = 1.0
+        
+        # Final probability
+        win_probability = base_probability * blocking_survival
+        
+        # Clamp to [0, 1]
+        win_probability = max(0.0, min(1.0, win_probability))
+        
+        # Store in dict
+        self.inline_dict[color_who_picked]["winning_probability"] = win_probability
+        
+        return win_probability
         
 
     def check_inline_per_color(self, color):

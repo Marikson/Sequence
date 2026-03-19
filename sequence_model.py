@@ -155,7 +155,8 @@ class SequenceModel:
     def determine_inline(self, cell,
         inline_minus_cells, inline_plus_cells,
         gap_minus_cells, gap_plus_cells,
-        empty_minus_cells, empty_plus_cells):
+        empty_minus_cells, empty_plus_cells,
+        opened_minus, opened_plus):
         """
         Determines the longest potential sequence that passes through `cell`,
         combining cells from both the minus (negative relative position) and
@@ -280,12 +281,12 @@ class SequenceModel:
                 return {
                     "inline": inline_count,
                     "open_in_middle": open_in_middle,
-                    "empty_middle_counter": gap_counter,
+                    "gap_counter": gap_counter,
                     "one_ended": one_ended,
                     "two_ended": two_ended,
                     "inline_cells": inline_cells_result,
                     "empty_cells": empty_tails,
-                    "empty_middle_cells": gap_cells_result,
+                    "gap_cells": gap_cells_result,
                     "_open_primary": open_primary,
                     "_open_secondary": open_secondary,
                 }
@@ -305,7 +306,7 @@ class SequenceModel:
             Quality ranking (higher priority first):
                 1. More inline cells
                 2. Two-ended > one-ended > closed
-                3. Fewer gaps (empty_middle_counter)
+                3. Fewer gaps (gap_counter)
             """
             if a["inline"] != b["inline"]:
                 return a["inline"] > b["inline"]
@@ -315,8 +316,8 @@ class SequenceModel:
             if a_open != b_open:
                 return a_open > b_open
 
-            if a["empty_middle_counter"] != b["empty_middle_counter"]:
-                return a["empty_middle_counter"] < b["empty_middle_counter"]
+            if a["gap_counter"] != b["gap_counter"]:
+                return a["gap_counter"] < b["gap_counter"]
 
             return False  # equal quality
 
@@ -365,12 +366,40 @@ class SequenceModel:
 
         evaluated = self.determine_inline(cell,inline_minus_cells, inline_plus_cells,
                                           list(reversed(gap_minus_cells)), list(reversed(gap_plus_cells)),
-                                          empty_minus_cells, empty_plus_cells)
+                                          empty_minus_cells, empty_plus_cells,
+                                          opened_minus, opened_plus)
 
         
         self.update_inline_dict(color, evaluated)
+        self.check_if_picked_cell_blocks_opponents(cell, color)
         self.calculate_win_probability(color)
-        
+     
+    
+    def check_if_picked_cell_blocks_opponents(self, cell, color):
+        for opponent_color in Misc.turn:
+            if opponent_color == color:
+                continue
+            
+            opponent_data = Misc.inline_dict[opponent_color]
+            for gap_cell in opponent_data["gap_cells"]:
+                if cell.row_index == gap_cell.row_index and cell.col_index == gap_cell.col_index:
+                    opponent_data["inline"] = 0
+                    opponent_data["one_ended"] = False
+                    opponent_data["two_ended"] = False
+                    opponent_data["open_in_middle"] = False
+                    opponent_data["gap_counter"] = 0
+                    opponent_data["inline_cells"] = []
+                    opponent_data["gap_cells"] = []
+                    opponent_data["empty_cells"] = []
+                    opponent_data["winning_probability"] = 0
+                    break
+                    
+            for empty_cell in opponent_data["empty_cells"]:
+                if cell.row_index == empty_cell.row_index and cell.col_index == empty_cell.col_index:
+                    opponent_data["empty_cells"].remove(empty_cell)
+                    break
+            
+
 
     def update_inline_dict(self, color, evaluated):
         to_update = False
@@ -379,21 +408,19 @@ class SequenceModel:
         elif evaluated["inline"] == Misc.inline_dict[color]["inline"]:
             if evaluated["two_ended"] and not Misc.inline_dict[color]["two_ended"]:
                 to_update = True
-            elif evaluated["empty_middle_counter"] < Misc.inline_dict[color]["empty_middle_counter"]:
+            elif evaluated["gap_counter"] < Misc.inline_dict[color]["gap_counter"]:
                 to_update = True
 
 
         if to_update:
             Misc.inline_dict[color]["inline"] = evaluated["inline"]
             Misc.inline_dict[color]["open_in_middle"] = evaluated["open_in_middle"]
-            Misc.inline_dict[color]["empty_middle_counter"] = evaluated["empty_middle_counter"]
+            Misc.inline_dict[color]["gap_counter"] = evaluated["gap_counter"]
             Misc.inline_dict[color]["one_ended"] = evaluated["one_ended"]
             Misc.inline_dict[color]["two_ended"] = evaluated["two_ended"]
             Misc.inline_dict[color]["inline_cells"] = evaluated["inline_cells"]
             Misc.inline_dict[color]["empty_cells"] = evaluated["empty_cells"]
-            Misc.inline_dict[color]["empty_middle_cells"] = evaluated["empty_middle_cells"]
-            
-            # self.print_inline_dict(color)
+            Misc.inline_dict[color]["gap_cells"] = evaluated["gap_cells"]
 
         Misc.inline_dict[color]["round_to_come_again"] = 2
         color_index = Misc.turn.index(color)
@@ -463,7 +490,7 @@ class SequenceModel:
         Calculate win probability for ALL colors based on:
         - inline: number of contiguous same-colored fields
         - open_in_middle: whether there's a gap in the sequence
-        - empty_middle_counter: number of gaps
+        - gap_counter: number of gaps
         - one_ended: sequence open on one end
         - two_ended: sequence open on both ends (doubles chance to complete)
         - round_to_come_again: how many rounds until this color plays again
@@ -480,7 +507,7 @@ class SequenceModel:
             data = Misc.inline_dict[color]
             inline = data["inline"]
             open_in_middle = data["open_in_middle"]
-            empty_middle_counter = data["empty_middle_counter"]
+            gap_counter = data["gap_counter"]
             one_ended = data["one_ended"]
             two_ended = data["two_ended"]
             round_to_come_again = data["round_to_come_again"]
@@ -514,11 +541,11 @@ class SequenceModel:
                 completion_multiplier = 1.0
             else:
                 # Sequence is blocked on both ends - can only win via middle gaps
-                completion_multiplier = 0.5 if open_in_middle else 0.0
+                completion_multiplier = 1.0 if open_in_middle else 0.0
             
             # --- Gap penalty ---
             # Gaps in the middle require additional placements
-            gap_penalty = (1 - p) ** empty_middle_counter if empty_middle_counter > 0 else 1.0
+            gap_penalty = (1 - p) ** gap_counter if gap_counter > 0 else 1.0
             
             # --- Base win probability ---
             # Probability to place the required missing cells

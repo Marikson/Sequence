@@ -13,11 +13,11 @@ class Misc:
                 "inline": 0,
                 "two_ended": False,
                 "open_in_middle": False,
-                "empty_middle_counter": 0,
+                "gap_counter": 0,
                 "one_ended": False,
                 "round_to_come_again": 0,
                 "inline_cells": [],
-                "empty_middle_cells": [],
+                "gap_cells": [],
                 "empty_cells": [],
                 "winning_probability": 0
             }, 
@@ -25,11 +25,11 @@ class Misc:
                 "inline": 0,
                 "two_ended": False,
                 "open_in_middle": False,
-                "empty_middle_counter": 0,
+                "gap_counter": 0,
                 "one_ended": False,
                 "round_to_come_again": 0,
                 "inline_cells": [],
-                "empty_middle_cells": [],
+                "gap_cells": [],
                 "empty_cells": [],
                 "winning_probability": 0
             },
@@ -37,11 +37,11 @@ class Misc:
                 "inline": 0,
                 "two_ended": False,
                 "open_in_middle": False,
-                "empty_middle_counter": 0,
+                "gap_counter": 0,
                 "one_ended": False,
                 "round_to_come_again": 0,
                 "inline_cells": [],
-                "empty_middle_cells": [],
+                "gap_cells": [],
                 "empty_cells": [],
                 "winning_probability": 0
             }
@@ -70,3 +70,4 @@ class Misc:
               f"\n  Winning probability: {round(Misc.inline_dict[color]['winning_probability']*100, 1)}%" \
               f"\n Round to come again: {Misc.inline_dict[color]['round_to_come_again']}"
               )
+        

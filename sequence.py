@@ -68,6 +68,10 @@ class Sequence:
         while self.model.picked_cell is None:
             self.model.grid[0][0].winfo_toplevel().update()
     
+    
+    def reset_picked_cell(self):
+        self.model.picked_cell = None
+      
 
     def reset_model(self):
         self.model.picked_cell = None
@@ -76,11 +80,11 @@ class Sequence:
                 "inline": 0,
                 "two_ended": False,
                 "open_in_middle": False,
-                "empty_middle_counter": 0,
+                "gap_counter": 0,
                 "one_ended": False,
                 "round_to_come_again": 0,
                 "inline_cells": [],
-                "empty_middle_cells": [],
+                "gap_cells": [],
                 "empty_cells": [],
                 "winning_probability": 0
             }, 
@@ -88,11 +92,11 @@ class Sequence:
                 "inline": 0,
                 "two_ended": False,
                 "open_in_middle": False,
-                "empty_middle_counter": 0,
+                "gap_counter": 0,
                 "one_ended": False,
                 "round_to_come_again": 0,
                 "inline_cells": [],
-                "empty_middle_cells": [],
+                "gap_cells": [],
                 "empty_cells": [],
                 "winning_probability": 0
             },
@@ -100,11 +104,11 @@ class Sequence:
                 "inline": 0,
                 "two_ended": False,
                 "open_in_middle": False,
-                "empty_middle_counter": 0,
+                "gap_counter": 0,
                 "one_ended": False,
                 "round_to_come_again": 0,
                 "inline_cells": [],
-                "empty_middle_cells": [],
+                "gap_cells": [],
                 "empty_cells": [],
                 "winning_probability": 0
             }
@@ -155,6 +159,8 @@ class Sequence:
                         btn.config(bg=winner_color_code, state="disabled")
                 self.reset_game()
                 break
+            
+            self.reset_picked_cell()
 
 
     def new_game(self):

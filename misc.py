@@ -2,7 +2,7 @@ class Misc:
     GRID_SIZE = 10
     GRID_MAX_INDEX = GRID_SIZE - 1
     PROBABILITY_TO_COLOR_FIELD = 16 / 104
-    WILLING_TO_BLOCK_PROBABILITY = 0.25
+    WILLING_TO_BLOCK_PROBABILITY = 0.2
     INLINE_TO_WIN = 5
 
     colors_selection = {"Red": "#ff0000", "Green": "#006400", "Blue": "#0000ff", "Black": "#000000", "White": "#ffffff"}
@@ -16,9 +16,9 @@ class Misc:
                 "empty_middle_counter": 0,
                 "one_ended": False,
                 "round_to_come_again": 0,
-                "inline_indexes": [],
-                "empty_middle_indexes": [],
-                "empty_indexes": [],
+                "inline_cells": [],
+                "empty_middle_cells": [],
+                "empty_cells": [],
                 "winning_probability": 0
             }, 
             "Blue": {
@@ -28,9 +28,9 @@ class Misc:
                 "empty_middle_counter": 0,
                 "one_ended": False,
                 "round_to_come_again": 0,
-                "inline_indexes": [],
-                "empty_middle_indexes": [],
-                "empty_indexes": [],
+                "inline_cells": [],
+                "empty_middle_cells": [],
+                "empty_cells": [],
                 "winning_probability": 0
             },
             "Red": {
@@ -40,9 +40,9 @@ class Misc:
                 "empty_middle_counter": 0,
                 "one_ended": False,
                 "round_to_come_again": 0,
-                "inline_indexes": [],
-                "empty_middle_indexes": [],
-                "empty_indexes": [],
+                "inline_cells": [],
+                "empty_middle_cells": [],
+                "empty_cells": [],
                 "winning_probability": 0
             }
         }
@@ -64,14 +64,9 @@ class Misc:
               f"\n  Empty middle counter: {Misc.inline_dict[color]['empty_middle_counter']} " \
               f"\n  One ended: {Misc.inline_dict[color]['one_ended']} " \
               f"\n  Two ended: {Misc.inline_dict[color]['two_ended']} " \
-            #   f"\n  Inline cells: {Misc.inline_dict[color]['inline_cells']} " \
-            #   f"\n  Empty middle cells: {Misc.inline_dict[color]['empty_middle_cells']} " \
-            #   f"\n  Empty cells: {Misc.inline_dict[color]['empty_cells']} "
-                
-              f"\n  Inline cells: {[f'[{cell.row_index}][{cell.col_index}]' for cell in Misc.inline_dict[color]['inline_cells']]} "
-              f"\n  Empty middle cells: {[f'[{cell.row_index}][{cell.col_index}]' for cell in Misc.inline_dict[color]['empty_middle_cells']]} "
-              f"\n  Empty cells: {[f'[{cell.row_index}][{cell.col_index}]' for cell in Misc.inline_dict[color]['empty_cells']]} "
+              f"\n  Inline cells: {[f'[{cell.row_index}][{cell.col_index}]' for cell in Misc.inline_dict[color]['inline_cells']]} " \
+              f"\n  Empty middle cells: {[f'[{cell.row_index}][{cell.col_index}]' for cell in Misc.inline_dict[color]['empty_middle_cells']]} " \
+              f"\n  Empty cells: {[f'[{cell.row_index}][{cell.col_index}]' for cell in Misc.inline_dict[color]['empty_cells']]} " \
+              f"\n  Winning probability: {round(Misc.inline_dict[color]['winning_probability']*100, 1)}%" \
+              f"\n Round to come again: {Misc.inline_dict[color]['round_to_come_again']}"
               )
-     
-
-

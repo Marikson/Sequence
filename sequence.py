@@ -8,6 +8,7 @@ class Sequence:
     def __init__(self):
         self.model = SM()
 
+
     def create_grid(self, sequence_field):
         cells = []
         for r in range(Misc.GRID_SIZE):
@@ -87,6 +88,7 @@ class Sequence:
             self.model.check_inline_per_color(current_color)
             
             self.represent_probability(Misc.inline_dict)
+            # Misc.print_inline_dict(current_color)
    
             color_index = (color_index + 1) if color_index < len(Misc.turn) - 1 else 0
 
@@ -101,6 +103,7 @@ class Sequence:
                 break
             
             self.reset_picked_cell()
+
 
 def main():
     field_template = tk.Tk()

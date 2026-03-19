@@ -420,51 +420,42 @@ class SequenceModel:
                 - block_attempt_prob: How likely each opponent is to attempt blocking
                 - coordination_factor: Multiplier for coordinated blocking (two-ended threats)
         """
-        base_willingness = Misc.WILLING_TO_BLOCK_PROBABILITY  # 0.25
+        base_willingness = Misc.WILLING_TO_BLOCK_PROBABILITY  # 0.20
         
         if inline >= 4:
             if two_ended:
                 # CRITICAL THREAT: Two-ended 4-inline = guaranteed win unless BOTH opponents block
                 # Both players MUST block (one each side) or lose
                 # Willingness approaches 1.0 (survival mode)
-                block_attempt_prob = min(0.95, base_willingness * 4.0)
+                block_attempt_prob = min(0.95, base_willingness * 5.0)
                 # Coordination factor: both players need to succeed
                 # If either fails to block their side, threat player wins
-                coordination_factor = 2.0  # Need to block 2 positions
             elif one_ended:
                 # HIGH THREAT: One-ended 4-inline = can win with one placement
                 # At least one opponent should block
-                block_attempt_prob = min(0.85, base_willingness * 3.0)
-                coordination_factor = 1.0  # Only 1 position to block
+                block_attempt_prob = min(0.85, base_willingness * 4.0)
             elif open_in_middle:
                 # MEDIUM-HIGH THREAT: 4-inline with gap
-                block_attempt_prob = min(0.70, base_willingness * 2.5)
-                coordination_factor = 1.0
+                block_attempt_prob = min(0.80, base_willingness * 4.0)
             else:
                 # Blocked on both ends, only middle gaps matter
                 block_attempt_prob = base_willingness * 1.5
-                coordination_factor = 1.0
         elif inline == 3:
             if two_ended:
                 # MEDIUM THREAT: Could become critical next turn
-                block_attempt_prob = min(0.60, base_willingness * 2.0)
-                coordination_factor = 1.5
+                block_attempt_prob = min(0.60, base_willingness * 3.0)
             elif one_ended:
                 block_attempt_prob = base_willingness * 1.5
-                coordination_factor = 1.0
             else:
                 block_attempt_prob = base_willingness
-                coordination_factor = 1.0
         elif inline == 2:
             # LOW THREAT: Early game, low priority to block
             block_attempt_prob = base_willingness * 0.5
-            coordination_factor = 1.0
         else:
             # MINIMAL THREAT
             block_attempt_prob = base_willingness * 0.25
-            coordination_factor = 1.0
         
-        return block_attempt_prob, coordination_factor
+        return block_attempt_prob
 
 
     def calculate_win_probability(self, color_who_picked):
@@ -542,7 +533,7 @@ class SequenceModel:
             opponents_before_next_turn = min(round_to_come_again + 1, num_players - 1)
             
             # Get dynamic blocking parameters based on threat level
-            block_attempt_prob, coordination_factor = self.calculate_dynamic_blocking_willingness(
+            block_attempt_prob = self.calculate_dynamic_blocking_willingness(
                 inline, one_ended, two_ended, open_in_middle
             )
             

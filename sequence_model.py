@@ -165,6 +165,14 @@ class SequenceModel:
         Tries BOTH direction orders (minus-first and plus-first), builds a
         candidate sequence for each, and returns the better one.
 
+        Parameters:
+            opened_minus: bool - True if the minus side ends with empty fields
+                          (sequence can potentially extend), False if blocked by
+                          board edge or another color.
+            opened_plus:  bool - True if the plus side ends with empty fields
+                          (sequence can potentially extend), False if blocked by
+                          board edge or another color.
+
         Quality ranking (higher priority first):
             1. More inline cells
             2. Two-ended > one-ended > closed
@@ -201,11 +209,17 @@ class SequenceModel:
         # ----------------------------------------------------------------
         # Helper: assemble a candidate sequence given a direction order
         # ----------------------------------------------------------------
-        def build_candidate(primary_ribbon, secondary_ribbon, primary_empty, secondary_empty):
+        def build_candidate(primary_ribbon, secondary_ribbon,
+                            primary_empty, secondary_empty,
+                            primary_opened, secondary_opened):
             """
             Builds a sequence: primary side → picked cell → secondary side.
             Tries multiple stopping points on the secondary side (at each
             gap boundary) and returns the best sub-candidate.
+
+            primary_opened / secondary_opened indicate whether that side of
+            the sequence is open (ends with empty fields rather than being
+            blocked by the board edge or another color).
             """
 
             # --- primary side (always fully consumed up to slot limit) ---
@@ -255,14 +269,18 @@ class SequenceModel:
                 if total_in_sequence < Misc.INLINE_TO_WIN:
                     remaining = Misc.INLINE_TO_WIN - total_in_sequence
 
+                    # Primary side: can only be open if primary_opened is True
+                    # (i.e., that side ends with empty fields, not blocked)
                     primary_ribbon_used = len(primary_to_add)
-                    if primary_ribbon_used >= len(primary_ribbon) and len(primary_empty) > 0:
+                    if primary_opened and primary_ribbon_used >= len(primary_ribbon) and len(primary_empty) > 0:
                         for i in range(min(remaining, len(primary_empty))):
                             empty_tails.append(primary_empty[i])
                             open_primary = True
 
                     remaining = Misc.INLINE_TO_WIN - total_in_sequence - len(empty_tails)
-                    if secondary_count >= len(secondary_ribbon) and len(secondary_empty) > 0 and remaining > 0:
+
+                    # Secondary side: can only be open if secondary_opened is True
+                    if secondary_opened and secondary_count >= len(secondary_ribbon) and len(secondary_empty) > 0 and remaining > 0:
                         for i in range(min(remaining, len(secondary_empty))):
                             empty_tails.append(secondary_empty[i])
                             open_secondary = True
@@ -270,6 +288,8 @@ class SequenceModel:
                         # We stopped early on secondary; the next ribbon cell
                         # is a gap, meaning the physical board cell is empty —
                         # so the secondary end is open through that gap cell.
+                        # This is still within the ribbon, so it's not blocked
+                        # by the edge or another color — it's inherently open.
                         gap_cell_as_empty = secondary_ribbon[secondary_count][0]
                         empty_tails.append(gap_cell_as_empty)
                         open_secondary = True
@@ -330,16 +350,18 @@ class SequenceModel:
         # ----------------------------------------------------------------
         # Try BOTH direction orders and pick the better candidate
         # ----------------------------------------------------------------
-        # Candidate 1: minus-first
+        # Candidate 1: minus-first (primary=minus, secondary=plus)
         candidate_minus_first = build_candidate(
             minus_ribbon, plus_ribbon,
-            empty_minus_cells, empty_plus_cells
+            empty_minus_cells, empty_plus_cells,
+            opened_minus, opened_plus
         )
 
-        # Candidate 2: plus-first
+        # Candidate 2: plus-first (primary=plus, secondary=minus)
         candidate_plus_first = build_candidate(
             plus_ribbon, minus_ribbon,
-            empty_plus_cells, empty_minus_cells
+            empty_plus_cells, empty_minus_cells,
+            opened_plus, opened_minus
         )
 
         if is_better(candidate_minus_first, candidate_plus_first):
@@ -361,8 +383,8 @@ class SequenceModel:
                             empty_minus_cells, empty_plus_cells):
         
         
-        if len(inline_minus_cells) == 0 and len(inline_plus_cells) == 0:
-            return          
+        # if len(inline_minus_cells) == 0 and len(inline_plus_cells) == 0:
+        #     return          
 
         evaluated = self.determine_inline(cell,inline_minus_cells, inline_plus_cells,
                                           list(reversed(gap_minus_cells)), list(reversed(gap_plus_cells)),
@@ -541,7 +563,7 @@ class SequenceModel:
                 completion_multiplier = 1.0
             else:
                 # Sequence is blocked on both ends - can only win via middle gaps
-                completion_multiplier = 1.0 if open_in_middle else 0.0
+                completion_multiplier = 0.5 if open_in_middle else 0.0
             
             # --- Gap penalty ---
             # Gaps in the middle require additional placements

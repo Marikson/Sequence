@@ -31,7 +31,7 @@ class SequenceTest(unittest.TestCase):
     
         test_game = Sequence()
         test_game.create_grid(test_field)
-        test_game.delete_grid()
+        test_game.reset_game()
 
         self.assertEqual(test_game.model.grid, [])
 

@@ -7,6 +7,8 @@ import termplotlib as tpl
 class Sequence:
     def __init__(self):
         self.model = SM()
+        self.field_template = tk.Tk()
+        self.field_template.title("Sequence Field")
 
 
     def create_grid(self, sequence_field):
@@ -41,11 +43,25 @@ class Sequence:
             sequence_field.grid_columnconfigure(i, weight=1)
     
 
-    def delete_grid(self):
+    def reset_game(self):
         for row in self.model.grid:
             for btn in row:
                 btn.destroy()
         self.model.grid = []
+        
+        self.reset_model()
+
+        
+        new_game_btn = tk.Button(
+            text="New Game",
+            command=lambda: self.new_game(),
+            bg="gray",
+            width=10, height=2
+        )
+        new_game_btn.grid(row=Misc.GRID_SIZE, column=0, columnspan=Misc.GRID_SIZE, sticky="nsew")
+        self.new_game_btn = new_game_btn
+        
+        
 
 
     def cell_picking(self):
@@ -53,8 +69,46 @@ class Sequence:
             self.model.grid[0][0].winfo_toplevel().update()
     
 
-    def reset_picked_cell(self):
+    def reset_model(self):
         self.model.picked_cell = None
+        Misc.inline_dict = {
+            "Green": {
+                "inline": 0,
+                "two_ended": False,
+                "open_in_middle": False,
+                "empty_middle_counter": 0,
+                "one_ended": False,
+                "round_to_come_again": 0,
+                "inline_cells": [],
+                "empty_middle_cells": [],
+                "empty_cells": [],
+                "winning_probability": 0
+            }, 
+            "Blue": {
+                "inline": 0,
+                "two_ended": False,
+                "open_in_middle": False,
+                "empty_middle_counter": 0,
+                "one_ended": False,
+                "round_to_come_again": 0,
+                "inline_cells": [],
+                "empty_middle_cells": [],
+                "empty_cells": [],
+                "winning_probability": 0
+            },
+            "Red": {
+                "inline": 0,
+                "two_ended": False,
+                "open_in_middle": False,
+                "empty_middle_counter": 0,
+                "one_ended": False,
+                "round_to_come_again": 0,
+                "inline_cells": [],
+                "empty_middle_cells": [],
+                "empty_cells": [],
+                "winning_probability": 0
+            }
+        }
     
     
     def represent_probability(self, inline_dict):
@@ -99,22 +153,25 @@ class Sequence:
                 for row in self.model.grid:
                     for btn in row:
                         btn.config(bg=winner_color_code, state="disabled")
-                self.delete_grid()
+                self.reset_game()
                 break
-            
-            self.reset_picked_cell()
 
+
+    def new_game(self):
+        self.create_grid(self.field_template)
+        self.start_game()
+        
+        self.field_template.mainloop()
 
 def main():
-    field_template = tk.Tk()
-    field_template.title("Sequence Field")
+    sequence_game = Sequence()
+    sequence_game.new_game()
+    
+    
+    
     
 
-    sequence_game = Sequence()
-    sequence_game.create_grid(field_template)
-    sequence_game.start_game()
-
-    field_template.mainloop()
+    
 
 
 if __name__ == "__main__":

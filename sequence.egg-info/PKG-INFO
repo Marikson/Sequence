@@ -1,0 +1,6 @@
+Metadata-Version: 2.1
+Name: sequence
+Version: 1.0.0
+Requires-Python: >=3.10
+Requires-Dist: termplotlib
+Requires-Dist: numpy<2.0.0,>=1.21.2

@@ -1,0 +1,17 @@
+README.md
+setup.py
+Tests/__init__.py
+Tests/debug_trace.py
+Tests/diagonal_inline_test.py
+Tests/grid_test.py
+Tests/horizontal_inline_test.py
+Tests/inverted_diagonal_inline_test.py
+Tests/other_color_inline_test.py
+Tests/relative_position_test.py
+Tests/vertical_inline_test.py
+sequence.egg-info/PKG-INFO
+sequence.egg-info/SOURCES.txt
+sequence.egg-info/dependency_links.txt
+sequence.egg-info/entry_points.txt
+sequence.egg-info/requires.txt
+sequence.egg-info/top_level.txt

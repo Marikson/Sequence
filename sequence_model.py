@@ -235,134 +235,201 @@ class SequenceModel:
         inline_minus_cells, inline_plus_cells,
         gap_minus_cells, gap_plus_cells,
         empty_minus_cells, empty_plus_cells):
-        # --------------------------------
-        # Helper methods
-        # --------------------------------
-        
-        def extend_sequence(inline_cells, gap_cells, sequence_pattern, sequence_cells, sequence_starting_side):
-            sorted_extension_cells = sorted(inline_cells + gap_cells, key=lambda c: abs(c.relative_position_to_picked_cell), reverse=True)
-            sorted_inline_cells = sorted(inline_cells, key=lambda c: abs(c.relative_position_to_picked_cell))            
-            closet_inline_cell = sorted_inline_cells[0] if sorted_inline_cells else None
-            closest_inline_cell_rel_pos = abs(closet_inline_cell.relative_position_to_picked_cell) if closet_inline_cell else -5
-            
-            
-            sorted_sequence_cells = sorted(sequence_cells, key=lambda c: abs(c.relative_position_to_picked_cell))
-            sequence_starting_cell = sorted_sequence_cells[-1] if sorted_sequence_cells else None
-            sequence_starting_cell_rel_pos = sequence_starting_cell.relative_position_to_picked_cell if sequence_starting_cell else None
-            extension_limit = abs(abs(closest_inline_cell_rel_pos) - abs(sequence_starting_cell_rel_pos)) if sequence_starting_cell_rel_pos is not None else 0
-            
-            sorted_extension_cells_limited = sorted_extension_cells[-extension_limit:] if extension_limit > 0 else sorted_extension_cells
-                
-            if extension_limit == 0:
-                empty_cells = list(reversed(sorted_extension_cells))[:-1]
-            else:
-                empty_cells = []
-            
-            was_inline = False
-            for c in sorted_extension_cells_limited:
-                if len(sequence_cells) < Misc.INLINE_TO_WIN:
-                    if abs(c.relative_position_to_picked_cell) <= extension_limit:
-                        if c in inline_cells:
-                            sequence_pattern.append("inline")
-                            sequence_cells.append(c)
-                            was_inline = True
-                        elif c in gap_cells and was_inline:
-                            sequence_pattern.append("gap")
-                            sequence_cells.append(c)
-                        else:
-                            empty_cells.append(c)         
-            
-            return sequence_pattern, sequence_cells, empty_cells
-        
-        
-        def process_cells(inline_cells, gap_cells, sequence_pattern, sequence_cells):
-            sorted_all_cells = sorted(inline_cells + gap_cells, key=lambda c: abs(c.relative_position_to_picked_cell))
-            
-            for c in sorted_all_cells:
-                if len(sequence_cells) < Misc.INLINE_TO_WIN:
-                    if c in inline_cells:
-                        sequence_pattern.append("inline")
-                        sequence_cells.append(c)
-                    elif c in gap_cells:
-                        sequence_pattern.append("gap")
-                        sequence_cells.append(c)
+        """
+        Determines the longest potential sequence that passes through `cell`,
+        combining cells from both the minus (negative relative position) and
+        plus (positive relative position) sides.
 
-            return sequence_pattern, sequence_cells
-        
-        # -------------------------------
-        # Weight calculation and direction determination
-        # -------------------------------
-        
-        minus_count, minus_inline_weight, minus_gap_weight, minus_empty_weight = self.calculate_weights(inline_minus_cells, gap_minus_cells, empty_minus_cells)
-        plus_count, plus_inline_weight, plus_gap_weight, plus_empty_weight = self.calculate_weights(inline_plus_cells, gap_plus_cells, empty_plus_cells)
-        
-        direction_order = self.get_direction_order(minus_count, plus_count, minus_inline_weight, plus_inline_weight, minus_gap_weight, plus_gap_weight, minus_empty_weight, plus_empty_weight)
-        
-        
-        # -------------------------------
-        # Process cells from preferred direction first
-        # -------------------------------
-        sequence_pattern = ["inline"]
-        sequence_cells = [cell]
-        gaps_to_empty_cells = []
-        
-        if direction_order[0] == "minus":
-            sequence_pattern, sequence_cells = process_cells(inline_minus_cells, gap_minus_cells, sequence_pattern, sequence_cells)
-            sequence_pattern, sequence_cells, gaps_to_empty_cells = extend_sequence(inline_plus_cells, gap_plus_cells, sequence_pattern, sequence_cells, "minus")
-            if gaps_to_empty_cells:
-                empty_plus_cells = gaps_to_empty_cells
+        Tries BOTH direction orders (minus-first and plus-first), builds a
+        candidate sequence for each, and returns the better one.
+
+        Quality ranking (higher priority first):
+            1. More inline cells
+            2. Two-ended > one-ended > closed
+            3. Fewer gaps
+        """
+
+        # ----------------------------------------------------------------
+        # Helper: build an ordered ribbon of cells from one side
+        # ----------------------------------------------------------------
+        def build_side_ribbon(inline_cells, gap_cells):
+            """
+            Walk outward from the picked cell along one side.
+            Returns a list of (cell, type) tuples sorted by increasing
+            abs(relative_position), where type is 'inline' or 'gap'.
+            A gap cell is only included if a colored cell follows beyond it.
+            """
+            inline_set = set(id(c) for c in inline_cells)
+            gap_set = set(id(c) for c in gap_cells)
+            all_cells = inline_cells + gap_cells
+            all_cells.sort(key=lambda c: abs(c.relative_position_to_picked_cell))
+
+            ribbon = []
+            pending_gaps = []
+
+            for c in all_cells:
+                if id(c) in inline_set:
+                    ribbon.extend(pending_gaps)
+                    pending_gaps = []
+                    ribbon.append((c, "inline"))
+                elif id(c) in gap_set:
+                    pending_gaps.append((c, "gap"))
+            return ribbon
+
+        # ----------------------------------------------------------------
+        # Helper: assemble a candidate sequence given a direction order
+        # ----------------------------------------------------------------
+        def build_candidate(primary_ribbon, secondary_ribbon, primary_empty, secondary_empty):
+            """
+            Builds a sequence: primary side → picked cell → secondary side.
+            Tries multiple stopping points on the secondary side (at each
+            gap boundary) and returns the best sub-candidate.
+            """
+
+            # --- primary side (always fully consumed up to slot limit) ---
+            base_sequence = [("inline", cell)]
+            slots_left = Misc.INLINE_TO_WIN - 1
+
+            primary_to_add = []
+            for c, kind in primary_ribbon:
+                if len(primary_to_add) < slots_left:
+                    primary_to_add.append((kind, c))
+            base_sequence = list(reversed(primary_to_add)) + base_sequence
+
+            # --- determine all candidate stopping points on secondary ---
+            # stopping point 0 = take nothing from secondary
+            # stopping point i = take the first i entries from secondary
+            # We always try the greedy (take as many as fit) AND every
+            # position just before a gap entry starts.
+            max_secondary = min(len(secondary_ribbon), Misc.INLINE_TO_WIN - len(base_sequence))
+            stop_points = {0, max_secondary}  # always try taking none and taking all
+            for idx in range(max_secondary):
+                if secondary_ribbon[idx][1] == "gap":
+                    stop_points.add(idx)       # stop right before this gap
+
+            def evaluate(secondary_count):
+                """Evaluate a candidate that takes `secondary_count` items from secondary."""
+                seq = list(base_sequence)
+                for i in range(secondary_count):
+                    seq.append((secondary_ribbon[i][1], secondary_ribbon[i][0]))
+
+                inline_count = 0
+                inline_cells_result = []
+                gap_counter = 0
+                gap_cells_result = []
+                for kind, c in seq:
+                    if kind == "inline":
+                        inline_count += 1
+                        inline_cells_result.append(c)
+                    elif kind == "gap":
+                        gap_counter += 1
+                        gap_cells_result.append(c)
+
+                total_in_sequence = len(seq)
+                open_primary = False
+                open_secondary = False
+                empty_tails = []
+
+                if total_in_sequence < Misc.INLINE_TO_WIN:
+                    remaining = Misc.INLINE_TO_WIN - total_in_sequence
+
+                    primary_ribbon_used = len(primary_to_add)
+                    if primary_ribbon_used >= len(primary_ribbon) and len(primary_empty) > 0:
+                        for i in range(min(remaining, len(primary_empty))):
+                            empty_tails.append(primary_empty[i])
+                            open_primary = True
+
+                    remaining = Misc.INLINE_TO_WIN - total_in_sequence - len(empty_tails)
+                    if secondary_count >= len(secondary_ribbon) and len(secondary_empty) > 0 and remaining > 0:
+                        for i in range(min(remaining, len(secondary_empty))):
+                            empty_tails.append(secondary_empty[i])
+                            open_secondary = True
+                    elif secondary_count < len(secondary_ribbon):
+                        # We stopped early on secondary; the next ribbon cell
+                        # is a gap, meaning the physical board cell is empty —
+                        # so the secondary end is open through that gap cell.
+                        gap_cell_as_empty = secondary_ribbon[secondary_count][0]
+                        empty_tails.append(gap_cell_as_empty)
+                        open_secondary = True
+
+                one_ended = open_primary or open_secondary
+                two_ended = open_primary and open_secondary
+                open_in_middle = gap_counter > 0
+
+                return {
+                    "inline": inline_count,
+                    "open_in_middle": open_in_middle,
+                    "empty_middle_counter": gap_counter,
+                    "one_ended": one_ended,
+                    "two_ended": two_ended,
+                    "inline_cells": inline_cells_result,
+                    "empty_cells": empty_tails,
+                    "empty_middle_cells": gap_cells_result,
+                    "_open_primary": open_primary,
+                    "_open_secondary": open_secondary,
+                }
+
+            best_sub = None
+            for sp in sorted(stop_points):
+                candidate = evaluate(sp)
+                if best_sub is None or is_better(candidate, best_sub):
+                    best_sub = candidate
+            return best_sub
+
+        # ----------------------------------------------------------------
+        # Helper: compare two candidates, return True if a is better than b
+        # ----------------------------------------------------------------
+        def is_better(a, b):
+            """
+            Quality ranking (higher priority first):
+                1. More inline cells
+                2. Two-ended > one-ended > closed
+                3. Fewer gaps (empty_middle_counter)
+            """
+            if a["inline"] != b["inline"]:
+                return a["inline"] > b["inline"]
+
+            a_open = (2 if a["two_ended"] else (1 if a["one_ended"] else 0))
+            b_open = (2 if b["two_ended"] else (1 if b["one_ended"] else 0))
+            if a_open != b_open:
+                return a_open > b_open
+
+            if a["empty_middle_counter"] != b["empty_middle_counter"]:
+                return a["empty_middle_counter"] < b["empty_middle_counter"]
+
+            return False  # equal quality
+
+        # ----------------------------------------------------------------
+        # Build ribbons from both sides
+        # ----------------------------------------------------------------
+        minus_ribbon = build_side_ribbon(inline_minus_cells, gap_minus_cells)
+        plus_ribbon = build_side_ribbon(inline_plus_cells, gap_plus_cells)
+
+        # ----------------------------------------------------------------
+        # Try BOTH direction orders and pick the better candidate
+        # ----------------------------------------------------------------
+        # Candidate 1: minus-first
+        candidate_minus_first = build_candidate(
+            minus_ribbon, plus_ribbon,
+            empty_minus_cells, empty_plus_cells
+        )
+
+        # Candidate 2: plus-first
+        candidate_plus_first = build_candidate(
+            plus_ribbon, minus_ribbon,
+            empty_plus_cells, empty_minus_cells
+        )
+
+        if is_better(candidate_minus_first, candidate_plus_first):
+            best = candidate_minus_first
         else:
-            sequence_pattern, sequence_cells = process_cells(inline_plus_cells, gap_plus_cells, sequence_pattern, sequence_cells)
-            sequence_pattern, sequence_cells, gaps_to_empty_cells = extend_sequence(inline_minus_cells, gap_minus_cells, sequence_pattern, sequence_cells, "plus")
-            if gaps_to_empty_cells:
-                empty_minus_cells = gaps_to_empty_cells
+            best = candidate_plus_first
 
+        # Remove internal flags before returning
+        best.pop("_open_primary", None)
+        best.pop("_open_secondary", None)
 
-        # -------------------------------
-        # Evaluate sequence and return results
-        # -------------------------------
-        inline = 0
-        inline_cells = []
-        gap_counter = 0
-        gap_cells = []
-        
-        for i in range(len(sequence_pattern)):
-            if sequence_pattern[i] == "inline":
-                inline_cells.append(sequence_cells[i])
-                inline += 1
-            elif sequence_pattern[i] == "gap":
-                gap_cells.append(sequence_cells[i])
-                gap_counter += 1
-
-        empty_tails = []
-        open_minus = False
-        open_plus = False
-        if len(sequence_cells) < Misc.INLINE_TO_WIN:
-            limit = Misc.INLINE_TO_WIN - len(sequence_cells)
-            for i in range(0, limit):
-                if i < len(empty_minus_cells):
-                    empty_tails.append(empty_minus_cells[i])
-                    open_minus = True
-                if i < len(empty_plus_cells):
-                    empty_tails.append(empty_plus_cells[i])
-                    open_plus = True
-                
-        
-        one_ended = open_minus or open_plus
-        two_ended = open_minus and open_plus
-        open_in_middle = gap_counter > 0
-                
-
-        return {
-            "inline": inline,
-            "open_in_middle": open_in_middle,
-            "empty_middle_counter": gap_counter,
-            "one_ended": one_ended,
-            "two_ended": two_ended,
-            "inline_cells": inline_cells,
-            "empty_cells": empty_tails,
-            "empty_middle_cells": gap_cells
-        }
+        return best
 
 
 

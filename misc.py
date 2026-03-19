@@ -6,16 +6,47 @@ class Misc:
     INLINE_TO_WIN = 5
 
     colors_selection = {"Red": "#ff0000", "Green": "#006400", "Blue": "#0000ff", "Black": "#000000", "White": "#ffffff"}
-    turn = ["Green"]#, "Blue", "Red"]
-    win_probability_per_color = {"Red": 0, "Green": 0, "Blue": 0}
-
-    @staticmethod
-    def get_color_name(color_code):
-        for color, code in vars.colors_selection.items():
-            if code == color_code:
-                return color
-        return None
+    turn = ["Green", "Blue", "Red"]
     
+    inline_dict = {
+            "Green": {
+                "inline": 0,
+                "two_ended": False,
+                "open_in_middle": False,
+                "empty_middle_counter": 0,
+                "one_ended": False,
+                "round_to_come_again": 0,
+                "inline_indexes": [],
+                "empty_middle_indexes": [],
+                "empty_indexes": [],
+                "winning_probability": 0
+            }, 
+            "Blue": {
+                "inline": 0,
+                "two_ended": False,
+                "open_in_middle": False,
+                "empty_middle_counter": 0,
+                "one_ended": False,
+                "round_to_come_again": 0,
+                "inline_indexes": [],
+                "empty_middle_indexes": [],
+                "empty_indexes": [],
+                "winning_probability": 0
+            },
+            "Red": {
+                "inline": 0,
+                "two_ended": False,
+                "open_in_middle": False,
+                "empty_middle_counter": 0,
+                "one_ended": False,
+                "round_to_come_again": 0,
+                "inline_indexes": [],
+                "empty_middle_indexes": [],
+                "empty_indexes": [],
+                "winning_probability": 0
+            }
+        }
+
 
     def print_hex_color(text, hex_color):
         # Remove '#' if present
@@ -24,5 +55,23 @@ class Misc:
         r, g, b = tuple(int(hex_color[i:i+2], 16) for i in (0, 2, 4))
         # ANSI escape for 24-bit color
         print(f"\033[38;2;{r};{g};{b}m{text}\033[0m")
+        
+    
+    @staticmethod
+    def print_inline_dict(color):
+        print(f"  Inline: {Misc.inline_dict[color]['inline']} " \
+              f"\n  Open in middle: {Misc.inline_dict[color]['open_in_middle']} " \
+              f"\n  Empty middle counter: {Misc.inline_dict[color]['empty_middle_counter']} " \
+              f"\n  One ended: {Misc.inline_dict[color]['one_ended']} " \
+              f"\n  Two ended: {Misc.inline_dict[color]['two_ended']} " \
+            #   f"\n  Inline cells: {Misc.inline_dict[color]['inline_cells']} " \
+            #   f"\n  Empty middle cells: {Misc.inline_dict[color]['empty_middle_cells']} " \
+            #   f"\n  Empty cells: {Misc.inline_dict[color]['empty_cells']} "
+                
+              f"\n  Inline cells: {[f'[{cell.row_index}][{cell.col_index}]' for cell in Misc.inline_dict[color]['inline_cells']]} "
+              f"\n  Empty middle cells: {[f'[{cell.row_index}][{cell.col_index}]' for cell in Misc.inline_dict[color]['empty_middle_cells']]} "
+              f"\n  Empty cells: {[f'[{cell.row_index}][{cell.col_index}]' for cell in Misc.inline_dict[color]['empty_cells']]} "
+              )
+     
 
 

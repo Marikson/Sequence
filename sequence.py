@@ -27,7 +27,7 @@ class Sequence:
                         width=4, height=2,
                         bg="White",
                         command=lambda r=r, c=c: self.model.on_cell_click(r, c),
-                        text="[{}][{}]".format(r, c)
+                        # text="[{}][{}]".format(r, c)
                     )
                 btn.grid(row=r, column=c, sticky="nsew")
                 row.append(btn)
@@ -55,22 +55,16 @@ class Sequence:
     def reset_picked_cell(self):
         self.model.picked_cell = None
     
+    
     def represent_probability(self, inline_dict):
-        
-        
         values = [round(inline_dict["Green"]["winning_probability"]*100, 1), 
                   round(inline_dict["Blue"]["winning_probability"]*100, 1), 
                   round(inline_dict["Red"]["winning_probability"]*100, 1)]
         fig = tpl.figure()
         fig.barh(values, force_ascii=False, max_width=50)
         
-        # bind_edges = [0, 1]
-        # fig.hist(values, bind_edges, orientation="horizontal", force_ascii=False)
         all_charts = fig.get_string()
-
         split_chart = all_charts.split("\n")
-        # for line in split_chart:
-        #     number_in_line = line.split()[0]
 
         for color in Misc.turn:
             color_code = Misc.colors_selection[color]
@@ -92,7 +86,7 @@ class Sequence:
             self.model.set_color(current_color)
             self.model.check_inline_per_color(current_color)
             
-            self.represent_probability(self.model.inline_dict)
+            self.represent_probability(Misc.inline_dict)
    
             color_index = (color_index + 1) if color_index < len(Misc.turn) - 1 else 0
 
@@ -103,7 +97,7 @@ class Sequence:
                 for row in self.model.grid:
                     for btn in row:
                         btn.config(bg=winner_color_code, state="disabled")
-                # self.delete_grid()
+                self.delete_grid()
                 break
             
             self.reset_picked_cell()

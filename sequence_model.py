@@ -152,45 +152,6 @@ class SequenceModel:
             self.grid[self.picked_cell.row_index][self.picked_cell.col_index].config(state="disabled")
 
     
-    def calculate_weights(self, inline_list, gap_list, empty_list):
-            inline_count = len(inline_list)
-            inline_rel_pos_prduct = 1
-            for cell in inline_list:
-                inline_rel_pos_prduct *= cell.relative_position_to_picked_cell
-            inline_weight = int(abs(inline_rel_pos_prduct) / len(inline_list)) if inline_list else 100
-            gap_rel_pos_prduct = 1
-            for cell in gap_list:
-                gap_rel_pos_prduct *= cell.relative_position_to_picked_cell
-            gap_weight = int(abs(gap_rel_pos_prduct) / len(gap_list)) if gap_list else 100
-            empty_weight = len(empty_list)
-            
-            return inline_count, inline_weight, gap_weight, empty_weight
-    
-    
-    def get_direction_order(self, minus_count, plus_count, minus_inline_weight, plus_inline_weight, minus_gap_weight, plus_gap_weight, minus_empty_weight, plus_empty_weight):
-            if minus_count > plus_count:
-                return ["minus", "plus"]
-            elif plus_count > minus_count:
-                return ["plus", "minus"]
-            else:
-                if minus_inline_weight < plus_inline_weight:
-                    return ["minus", "plus"]
-                elif plus_inline_weight < minus_inline_weight:
-                    return ["plus", "minus"]
-                else:
-                    if minus_gap_weight < plus_gap_weight:
-                        return ["minus", "plus"]
-                    elif plus_gap_weight < minus_gap_weight:
-                        return ["plus", "minus"]
-                    else:
-                        if minus_empty_weight > plus_empty_weight:
-                            return ["minus", "plus"]
-                        elif plus_empty_weight > minus_empty_weight:
-                            return ["plus", "minus"]
-                        else:
-                            return ["minus", "plus"]
-        
-    
     def determine_inline(self, cell,
         inline_minus_cells, inline_plus_cells,
         gap_minus_cells, gap_plus_cells,

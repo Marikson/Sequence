@@ -563,7 +563,7 @@ class SequenceModel:
                 completion_multiplier = 1.0
             else:
                 # Sequence is blocked on both ends - can only win via middle gaps
-                completion_multiplier = 0.5 if open_in_middle else 0.0
+                completion_multiplier = 1.0 if open_in_middle else 0.0
             
             # --- Gap penalty ---
             # Gaps in the middle require additional placements

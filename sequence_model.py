@@ -84,12 +84,80 @@ class SequenceModel:
     def __init__(self):
         self.grid = None
         self.picked_cell = None
+        self.picked_cell_value = None
         
+        self.board = [
+            ["XX", "6D", "7D", "8D", "9D", "10D", "QD", "KD", "AD", "XX"],
+            ["5D", "3H", "2H", "2S", "3S", "4S", "5S", "6S", "7S", "AC"],
+            ["4D", "4H", "KD", "AD", "AC", "KC", "QC", "10C", "8S", "KC"],
+            ["3D", "5H", "QD", "QH", "10H", "9H", "8H", "9C", "9S", "QC"],
+            ["2D", "6H", "10D", "KH", "3H", "2H", "7H", "8C", "10S", "10C"],
+            ["AS", "7H", "9D", "AH", "4H", "5H", "6H", "7C", "QS", "9C"],
+            ["KS", "8H", "8D", "2C", "3C", "4C", "5C", "6C", "KS", "8C"],
+            ["QS", "9H", "7D", "6D", "6D", "4D", "QD", "2D", "AS", "7C"],
+            ["10S", "10H", "QH", "KH", "AH", "2C", "3C", "4C", "5C", "6C"],
+            ["XX", "9S", "8S", "7S", "6S", "5S", "4S", "3S", "2S", "XX"],
+        ]
+        
+        self.init_attrs()
+        
+          
+    def init_attrs(self):
+        self.ALL_CARDS_COUNT = 108
+        self.CARDS_IN_GAME = 108
+        self.NUMBER_OF_CARDS_CAN_COLOR_FIELD = 10
+        self.CARDS_PER_TEAM = 10
+        self.CARDS_IN_HAND = 5
+        self.WILLING_TO_BLOCK_PROBABILITY = 0.2
+        self.INLINE_TO_WIN = 5
+
+        self.reserved_cell_values = []
+        
+        Misc.inline_dict = {
+            "Green": {
+                "inline": 0,
+                "two_ended": False,
+                "open_in_middle": False,
+                "gap_counter": 0,
+                "one_ended": False,
+                "round_to_come_again": 0,
+                "inline_cells": [],
+                "gap_cells": [],
+                "empty_cells": [],
+                "winning_probability": 0
+            }, 
+            "Blue": {
+                "inline": 0,
+                "two_ended": False,
+                "open_in_middle": False,
+                "gap_counter": 0,
+                "one_ended": False,
+                "round_to_come_again": 0,
+                "inline_cells": [],
+                "gap_cells": [],
+                "empty_cells": [],
+                "winning_probability": 0
+            },
+            "Red": {
+                "inline": 0,
+                "two_ended": False,
+                "open_in_middle": False,
+                "gap_counter": 0,
+                "one_ended": False,
+                "round_to_come_again": 0,
+                "inline_cells": [],
+                "gap_cells": [],
+                "empty_cells": [],
+                "winning_probability": 0
+            }
+        }
           
     def on_cell_click(self, row, col):
         if row < 0 or row >= Misc.GRID_SIZE or col < 0 or col >= Misc.GRID_SIZE:
             return
         self.picked_cell = self.Cell(row, col)
+        self.picked_cell_value = self.board[row][col]
+        self.reserved_cell_values.append(self.picked_cell_value)
 
 
     def get_btn_color(self, btn):
@@ -104,43 +172,43 @@ class SequenceModel:
                     continue
 
                 # Right
-                if c <= Misc.GRID_SIZE - Misc.INLINE_TO_WIN:
-                    if all(self.get_btn_color(self.grid[r][c + i]) in [color, "Black"] for i in range(Misc.INLINE_TO_WIN)):
+                if c <= Misc.GRID_SIZE - self.INLINE_TO_WIN:
+                    if all(self.get_btn_color(self.grid[r][c + i]) in [color, "Black"] for i in range(self.INLINE_TO_WIN)):
                         return color
                     
                 # Left
                 if c >= 4:
-                    if all(self.get_btn_color(self.grid[r][c - i]) in [color, "Black"] for i in range(Misc.INLINE_TO_WIN)):
+                    if all(self.get_btn_color(self.grid[r][c - i]) in [color, "Black"] for i in range(self.INLINE_TO_WIN)):
                         return color
 
                 # Down
-                if r <= Misc.GRID_SIZE - Misc.INLINE_TO_WIN:
-                    if all(self.get_btn_color(self.grid[r + i][c]) in [color, "Black"] for i in range(Misc.INLINE_TO_WIN)):
+                if r <= Misc.GRID_SIZE - self.INLINE_TO_WIN:
+                    if all(self.get_btn_color(self.grid[r + i][c]) in [color, "Black"] for i in range(self.INLINE_TO_WIN)):
                         return color
                     
                 # Up
                 if r >= 4:
-                    if all(self.get_btn_color(self.grid[r - i][c]) in [color, "Black"] for i in range(Misc.INLINE_TO_WIN)):
+                    if all(self.get_btn_color(self.grid[r - i][c]) in [color, "Black"] for i in range(self.INLINE_TO_WIN)):
                         return color
 
                 # down-right
-                if r <= Misc.GRID_SIZE - Misc.INLINE_TO_WIN and c <= Misc.GRID_SIZE - Misc.INLINE_TO_WIN:
-                    if all(self.get_btn_color(self.grid[r + i][c + i]) in [color, "Black"] for i in range(Misc.INLINE_TO_WIN)):
+                if r <= Misc.GRID_SIZE - self.INLINE_TO_WIN and c <= Misc.GRID_SIZE - self.INLINE_TO_WIN:
+                    if all(self.get_btn_color(self.grid[r + i][c + i]) in [color, "Black"] for i in range(self.INLINE_TO_WIN)):
                         return color
 
                 # up-right
-                if r >= 4 and c <= Misc.GRID_SIZE - Misc.INLINE_TO_WIN:
-                    if all(self.get_btn_color(self.grid[r - i][c + i]) in [color, "Black"] for i in range(Misc.INLINE_TO_WIN)):
+                if r >= 4 and c <= Misc.GRID_SIZE - self.INLINE_TO_WIN:
+                    if all(self.get_btn_color(self.grid[r - i][c + i]) in [color, "Black"] for i in range(self.INLINE_TO_WIN)):
                         return color
                     
                 # down-left
-                if r <= Misc.GRID_SIZE - Misc.INLINE_TO_WIN and c >= 4:
-                    if all(self.get_btn_color(self.grid[r + i][c - i]) in [color, "Black"] for i in range(Misc.INLINE_TO_WIN)):
+                if r <= Misc.GRID_SIZE - self.INLINE_TO_WIN and c >= 4:
+                    if all(self.get_btn_color(self.grid[r + i][c - i]) in [color, "Black"] for i in range(self.INLINE_TO_WIN)):
                         return color
 
                 # up-left
                 if r >= 4 and c >= 4:
-                    if all(self.get_btn_color(self.grid[r - i][c - i]) in [color, "Black"] for i in range(Misc.INLINE_TO_WIN)):
+                    if all(self.get_btn_color(self.grid[r - i][c - i]) in [color, "Black"] for i in range(self.INLINE_TO_WIN)):
                         return color    
 
         return False
@@ -150,6 +218,7 @@ class SequenceModel:
         if color:
             self.grid[self.picked_cell.row_index][self.picked_cell.col_index].config(bg=color)
             self.grid[self.picked_cell.row_index][self.picked_cell.col_index].config(state="disabled")
+            self.CARDS_IN_GAME -= 1
 
     
     def determine_inline(self, cell,
@@ -224,7 +293,7 @@ class SequenceModel:
 
             # --- primary side (always fully consumed up to slot limit) ---
             base_sequence = [("inline", cell)]
-            slots_left = Misc.INLINE_TO_WIN - 1
+            slots_left = self.INLINE_TO_WIN - 1
 
             primary_to_add = []
             for c, kind in primary_ribbon:
@@ -237,7 +306,7 @@ class SequenceModel:
             # stopping point i = take the first i entries from secondary
             # We always try the greedy (take as many as fit) AND every
             # position just before a gap entry starts.
-            max_secondary = min(len(secondary_ribbon), Misc.INLINE_TO_WIN - len(base_sequence))
+            max_secondary = min(len(secondary_ribbon), self.INLINE_TO_WIN - len(base_sequence))
             stop_points = {0, max_secondary}  # always try taking none and taking all
             for idx in range(max_secondary):
                 if secondary_ribbon[idx][1] == "gap":
@@ -266,8 +335,8 @@ class SequenceModel:
                 open_secondary = False
                 empty_tails = []
 
-                if total_in_sequence < Misc.INLINE_TO_WIN:
-                    remaining = Misc.INLINE_TO_WIN - total_in_sequence
+                if total_in_sequence < self.INLINE_TO_WIN:
+                    remaining = self.INLINE_TO_WIN - total_in_sequence
 
                     # Primary side: can only be open if primary_opened is True
                     # (i.e., that side ends with empty fields, not blocked)
@@ -277,7 +346,7 @@ class SequenceModel:
                             empty_tails.append(primary_empty[i])
                             open_primary = True
 
-                    remaining = Misc.INLINE_TO_WIN - total_in_sequence - len(empty_tails)
+                    remaining = self.INLINE_TO_WIN - total_in_sequence - len(empty_tails)
 
                     # Secondary side: can only be open if secondary_opened is True
                     if secondary_opened and secondary_count >= len(secondary_ribbon) and len(secondary_empty) > 0 and remaining > 0:
@@ -380,11 +449,7 @@ class SequenceModel:
                             opened_minus, opened_plus,
                             inline_minus_cells, inline_plus_cells,
                             gap_minus_cells, gap_plus_cells,
-                            empty_minus_cells, empty_plus_cells):
-        
-        
-        # if len(inline_minus_cells) == 0 and len(inline_plus_cells) == 0:
-        #     return          
+                            empty_minus_cells, empty_plus_cells):        
 
         evaluated = self.determine_inline(cell,inline_minus_cells, inline_plus_cells,
                                           list(reversed(gap_minus_cells)), list(reversed(gap_plus_cells)),
@@ -421,7 +486,6 @@ class SequenceModel:
                     opponent_data["empty_cells"].remove(empty_cell)
                     break
             
-
 
     def update_inline_dict(self, color, evaluated):
         to_update = False
@@ -469,7 +533,7 @@ class SequenceModel:
                 - block_attempt_prob: How likely each opponent is to attempt blocking
                 - coordination_factor: Multiplier for coordinated blocking (two-ended threats)
         """
-        base_willingness = Misc.WILLING_TO_BLOCK_PROBABILITY  # 0.20
+        base_willingness = self.WILLING_TO_BLOCK_PROBABILITY  # 0.20
         
         if inline >= 4:
             if two_ended:
@@ -507,6 +571,52 @@ class SequenceModel:
         return block_attempt_prob
 
 
+    def calculate_probability_to_color_field(self):
+        """
+        Calculate the probability that at least one card in the player's
+        hand (of size CARDS_IN_HAND) can be used to color the desired field.
+
+        The total pool of unknown cards from this player's perspective is:
+            cards remaining in the draw pile + cards in all other players' hands
+
+        The player's own hand of 5 cards is drawn from this pool.
+
+        Uses the hypergeometric distribution:
+            P(at least 1 suitable) = 1 - C(N-S, H) / C(N, H)
+
+        Where:
+            N = total unknown cards (draw pile + other players' hands)
+            S = suitable cards still available (not yet played)
+            H = cards in this player's hand (CARDS_IN_HAND)
+        """
+        from math import comb
+
+        # How many copies of the picked card value have already been played
+        already_used = self.reserved_cell_values.count(self.picked_cell_value)
+
+        num_opponents = len(Misc.turn) - 1
+        cards_in_other_hands = num_opponents * self.CARDS_IN_HAND
+        # Total unknown cards = draw pile + other players' hands
+        total_unknown = max(self.CARDS_IN_GAME + cards_in_other_hands, 1)
+        cards_can_color = max(self.NUMBER_OF_CARDS_CAN_COLOR_FIELD - already_used, 0)
+        hand = self.CARDS_IN_HAND
+
+        # Edge cases
+        if cards_can_color <= 0 or hand <= 0:
+            return 0.0
+        if cards_can_color >= total_unknown:
+            return 1.0
+        if hand > total_unknown:
+            hand = total_unknown
+
+        non_suitable = total_unknown - cards_can_color
+        if non_suitable < hand:
+            return 1.0
+
+        # P(none suitable) = C(N-S, H) / C(N, H)
+        prob_none_suitable = comb(non_suitable, hand) / comb(total_unknown, hand)
+        return 1.0 - prob_none_suitable
+
     def calculate_win_probability(self, color_who_picked):
         """
         Calculate win probability for ALL colors based on:
@@ -534,11 +644,11 @@ class SequenceModel:
             two_ended = data["two_ended"]
             round_to_come_again = data["round_to_come_again"]
             
-            # Base probability to place a field
-            p = Misc.PROBABILITY_TO_COLOR_FIELD  # 16/104 ≈ 0.154
+            # Base probability to place a field (accounts for deck siffffff cards remaining, and 5-card hand)
+            p = self.calculate_probability_to_color_field()
             
             # How many fields needed to complete the sequence
-            missing_cells = Misc.INLINE_TO_WIN - inline
+            missing_cells = self.INLINE_TO_WIN - inline
             
             # If already won or no progress
             if missing_cells <= 0:
@@ -567,11 +677,11 @@ class SequenceModel:
             
             # --- Gap penalty ---
             # Gaps in the middle require additional placements
-            gap_penalty = (1 - p) ** gap_counter if gap_counter > 0 else 1.0
+            # gap_penalty = (1 - p) ** gap_counter if gap_counter > 0 else 1.0
             
             # --- Base win probability ---
             # Probability to place the required missing cells
-            base_probability = (p ** missing_cells) * completion_multiplier * gap_penalty
+            base_probability = (p ** missing_cells) * completion_multiplier # * gap_penalty
             
             # --- Dynamic Blocking factor (3 players) ---
             num_players = len(Misc.turn) if len(Misc.turn) > 1 else 3
@@ -664,7 +774,7 @@ class SequenceModel:
         potentially_gap_plus = False
         other_color_inline_minus = False
         other_color_inline_plus = False
-        for i in range(1, Misc.INLINE_TO_WIN):
+        for i in range(1, self.INLINE_TO_WIN):
             # Left
             if self.picked_cell.col_index - i >= 0:
                 if self.get_btn_color(self.grid[self.picked_cell.row_index][self.picked_cell.col_index - i]) in [color, "Black"]:
@@ -744,7 +854,7 @@ class SequenceModel:
         potentially_gap_plus = False
         other_color_inline_minus = False
         other_color_inline_plus = False
-        for i in range(1, Misc.INLINE_TO_WIN):
+        for i in range(1, self.INLINE_TO_WIN):
             # Up
             if self.picked_cell.row_index - i >= 0:
                 if self.get_btn_color(self.grid[self.picked_cell.row_index - i][self.picked_cell.col_index]) in [color, "Black"]:
@@ -824,7 +934,7 @@ class SequenceModel:
         potentially_gap_plus = False
         other_color_inline_minus = False
         other_color_inline_plus = False
-        for i in range(1, Misc.INLINE_TO_WIN):
+        for i in range(1, self.INLINE_TO_WIN):
             # up-left
             if self.picked_cell.row_index - i >= 0 and self.picked_cell.col_index - i >= 0:
                 if self.get_btn_color(self.grid[self.picked_cell.row_index - i][self.picked_cell.col_index - i]) in [color, "Black"]:
@@ -904,7 +1014,7 @@ class SequenceModel:
         potentially_gap_plus = False
         other_color_inline_minus = False
         other_color_inline_plus = False
-        for i in range(1, Misc.INLINE_TO_WIN):
+        for i in range(1, self.INLINE_TO_WIN):
             # down-left
             if self.picked_cell.row_index + i <= Misc.GRID_MAX_INDEX and self.picked_cell.col_index - i >= 0:
                 if self.get_btn_color(self.grid[self.picked_cell.row_index + i][self.picked_cell.col_index - i]) in [color, "Black"]:

@@ -49,6 +49,7 @@ class Sequence:
                 btn.destroy()
         self.model.grid = []
         
+        self.reset_picked_cell()
         self.reset_model()
 
         
@@ -71,48 +72,12 @@ class Sequence:
     
     def reset_picked_cell(self):
         self.model.picked_cell = None
+        self.model.picked_cell_value = None
       
 
     def reset_model(self):
-        self.model.picked_cell = None
-        Misc.inline_dict = {
-            "Green": {
-                "inline": 0,
-                "two_ended": False,
-                "open_in_middle": False,
-                "gap_counter": 0,
-                "one_ended": False,
-                "round_to_come_again": 0,
-                "inline_cells": [],
-                "gap_cells": [],
-                "empty_cells": [],
-                "winning_probability": 0
-            }, 
-            "Blue": {
-                "inline": 0,
-                "two_ended": False,
-                "open_in_middle": False,
-                "gap_counter": 0,
-                "one_ended": False,
-                "round_to_come_again": 0,
-                "inline_cells": [],
-                "gap_cells": [],
-                "empty_cells": [],
-                "winning_probability": 0
-            },
-            "Red": {
-                "inline": 0,
-                "two_ended": False,
-                "open_in_middle": False,
-                "gap_counter": 0,
-                "one_ended": False,
-                "round_to_come_again": 0,
-                "inline_cells": [],
-                "gap_cells": [],
-                "empty_cells": [],
-                "winning_probability": 0
-            }
-        }
+        self.model.init_attrs()
+        
     
     
     def represent_probability(self, inline_dict):
@@ -137,6 +102,7 @@ class Sequence:
 
     def start_game(self):
         color_index = 0
+        self.model.CARDS_IN_GAME = self.model.ALL_CARDS_COUNT - self.model.CARDS_PER_TEAM * len(Misc.turn)
         while any(btn["state"] != "disabled" for row in self.model.grid for btn in row):
             current_color = Misc.turn[color_index]
             print(f"Current turn: {current_color}")

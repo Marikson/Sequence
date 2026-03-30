@@ -1,10 +1,7 @@
 class Misc:
     GRID_SIZE = 10
     GRID_MAX_INDEX = GRID_SIZE - 1
-    PROBABILITY_TO_COLOR_FIELD = 16 / 104
-    WILLING_TO_BLOCK_PROBABILITY = 0.2
-    INLINE_TO_WIN = 5
-
+    
     colors_selection = {"Red": "#ff0000", "Green": "#006400", "Blue": "#0000ff", "Black": "#000000", "White": "#ffffff"}
     turn = ["Green", "Blue", "Red"]
     

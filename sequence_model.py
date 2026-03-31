@@ -157,7 +157,6 @@ class SequenceModel:
             return
         self.picked_cell = self.Cell(row, col)
         self.picked_cell_value = self.board[row][col]
-        self.reserved_cell_values.append(self.picked_cell_value)
 
 
     def get_btn_color(self, btn):
@@ -218,7 +217,6 @@ class SequenceModel:
         if color:
             self.grid[self.picked_cell.row_index][self.picked_cell.col_index].config(bg=color)
             self.grid[self.picked_cell.row_index][self.picked_cell.col_index].config(state="disabled")
-            self.CARDS_IN_GAME -= 1
 
     
     def determine_inline(self, cell,
@@ -445,7 +443,7 @@ class SequenceModel:
         return best
 
 
-    def set_inline_dict(self, color, cell: Cell,
+    def evaluate_inline_dict(self, color, cell: Cell,
                             opened_minus, opened_plus,
                             inline_minus_cells, inline_plus_cells,
                             gap_minus_cells, gap_plus_cells,
@@ -458,8 +456,7 @@ class SequenceModel:
 
         
         self.update_inline_dict(color, evaluated)
-        self.check_if_picked_cell_blocks_opponents(cell, color)
-        self.calculate_win_probability(color)
+        
      
     
     def check_if_picked_cell_blocks_opponents(self, cell, color):
@@ -675,13 +672,10 @@ class SequenceModel:
                 # Sequence is blocked on both ends - can only win via middle gaps
                 completion_multiplier = 1.0 if open_in_middle else 0.0
             
-            # --- Gap penalty ---
-            # Gaps in the middle require additional placements
-            # gap_penalty = (1 - p) ** gap_counter if gap_counter > 0 else 1.0
             
             # --- Base win probability ---
             # Probability to place the required missing cells
-            base_probability = (p ** missing_cells) * completion_multiplier # * gap_penalty
+            base_probability = (p ** missing_cells) * completion_multiplier
             
             # --- Dynamic Blocking factor (3 players) ---
             num_players = len(Misc.turn) if len(Misc.turn) > 1 else 3
@@ -689,7 +683,7 @@ class SequenceModel:
             # Number of opponents who get to play before this color's next turn
             # round_to_come_again tells us how far away our next turn is
             # More rounds = more opponents get chances to block
-            opponents_before_next_turn = min(round_to_come_again + 1, num_players - 1)
+            opponents_before_next_turn = round_to_come_again
             
             # Get dynamic blocking parameters based on threat level
             block_attempt_prob = self.calculate_dynamic_blocking_willingness(
@@ -727,7 +721,8 @@ class SequenceModel:
                 blocking_survival = 1.0
             
             # Final probability incorporating round delay
-            win_probability = base_probability * blocking_survival * round_delay_factor
+            # win_probability = base_probability * blocking_survival * round_delay_factor
+            win_probability = base_probability * round_delay_factor
             
             # Clamp to [0, 1]
             win_probability = max(0.0, min(1.0, win_probability))
@@ -740,23 +735,31 @@ class SequenceModel:
         color, picked_cell, opened_minus, opened_plus, inline_minus_cells, inline_plus_cells, \
         gap_minus_cells, gap_plus_cells, empty_minus_cells, empty_plus_cells \
                 = self.check_inline_per_color_horizontal(color)
-        self.set_inline_dict(color, picked_cell, opened_minus, opened_plus, inline_minus_cells, inline_plus_cells, gap_minus_cells, gap_plus_cells, empty_minus_cells, empty_plus_cells)
+        self.evaluate_inline_dict(color, picked_cell, opened_minus, opened_plus, inline_minus_cells, inline_plus_cells, gap_minus_cells, gap_plus_cells, empty_minus_cells, empty_plus_cells)
         
         color, picked_cell, opened_minus, opened_plus, inline_minus_cells, inline_plus_cells, \
         gap_minus_cells, gap_plus_cells, empty_minus_cells, empty_plus_cells \
                 = self.check_inline_per_color_vertical(color)
-        self.set_inline_dict(color, picked_cell, opened_minus, opened_plus, inline_minus_cells, inline_plus_cells, gap_minus_cells, gap_plus_cells, empty_minus_cells, empty_plus_cells)
+        self.evaluate_inline_dict(color, picked_cell, opened_minus, opened_plus, inline_minus_cells, inline_plus_cells, gap_minus_cells, gap_plus_cells, empty_minus_cells, empty_plus_cells)
         
         color, picked_cell, opened_minus, opened_plus, inline_minus_cells, inline_plus_cells, \
         gap_minus_cells, gap_plus_cells, empty_minus_cells, empty_plus_cells \
                 = self.check_inline_per_color_diagonal(color)
-        self.set_inline_dict(color, picked_cell, opened_minus, opened_plus, inline_minus_cells, inline_plus_cells, gap_minus_cells, gap_plus_cells, empty_minus_cells, empty_plus_cells)
+        self.evaluate_inline_dict(color, picked_cell, opened_minus, opened_plus, inline_minus_cells, inline_plus_cells, gap_minus_cells, gap_plus_cells, empty_minus_cells, empty_plus_cells)
         
         color, picked_cell, opened_minus, opened_plus, inline_minus_cells, inline_plus_cells, \
         gap_minus_cells, gap_plus_cells, empty_minus_cells, empty_plus_cells \
                 = self.check_inline_per_color_inverted_diagonal(color)
-        self.set_inline_dict(color, picked_cell, opened_minus, opened_plus, inline_minus_cells, inline_plus_cells, gap_minus_cells, gap_plus_cells, empty_minus_cells, empty_plus_cells)
+        self.evaluate_inline_dict(color, picked_cell, opened_minus, opened_plus, inline_minus_cells, inline_plus_cells, gap_minus_cells, gap_plus_cells, empty_minus_cells, empty_plus_cells)
     
+    
+        self.check_if_picked_cell_blocks_opponents(picked_cell, color)
+        self.calculate_win_probability(color)
+        
+        self.reserved_cell_values.append(self.picked_cell_value)
+        self.CARDS_IN_GAME -= 1
+        
+        
     
     def check_inline_per_color_horizontal(self, color):
         # Horizontal

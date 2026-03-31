@@ -20,14 +20,14 @@ class Sequence:
                     (r == Misc.GRID_MAX_INDEX and c == 0) or (r == Misc.GRID_MAX_INDEX and c == Misc.GRID_MAX_INDEX):
                     btn = tk.Button(
                         sequence_field,
-                        width=4, height=2,
+                        width=6, height=5,
                         bg="Black",
                         state="disabled"
                     )
                 else:
                     btn = tk.Button(
                         sequence_field,
-                        width=4, height=2,
+                        width=6, height=5,
                         bg="White",
                         command=lambda r=r, c=c: self.model.on_cell_click(r, c),
                         # text="[{}][{}]".format(r, c)
@@ -102,7 +102,7 @@ class Sequence:
 
     def start_game(self):
         color_index = 0
-        self.model.CARDS_IN_GAME = self.model.ALL_CARDS_COUNT - self.model.CARDS_PER_TEAM * len(Misc.turn)
+        self.model.CARDS_IN_GAME = self.model.ALL_CARDS_COUNT - self.model.CARDS_IN_HAND * len(Misc.turn)
         while any(btn["state"] != "disabled" for row in self.model.grid for btn in row):
             current_color = Misc.turn[color_index]
             print(f"Current turn: {current_color}")
